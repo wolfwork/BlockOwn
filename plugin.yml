@@ -1,0 +1,20 @@
+name: BlockOwn
+version: 0.2alpha
+
+author: Pheasn
+
+main: me.pheasn.blockown.BlockOwn
+
+commands:
+    
+  owner:
+    
+  own:
+    
+  unown:
+   
+  blockown:
+  
+  protect:
+  
+  unprotect:
