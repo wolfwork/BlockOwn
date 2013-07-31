@@ -1,5 +1,6 @@
 package me.pheasn.blockown;
 
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,16 +20,53 @@ public class CE_Protect implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			Block target = player.getTargetBlock(null, 200);
-			if (args.length == 1) {
-				plugin.playerSettings.blacklistAdd(player, target.getType()
-						.name(), args[0]);
-				return true;
-			} else if (args.length == 2) {
-				plugin.playerSettings.blacklistAdd(player, args[1], args[0]);
-				return true;
+			String protectName;
+			if (target != null) {
+				String blockName = target.getType().name();
+				if (args.length == 1) {
+					protectName = args[0];
+					if (args[0].equalsIgnoreCase("all")) {
+						args[0] = PlayerSettings.ALL_PLAYERS;
+						protectName = "all players";
+					}
+					plugin.playerSettings.blacklistAdd(player, target.getType()
+							.name(), args[0]);
+					sendSuccessMessage(player, blockName, protectName);
+					return true;
+				} else if (args.length == 2) {
+					blockName = args[0];
+					protectName = args[1];
+					if (args[0].equalsIgnoreCase("all")) {
+						args[0] = PlayerSettings.ALL_BLOCKS;
+						blockName = "all";
+					}
+					if (args[1].equalsIgnoreCase("all")) {
+						args[1] = PlayerSettings.ALL_PLAYERS;
+						protectName = "all players";
+					}
+					plugin.playerSettings
+							.blacklistAdd(player, args[0], args[1]);
+					sendSuccessMessage(player, blockName, protectName);
+					return true;
+				} else {
+					plugin.say(player, ChatColor.RED,
+							"Invalid amount of arguments.");
+					return false;
+				}
+			} else {
+				plugin.say(player, ChatColor.RED,
+						"You need to aim at a block to perform this command.");
+				return false;
 			}
+		} else {
+			plugin.con("This command is just for players.");
+			return false;
 		}
-		return false;
 	}
 
+	private void sendSuccessMessage(Player player, String blockName,
+			String protectName) {
+		plugin.say(player, ChatColor.GREEN, "Your " + blockName.toLowerCase()
+				+ " blocks are now protected against " + protectName + ".");
+	}
 }

@@ -20,8 +20,9 @@ public class CE_Owner implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			Block target = player.getTargetBlock(null, 200);
+			if(target!=null){
 			if (plugin.owning.getOwner(target) != null) {
-				plugin.say(player, ChatColor.GREEN, "This block belongs to "
+				plugin.say(player, ChatColor.GREEN, "This block is property of "
 						+ plugin.owning.getOwner(target).getName());
 				return true;
 			} else {
@@ -29,7 +30,12 @@ public class CE_Owner implements CommandExecutor {
 						"This block belongs to no one");
 				return true;
 			}
+			}else{
+				plugin.say(player,ChatColor.RED,"You need to aim at a block to perform this command.");
+				return false;
+			}
 		} else {
+			plugin.con(ChatColor.RED,"This command is just for players.");
 			return false;
 		}
 	}

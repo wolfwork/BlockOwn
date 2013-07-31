@@ -1,5 +1,7 @@
 package me.pheasn.blockown;
 
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,14 +19,24 @@ public class CE_Own implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (plugin.owning.getOwner(player.getTargetBlock(null, 200)) == null
-					|| plugin.owning.getOwner(player.getTargetBlock(null, 200))
-							.getName().equalsIgnoreCase(player.getName()))
-				plugin.owning
-						.setOwner(player.getTargetBlock(null, 200), player);
-			return true;
+			OfflinePlayer owner = plugin.owning.getOwner(player.getTargetBlock(
+					null, 200));
+			if (owner == null) {
+				plugin.owning.setOwner(player.getTargetBlock(null, 200), player);
+				plugin.say(player, ChatColor.GREEN,"This block is yours now.");
+				return true;
+			}
+			if (owner.getName().equalsIgnoreCase(player.getName())) {
+				plugin.say(player, ChatColor.YELLOW, "This block is already yours.");
+				return true;
+			} else {
+				plugin.say(player,ChatColor.RED,"This block is property of "+owner.getName()+".");
+				return false;
+			}
+		}else{
+			plugin.con(ChatColor.RED,"This command is just for players.");
+			return false;
 		}
-		return false;
 	}
 
 }

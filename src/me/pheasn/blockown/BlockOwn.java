@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 public class BlockOwn extends JavaPlugin {
 	private ConsoleCommandSender console;
@@ -67,7 +68,7 @@ public class BlockOwn extends JavaPlugin {
 		this.getCommand("unprotect")
 				.setUsage(
 						ChatColor.RED
-								+ "Appropriate usage: /<command> <player> <(Optional) blockType>");
+								+ "Appropriate usage: /<command> <(Optional) blockType> <player>");
 		this.getCommand("unprotect")
 				.setDescription(
 						"Reverts protection of the targeted (or specified) BlockType against specified Player.");
@@ -102,6 +103,13 @@ public class BlockOwn extends JavaPlugin {
 		}
 		owning = new Owning(this);
 		playerSettings = new PlayerSettings(this);
+		try {
+			Metrics metrics = new Metrics(this);
+
+			metrics.start();
+		} catch (IOException e) {
+			this.con(ChatColor.RED, "[ERROR] METRICS failed.");
+		}
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmd_label, String[] args){
@@ -172,7 +180,7 @@ public class BlockOwn extends JavaPlugin {
 	}
 
 	public String inBrackets(String s) {
-		return "[" + s + "]";
+		return "[" + s + "] ";
 	}
 
 	public String serverNameInBrackets() {
