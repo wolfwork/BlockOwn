@@ -17,12 +17,15 @@ public class L_BlockClick implements Listener {
 		if (plugin.getConfig()
 				.getBoolean("ServerSettings.enablePlayerSettings")) { //$NON-NLS-1$
 			if (event.getClickedBlock() != null) {
-				if (plugin.playerSettings.isBlacklisted(event.getPlayer(),
-						plugin.owning.getOwner(event.getClickedBlock()), event
-								.getClickedBlock().getType().name())) {
-					event.setCancelled(true);
-					plugin.say(event.getPlayer(), ChatColor.RED,
-							Messages.getString("L_BlockClick.1")); //$NON-NLS-1$
+				if (!plugin.owning.getOwner(event.getClickedBlock()).getName()
+						.equalsIgnoreCase(event.getPlayer().getName())) {
+					if (plugin.playerSettings.isBlacklisted(event.getPlayer(),
+							plugin.owning.getOwner(event.getClickedBlock()),
+							event.getClickedBlock().getType().name())) {
+						event.setCancelled(true);
+						plugin.say(event.getPlayer(), ChatColor.RED,
+								Messages.getString("L_BlockClick.1")); //$NON-NLS-1$
+					}
 				}
 			}
 		}
