@@ -10,8 +10,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class PlayerSettings {
 	private BlockOwn plugin;
-	public static final String ALL_PLAYERS = "#all#";
-	public static final String ALL_BLOCKS = "#all#";
+	public static final String ALL_PLAYERS = "#all#"; //$NON-NLS-1$
+	public static final String ALL_BLOCKS = "#all#"; //$NON-NLS-1$
 	private HashMap<String, HashMap<String, ArrayList<String>>> blacklists;
 
 	public PlayerSettings(BlockOwn plugin) {
@@ -22,18 +22,18 @@ public class PlayerSettings {
 
 	private void initialize() {
 		FileConfiguration config = plugin.getConfig();
-		if (config.get("PlayerSettings") != null) {
-			Set<String> keys = config.getConfigurationSection("PlayerSettings")
+		if (config.get("PlayerSettings") != null) { //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("PlayerSettings") //$NON-NLS-1$
 					.getKeys(false);
 			for (String player : keys) {
 				blacklists
 						.put(player, new HashMap<String, ArrayList<String>>());
 				for (String blockType : config.getConfigurationSection(
-						"PlayerSettings." + player).getKeys(false)) {
+						"PlayerSettings." + player).getKeys(false)) { //$NON-NLS-1$
 					blacklists.get(player).put(blockType,
 							new ArrayList<String>());
 					for (String blacklistedPlayer : config
-							.getStringList("PlayerSettings." + player + "."
+							.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
 									+ blockType)) {
 						blacklists.get(player).get(blockType)
 								.add(blacklistedPlayer);
@@ -49,7 +49,7 @@ public class PlayerSettings {
 				.entrySet()) {
 			for (Entry<String, ArrayList<String>> playerBlacklists : entry
 					.getValue().entrySet()) {
-				config.set("PlayerSettings." + entry.getKey() + "."
+				config.set("PlayerSettings." + entry.getKey() + "." //$NON-NLS-1$ //$NON-NLS-2$
 						+ playerBlacklists.getKey(),
 						playerBlacklists.getValue());
 			}
@@ -76,8 +76,9 @@ public class PlayerSettings {
 				ArrayList<String> blacklistedPlayers = playerBlacklists
 						.get(blockType);
 				if (!(blockType == ALL_BLOCKS)) {
-					if(playerBlacklists.containsKey(ALL_BLOCKS)){
-					blacklistedPlayers.addAll(playerBlacklists.get(ALL_BLOCKS));
+					if (playerBlacklists.containsKey(ALL_BLOCKS)) {
+						blacklistedPlayers.addAll(playerBlacklists
+								.get(ALL_BLOCKS));
 					}
 				}
 				return blacklistedPlayers;
@@ -136,13 +137,13 @@ public class PlayerSettings {
 	public boolean isBlacklisted(String candidate, String owner,
 			String blockType) {
 		try {
-			if (this.getBlacklist(owner, blockType).contains(candidate)) {
+			ArrayList<String>blacklist=this.getBlacklist(owner,blockType);
+			if (blacklist.contains(candidate)||blacklist.contains(ALL_PLAYERS)) {
 				return true;
-			} else {
+			} else{
 				return false;
 			}
 		} catch (Exception ex) {
-			plugin.con("Str"+ex.toString());
 			return false;
 		}
 	}

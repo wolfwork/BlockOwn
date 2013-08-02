@@ -1,6 +1,7 @@
 package me.pheasn.blockown;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,9 +26,9 @@ public class CE_Protect implements CommandExecutor {
 				String blockName = target.getType().name();
 				if (args.length == 1) {
 					protectName = args[0];
-					if (args[0].equalsIgnoreCase("all")) {
+					if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
 						args[0] = PlayerSettings.ALL_PLAYERS;
-						protectName = "all players";
+						protectName = Messages.getString("CE_Protect.0"); //$NON-NLS-1$
 					}
 					plugin.playerSettings.blacklistAdd(player, target.getType()
 							.name(), args[0]);
@@ -36,37 +37,37 @@ public class CE_Protect implements CommandExecutor {
 				} else if (args.length == 2) {
 					blockName = args[0];
 					protectName = args[1];
-					if (args[0].equalsIgnoreCase("all")) {
+					if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
 						args[0] = PlayerSettings.ALL_BLOCKS;
-						blockName = "all";
+						blockName = "all"; //$NON-NLS-1$
 					}
-					if (args[1].equalsIgnoreCase("all")) {
+					if (args[1].equalsIgnoreCase("all")) { //$NON-NLS-1$
 						args[1] = PlayerSettings.ALL_PLAYERS;
-						protectName = "all players";
+						protectName = Messages.getString("CE_Protect.1"); //$NON-NLS-1$
 					}
-					plugin.playerSettings
-							.blacklistAdd(player, args[0], args[1]);
+					plugin.playerSettings.blacklistAdd(player, Material
+							.getMaterial(args[0]).name(), args[1]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else {
 					plugin.say(player, ChatColor.RED,
-							"Invalid amount of arguments.");
+							Messages.getString("CE_Protect.6")); //$NON-NLS-1$
 					return false;
 				}
 			} else {
 				plugin.say(player, ChatColor.RED,
-						"You need to aim at a block to perform this command.");
+						Messages.getString("CE_Protect.7")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			plugin.con("This command is just for players.");
+			plugin.con(Messages.getString("CE_Protect.8")); //$NON-NLS-1$
 			return false;
 		}
 	}
 
 	private void sendSuccessMessage(Player player, String blockName,
 			String protectName) {
-		plugin.say(player, ChatColor.GREEN, "Your " + blockName.toLowerCase()
-				+ " blocks are now protected against " + protectName + ".");
+		plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Protect.9") + blockName.toLowerCase() //$NON-NLS-1$
+				+ Messages.getString("CE_Protect.10") + protectName + "."); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

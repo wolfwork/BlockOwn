@@ -1,3 +1,4 @@
 ServerSettings:
   enable: true
+  enablePlayerSettings: true
 PlayerSettings:

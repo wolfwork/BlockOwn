@@ -14,19 +14,21 @@ public class CE_Unown implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String cmd_label,
-			String[] args) {
-		try{
-			if(sender instanceof Player){
+	public boolean onCommand(CommandSender sender, Command cmd,
+			String cmd_label, String[] args) {
+		try {
+			if (sender instanceof Player) {
 				Player player = (Player) sender;
-				Block target=player.getTargetBlock(null, 200);
-				if(target!=null && plugin.owning.getOwner(target).getName().equalsIgnoreCase(player.getName())){
+				Block target = player.getTargetBlock(null, 200);
+				if (target != null
+						&& plugin.owning.getOwner(target).getName()
+								.equalsIgnoreCase(player.getName())) {
 					plugin.owning.removeOwner(target);
 					return true;
 				}
 			}
-		}catch(Exception ex){
-			
+		} catch (Exception ex) {
+
 		}
 		return false;
 	}

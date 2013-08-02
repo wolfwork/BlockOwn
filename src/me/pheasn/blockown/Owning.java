@@ -39,9 +39,9 @@ public class Owning {
 					players.add(offlinePlayer.getName());
 				}
 				while ((owning = bufferedReader.readLine()) != null) {
-					String[] owningDiv = owning.split(":");
+					String[] owningDiv = owning.split(":"); //$NON-NLS-1$
 					String worldName = owningDiv[0];
-					String[] BlockCoordinates = owningDiv[1].split("#");
+					String[] BlockCoordinates = owningDiv[1].split("#"); //$NON-NLS-1$
 					String playerName = owningDiv[2];
 					if (worlds.contains(worldName)
 							&& players.contains(playerName)) {
@@ -62,7 +62,7 @@ public class Owning {
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, "BlockOwners file not found.");
+			plugin.con(ChatColor.RED, Messages.getString("Owning.2")); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -70,7 +70,7 @@ public class Owning {
 	public boolean save() {
 		if (!plugin.getBlockOwnerFile().exists()) {
 			plugin.con(ChatColor.YELLOW,
-					"BlockOwners file not found. Creating a new one...");
+					Messages.getString("Owning.3")); //$NON-NLS-1$
 			try {
 				plugin.getBlockOwnerFile().createNewFile();
 			} catch (IOException e) {
@@ -81,15 +81,15 @@ public class Owning {
 					false);
 			for (Entry<Block, String> entry : ownings.entrySet()) {
 				Block block = entry.getKey();
-				fileWriter.write(block.getWorld().getName() + ":"
-						+ block.getX() + "#" + block.getY() + "#"
-						+ block.getZ() + ":" + entry.getValue());
+				fileWriter.write(block.getWorld().getName() + ":" //$NON-NLS-1$
+						+ block.getX() + "#" + block.getY() + "#" //$NON-NLS-1$ //$NON-NLS-2$
+						+ block.getZ() + ":" + entry.getValue()+System.getProperty("line.separator")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			fileWriter.flush();
 			fileWriter.close();
 			return true;
 		} catch (Exception ex) {
-			plugin.con(ChatColor.RED,ex.toString());
+			plugin.con(ChatColor.RED, ex.toString());
 		}
 		return false;
 	}
@@ -105,10 +105,12 @@ public class Owning {
 	public void setOwner(Block block, OfflinePlayer offlinePlayer) {
 		ownings.put(block, offlinePlayer.getName());
 	}
+
 	public void setOwner(Block block, String player) {
 		ownings.put(block, player);
 	}
-	public void removeOwner(Block block){
+
+	public void removeOwner(Block block) {
 		ownings.remove(block);
 	}
 }

@@ -22,19 +22,22 @@ public class CE_Own implements CommandExecutor {
 			OfflinePlayer owner = plugin.owning.getOwner(player.getTargetBlock(
 					null, 200));
 			if (owner == null) {
-				plugin.owning.setOwner(player.getTargetBlock(null, 200), player);
-				plugin.say(player, ChatColor.GREEN,"This block is yours now.");
+				plugin.owning
+						.setOwner(player.getTargetBlock(null, 200), player);
+				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Own.0")); //$NON-NLS-1$
 				return true;
 			}
 			if (owner.getName().equalsIgnoreCase(player.getName())) {
-				plugin.say(player, ChatColor.YELLOW, "This block is already yours.");
+				plugin.say(player, ChatColor.YELLOW,
+						Messages.getString("CE_Own.1")); //$NON-NLS-1$
 				return true;
 			} else {
-				plugin.say(player,ChatColor.RED,"This block is property of "+owner.getName()+".");
+				plugin.say(player, ChatColor.RED, Messages.getString("CE_Own.2") //$NON-NLS-1$
+						+ owner.getName() + "."); //$NON-NLS-1$
 				return false;
 			}
-		}else{
-			plugin.con(ChatColor.RED,"This command is just for players.");
+		} else {
+			plugin.con(ChatColor.RED, Messages.getString("CE_Own.4")); //$NON-NLS-1$
 			return false;
 		}
 	}
