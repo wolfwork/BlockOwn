@@ -17,7 +17,7 @@ public class L_BlockClick implements Listener {
 		if (plugin.getConfig()
 				.getBoolean("ServerSettings.enablePlayerSettings")) { //$NON-NLS-1$
 			if (event.getClickedBlock() != null) {
-				if (!plugin.owning.getOwner(event.getClickedBlock()).getName()
+				if (plugin.owning.getOwner(event.getClickedBlock())!=null&&!plugin.owning.getOwner(event.getClickedBlock()).getName()
 						.equalsIgnoreCase(event.getPlayer().getName())) {
 					if (plugin.playerSettings.isBlacklisted(event.getPlayer(),
 							plugin.owning.getOwner(event.getClickedBlock()),
