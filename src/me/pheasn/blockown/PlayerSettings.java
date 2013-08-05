@@ -13,6 +13,7 @@ public class PlayerSettings {
 	public static final String ALL_PLAYERS = "#all#"; //$NON-NLS-1$
 	public static final String ALL_BLOCKS = "#all#"; //$NON-NLS-1$
 	private HashMap<String, HashMap<String, LinkedList<String>[]>> blacklists;
+
 	public PlayerSettings(BlockOwn plugin) {
 		this.plugin = plugin;
 		blacklists = new HashMap<String, HashMap<String, LinkedList<String>[]>>();
@@ -25,17 +26,16 @@ public class PlayerSettings {
 			Set<String> keys = config.getConfigurationSection("PlayerSettings") //$NON-NLS-1$
 					.getKeys(false);
 			for (String player : keys) {
-				blacklists
-						.put(player, new HashMap<String, LinkedList<String>[]>());
+				blacklists.put(player,
+						new HashMap<String, LinkedList<String>[]>());
 				for (String blockType : config.getConfigurationSection(
 						"PlayerSettings." + player).getKeys(false)) { //$NON-NLS-1$
-					blacklists.get(player).put(blockType,
-							newLinkedList());
+					blacklists.get(player).put(blockType, newLinkedList());
 					for (String blacklistedPlayer : config
 							.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
 									+ blockType)) {
 						blacklists.get(player).get(blockType)[0]
-								.add(blacklistedPlayer);
+								.add(blacklistedPlayer.toLowerCase());
 					}
 				}
 			}
@@ -55,7 +55,7 @@ public class PlayerSettings {
 		}
 	}
 
-	public HashMap<String, LinkedList<String>[]> getBlacklists(String player) {
+	private HashMap<String, LinkedList<String>[]> getBlacklists(String player) {
 		if (blacklists.containsKey(player)) {
 			return blacklists.get(player);
 		} else {
@@ -63,11 +63,13 @@ public class PlayerSettings {
 		}
 	}
 
-	public HashMap<String, LinkedList<String>[]> getBlacklists(OfflinePlayer player) {
+	@SuppressWarnings("unused")
+	private HashMap<String, LinkedList<String>[]> getBlacklists(
+			OfflinePlayer player) {
 		return getBlacklists(player.getName());
 	}
 
-	public LinkedList<String> getBlacklist(String owner, String blockType) {
+	private LinkedList<String> getBlacklist(String owner, String blockType) {
 		if (blacklists.containsKey(owner)) {
 			HashMap<String, LinkedList<String>[]> playerBlacklists = blacklists
 					.get(owner);
@@ -89,19 +91,23 @@ public class PlayerSettings {
 		}
 	}
 
-	public LinkedList<String> getBlacklist(OfflinePlayer owner, String blockType) {
+	@SuppressWarnings("unused")
+	private LinkedList<String> getBlacklist(OfflinePlayer owner,
+			String blockType) {
 		return getBlacklist(owner.getName(), blockType);
 	}
 
 	public void blacklistAdd(String owner, String blockType,
 			String blacklistedPlayer) {
+		blacklistedPlayer=blacklistedPlayer.toLowerCase();
 		if (!blacklists.containsKey(owner)) {
 			blacklists.put(owner, new HashMap<String, LinkedList<String>[]>());
 		}
 		if (!blacklists.get(owner).containsKey(blockType)) {
 			blacklists.get(owner).put(blockType, newLinkedList());
 		}
-		if (!blacklists.get(owner).get(blockType)[0].contains(blacklistedPlayer)) {
+		if (!blacklists.get(owner).get(blockType)[0]
+				.contains(blacklistedPlayer)) {
 			blacklists.get(owner).get(blockType)[0].add(blacklistedPlayer);
 		}
 	}
@@ -114,7 +120,7 @@ public class PlayerSettings {
 	public void blacklistRemove(String owner, String blockType,
 			String blacklistedPlayer) {
 		if (isBlacklisted(blacklistedPlayer, owner, blockType)) {
-			blacklists.get(owner).get(blockType)[0].remove(blacklistedPlayer);
+			blacklists.get(owner).get(blockType)[0].remove(blacklistedPlayer.toLowerCase());
 		}
 	}
 
@@ -134,24 +140,28 @@ public class PlayerSettings {
 
 	public boolean isBlacklisted(String candidate, String owner,
 			String blockType) {
+		candidate=candidate.toLowerCase();
 		try {
-			LinkedList<String>blacklist=this.getBlacklist(owner,blockType);
-			if (blacklist.contains(candidate)||blacklist.contains(ALL_PLAYERS)) {
+			LinkedList<String> blacklist = this.getBlacklist(owner, blockType);
+			if (blacklist.contains(candidate)
+					|| blacklist.contains(ALL_PLAYERS)) {
 				return true;
-			} else{
+			} else {
 				return false;
 			}
 		} catch (Exception ex) {
 			return false;
 		}
 	}
-@SuppressWarnings("unchecked")
-private LinkedList<String>[] newLinkedList(){
-	LinkedList<String>[] list =(LinkedList<String>[]) new LinkedList[2];
-	list[0]=new LinkedList<String>();
-	list[1]=new LinkedList<String>();
-	return list;
-}
+
+	@SuppressWarnings("unchecked")
+	private LinkedList<String>[] newLinkedList() {
+		LinkedList<String>[] list = (LinkedList<String>[]) new LinkedList[2];
+		list[0] = new LinkedList<String>();
+		list[1] = new LinkedList<String>();
+		return list;
+	}
+
 	@Override
 	public void finalize() {
 		this.save();
