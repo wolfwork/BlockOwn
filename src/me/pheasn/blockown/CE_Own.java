@@ -24,7 +24,8 @@ public class CE_Own implements CommandExecutor {
 			if (owner == null) {
 				plugin.owning
 						.setOwner(player.getTargetBlock(null, 200), player);
-				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Own.0")); //$NON-NLS-1$
+				plugin.say(player, ChatColor.GREEN,
+						Messages.getString("CE_Own.0")); //$NON-NLS-1$
 				return true;
 			}
 			if (owner.getName().equalsIgnoreCase(player.getName())) {
@@ -32,8 +33,9 @@ public class CE_Own implements CommandExecutor {
 						Messages.getString("CE_Own.1")); //$NON-NLS-1$
 				return true;
 			} else {
-				plugin.say(player, ChatColor.RED, Messages.getString("CE_Own.2") //$NON-NLS-1$
-						+ owner.getName() + "."); //$NON-NLS-1$
+				plugin.say(player, ChatColor.RED,
+						Messages.getString("CE_Own.2") //$NON-NLS-1$
+								+ owner.getName() + "."); //$NON-NLS-1$
 				return false;
 			}
 		} else {
