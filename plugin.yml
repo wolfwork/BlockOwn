@@ -1,5 +1,5 @@
 name: BlockOwn
-version: 0.3.2
+version: 0.3.4
 
 author: Pheasn
 
@@ -18,3 +18,9 @@ commands:
   protect:
   
   unprotect:
+  
+  whitelist:
+
+  unwhitelist:
+  
+  protection:

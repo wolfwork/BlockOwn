@@ -1,7 +1,6 @@
 package me.pheasn.blockown;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -45,8 +44,7 @@ public class CE_Protect implements CommandExecutor {
 						args[1] = PlayerSettings.ALL_PLAYERS;
 						protectName = Messages.getString("CE_Protect.1"); //$NON-NLS-1$
 					}
-					plugin.playerSettings.blacklistAdd(player, Material
-							.getMaterial(args[0]).name(), args[1]);
+					plugin.playerSettings.blacklistAdd(player,args[0].toUpperCase(), args[1]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else {
@@ -67,7 +65,10 @@ public class CE_Protect implements CommandExecutor {
 
 	private void sendSuccessMessage(Player player, String blockName,
 			String protectName) {
-		plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Protect.9") + blockName.toLowerCase() //$NON-NLS-1$
-				+ Messages.getString("CE_Protect.10") + protectName + "."); //$NON-NLS-1$ //$NON-NLS-2$
+		plugin.say(
+				player,
+				ChatColor.GREEN,
+				Messages.getString("CE_Protect.9") + blockName.toLowerCase() //$NON-NLS-1$
+						+ Messages.getString("CE_Protect.10") + protectName + "."); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

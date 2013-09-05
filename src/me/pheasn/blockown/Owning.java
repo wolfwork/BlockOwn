@@ -69,8 +69,7 @@ public class Owning {
 
 	public boolean save() {
 		if (!plugin.getBlockOwnerFile().exists()) {
-			plugin.con(ChatColor.YELLOW,
-					Messages.getString("Owning.3")); //$NON-NLS-1$
+			plugin.con(ChatColor.YELLOW, Messages.getString("Owning.3")); //$NON-NLS-1$
 			try {
 				plugin.getBlockOwnerFile().createNewFile();
 			} catch (IOException e) {
@@ -81,9 +80,13 @@ public class Owning {
 					false);
 			for (Entry<Block, String> entry : ownings.entrySet()) {
 				Block block = entry.getKey();
-				fileWriter.write(block.getWorld().getName() + ":" //$NON-NLS-1$
-						+ block.getX() + "#" + block.getY() + "#" //$NON-NLS-1$ //$NON-NLS-2$
-						+ block.getZ() + ":" + entry.getValue()+System.getProperty("line.separator")); //$NON-NLS-1$ //$NON-NLS-2$
+				fileWriter
+						.write(block.getWorld().getName()
+								+ ":" //$NON-NLS-1$
+								+ block.getX()
+								+ "#" + block.getY() + "#" //$NON-NLS-1$ //$NON-NLS-2$
+								+ block.getZ()
+								+ ":" + entry.getValue() + System.getProperty("line.separator")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			fileWriter.flush();
 			fileWriter.close();
