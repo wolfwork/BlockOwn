@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class PlayerSettings {
 	private BlockOwn plugin;
 	public static final String ALL_PLAYERS = "#all#"; //$NON-NLS-1$
-	public static final String ALL_BLOCKS = "#all#"; //$NON-NLS-1$
+	public static final String ALL_BLOCKS = "#ALL#"; //$NON-NLS-1$
 	private HashMap<String, HashMap<String, LinkedList<String>[]>> lists;
 
 	private boolean outdatedSettings = false;
@@ -35,9 +35,8 @@ public class PlayerSettings {
 						"PlayerSettings." + player).getKeys(false)) { //$NON-NLS-1$
 					lists.get(player).put(blockType, newLinkedList());
 					if (!outdatedSettings
-							&& config
-									.getConfigurationSection(
-											"PlayerSettings." + player+"."+blockType)==null) {
+							&& config.getConfigurationSection("PlayerSettings."
+									+ player + "." + blockType) == null) {
 						outdatedSettings = true;
 					}
 					if (outdatedSettings) {
@@ -106,19 +105,21 @@ public class PlayerSettings {
 		if (lists.containsKey(owner)) {
 			HashMap<String, LinkedList<String>[]> playerBlacklists = lists
 					.get(owner);
+			LinkedList<String> blacklistedPlayers = new LinkedList<String>();
+			if (!(blockType == ALL_BLOCKS)) {
+				if (playerBlacklists.containsKey(ALL_BLOCKS)) {
+					blacklistedPlayers
+							.addAll(playerBlacklists.get(ALL_BLOCKS)[0]);
+				}
+			}
 			if (playerBlacklists.containsKey(blockType)) {
-				LinkedList<String> blacklistedPlayers = playerBlacklists
-						.get(blockType)[0];
-				if (!(blockType == ALL_BLOCKS)) {
-					if (playerBlacklists.containsKey(ALL_BLOCKS)) {
-						blacklistedPlayers.addAll(playerBlacklists
-								.get(ALL_BLOCKS)[0]);
+				for (String player : playerBlacklists.get(blockType)[0]) {
+					if (!blacklistedPlayers.contains(player)) {
+						blacklistedPlayers.add(player);
 					}
 				}
-				return blacklistedPlayers;
-			} else {
-				return new LinkedList<String>();
 			}
+			return blacklistedPlayers;
 		} else {
 			return new LinkedList<String>();
 		}
@@ -202,19 +203,21 @@ public class PlayerSettings {
 		if (lists.containsKey(owner)) {
 			HashMap<String, LinkedList<String>[]> playerWhitelists = lists
 					.get(owner);
+			LinkedList<String> whitelistedPlayers = new LinkedList<String>();
+			if (!(blockType == ALL_BLOCKS)) {
+				if (playerWhitelists.containsKey(ALL_BLOCKS)) {
+					whitelistedPlayers
+							.addAll(playerWhitelists.get(ALL_BLOCKS)[1]);
+				}
+			}
 			if (playerWhitelists.containsKey(blockType)) {
-				LinkedList<String> whitelistedPlayers = playerWhitelists
-						.get(blockType)[1];
-				if (!(blockType == ALL_BLOCKS)) {
-					if (playerWhitelists.containsKey(ALL_BLOCKS)) {
-						whitelistedPlayers.addAll(playerWhitelists
-								.get(ALL_BLOCKS)[1]);
+				for (String player : playerWhitelists.get(blockType)[1]) {
+					if (!whitelistedPlayers.contains(player)) {
+						whitelistedPlayers.add(player);
 					}
 				}
-				return whitelistedPlayers;
-			} else {
-				return new LinkedList<String>();
 			}
+			return whitelistedPlayers;
 		} else {
 			return new LinkedList<String>();
 		}

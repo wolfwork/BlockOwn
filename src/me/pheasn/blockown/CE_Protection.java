@@ -52,7 +52,7 @@ public class CE_Protection implements CommandExecutor {
 			}
 		plugin.say(player, ChatColor.GREEN, "Whitelist:"); //$NON-NLS-1$
 			for (String whitelistedPlayer:whitelist){
-				plugin.say(player, ChatColor.GREEN, whitelistedPlayer);
+				plugin.say(player, ChatColor.DARK_GREEN, whitelistedPlayer);
 			}
 	}
 }
