@@ -24,13 +24,14 @@ public class CE_Protection implements CommandExecutor {
 					if(player.getTargetBlock(null,200)!=null){
 						sendLists(player, plugin.playerSettings.getBlacklist(player,player.getTargetBlock(null, 200).getType().name()), plugin.playerSettings.getWhitelist(player,player.getTargetBlock(null, 200).getType().name()));
 						return true;
-					}
+					}else{
 					return false;
+					}
 				}else if(args.length==1){
 					if(args[0].equalsIgnoreCase("all")){ //$NON-NLS-1$
 						sendLists(player, plugin.playerSettings.getBlacklist(player, PlayerSettings.ALL_BLOCKS), plugin.playerSettings.getWhitelist(player, PlayerSettings.ALL_BLOCKS));
 					}else{
-						sendLists(player, plugin.playerSettings.getBlacklist(player, args[0]), plugin.playerSettings.getWhitelist(player, args[0]));
+						sendLists(player, plugin.playerSettings.getBlacklist(player, args[0].toUpperCase()), plugin.playerSettings.getWhitelist(player, args[0]));
 					}
 				return true;
 				}else{
