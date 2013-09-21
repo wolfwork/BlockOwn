@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.Metrics;
 
 public class BlockOwn extends JavaPlugin {
 	private ConsoleCommandSender console;
@@ -118,13 +117,6 @@ public class BlockOwn extends JavaPlugin {
 			return;
 		} else {
 			this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
-		}
-		try {
-			Metrics metrics = new Metrics(this);
-
-			metrics.start();
-		} catch (IOException e) {
-			this.con(ChatColor.RED, Messages.getString("BlockOwn.42")); //$NON-NLS-1$
 		}
 	}
 
