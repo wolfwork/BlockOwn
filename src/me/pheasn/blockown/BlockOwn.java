@@ -63,22 +63,29 @@ public class BlockOwn extends JavaPlugin {
 				.setUsage(ChatColor.RED + Messages.getString("BlockOwn.31")); //$NON-NLS-1$
 		this.getCommand("unprotect") //$NON-NLS-1$
 				.setDescription(Messages.getString("BlockOwn.33")); //$NON-NLS-1$
-		this.getCommand("whitelist").setExecutor(new CE_Whitelist(this));  //$NON-NLS-1$
-		this.getCommand("whitelist")  //$NON-NLS-1$
-				.setUsage(ChatColor.RED + Messages.getString(Messages.getString("BlockOwn.2")));  //$NON-NLS-1$
-		this.getCommand("whitelist")  //$NON-NLS-1$
-				.setDescription(Messages.getString(Messages.getString("BlockOwn.4"))); //$NON-NLS-1$
-		this.getCommand("unwhitelist").setExecutor(new CE_Unwhitelist(this));  //$NON-NLS-1$
-		this.getCommand("unwhitelist")  //$NON-NLS-1$
-				.setUsage(ChatColor.RED + Messages.getString(Messages.getString("BlockOwn.9")));  //$NON-NLS-1$
-		this.getCommand("unwhitelist")  //$NON-NLS-1$
-				.setDescription(Messages.getString(Messages.getString("BlockOwn.12")));  //$NON-NLS-1$
+		this.getCommand("whitelist").setExecutor(new CE_Whitelist(this)); //$NON-NLS-1$
+		this.getCommand("whitelist") //$NON-NLS-1$
+				.setUsage(
+						ChatColor.RED
+								+ Messages.getString(Messages
+										.getString("BlockOwn.2"))); //$NON-NLS-1$
+		this.getCommand("whitelist") //$NON-NLS-1$
+				.setDescription(
+						Messages.getString(Messages.getString("BlockOwn.4"))); //$NON-NLS-1$
+		this.getCommand("unwhitelist").setExecutor(new CE_Unwhitelist(this)); //$NON-NLS-1$
+		this.getCommand("unwhitelist") //$NON-NLS-1$
+				.setUsage(
+						ChatColor.RED
+								+ Messages.getString(Messages
+										.getString("BlockOwn.9"))); //$NON-NLS-1$
+		this.getCommand("unwhitelist") //$NON-NLS-1$
+				.setDescription(
+						Messages.getString(Messages.getString("BlockOwn.12"))); //$NON-NLS-1$
 		this.getCommand("protection").setExecutor(new CE_Protection(this)); //$NON-NLS-1$
 		this.getCommand("protection").setUsage( //$NON-NLS-1$
 				Messages.getString("BlockOwn.17")); //$NON-NLS-1$
 		this.getCommand("protection") //$NON-NLS-1$
-				.setDescription(
-						Messages.getString("BlockOwn.20")); //$NON-NLS-1$
+				.setDescription(Messages.getString("BlockOwn.20")); //$NON-NLS-1$
 		this.getServer().getPluginManager()
 				.registerEvents(new L_BlockClick(this), this);
 		this.getServer().getPluginManager()
@@ -118,6 +125,9 @@ public class BlockOwn extends JavaPlugin {
 		} else {
 			this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 		}
+		this.getConfig().set("Settings-Version",
+				this.getDescription().getVersion());
+		this.saveConfig();
 	}
 
 	@Override

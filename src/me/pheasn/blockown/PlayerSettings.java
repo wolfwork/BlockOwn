@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -173,6 +174,9 @@ public class PlayerSettings {
 	public boolean isBlacklisted(String candidate, String owner,
 			String blockType) {
 		candidate = candidate.toLowerCase();
+		if(blockType.equalsIgnoreCase(Material.CHEST.name())||blockType.equalsIgnoreCase(Material.ENDER_CHEST.name())){
+			return true;
+		}
 		try {
 			LinkedList<String> blacklist = this.getBlacklist(owner, blockType);
 			if (blacklist.contains(candidate)
