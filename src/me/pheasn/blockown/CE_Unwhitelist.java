@@ -8,13 +8,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CE_Unwhitelist implements CommandExecutor {
-BlockOwn plugin;
-public CE_Unwhitelist(BlockOwn plugin){
-	this.plugin=plugin;
-}
+	BlockOwn plugin;
+
+	public CE_Unwhitelist(BlockOwn plugin) {
+		this.plugin = plugin;
+	}
+
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String cmd_label,
-			String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd,
+			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			Block target = player.getTargetBlock(null, 200);
@@ -42,7 +44,8 @@ public CE_Unwhitelist(BlockOwn plugin){
 						args[1] = PlayerSettings.ALL_PLAYERS;
 						whiteName = Messages.getString("CE_Unprotect.5"); //$NON-NLS-1$
 					}
-					plugin.playerSettings.whitelistRemove(player,args[0].toUpperCase(), args[1]);
+					plugin.playerSettings.whitelistRemove(player,
+							args[0].toUpperCase(), args[1]);
 					sendSuccessMessage(player, blockName, whiteName);
 					return true;
 				} else {
@@ -60,6 +63,7 @@ public CE_Unwhitelist(BlockOwn plugin){
 			return false;
 		}
 	}
+
 	private void sendSuccessMessage(Player player, String blockName,
 			String whiteName) {
 		plugin.say(

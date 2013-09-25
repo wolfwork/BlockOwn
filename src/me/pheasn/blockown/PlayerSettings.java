@@ -36,8 +36,8 @@ public class PlayerSettings {
 						"PlayerSettings." + player).getKeys(false)) { //$NON-NLS-1$
 					lists.get(player).put(blockType, newLinkedList());
 					if (!outdatedSettings
-							&& config.getConfigurationSection("PlayerSettings."
-									+ player + "." + blockType) == null) {
+							&& config.getConfigurationSection("PlayerSettings." //$NON-NLS-1$
+									+ player + "." + blockType) == null) { //$NON-NLS-1$
 						outdatedSettings = true;
 					}
 					if (outdatedSettings) {
@@ -50,13 +50,13 @@ public class PlayerSettings {
 					} else {
 						for (String blacklistedPlayer : config
 								.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
-										+ blockType + ".BLACKLIST")) {
+										+ blockType + ".BLACKLIST")) { //$NON-NLS-1$
 							lists.get(player).get(blockType)[0]
 									.add(blacklistedPlayer.toLowerCase());
 						}
 						for (String whitelistedPlayer : config
 								.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
-										+ blockType + ".WHITELIST")) {
+										+ blockType + ".WHITELIST")) { //$NON-NLS-1$
 							lists.get(player).get(blockType)[1]
 									.add(whitelistedPlayer.toLowerCase());
 						}
@@ -71,18 +71,18 @@ public class PlayerSettings {
 		for (Entry<String, HashMap<String, LinkedList<String>[]>> entry : lists
 				.entrySet()) {
 			if (outdatedSettings) {
-				config.set("PlayerSettings." + entry.getKey(), null);
+				config.set("PlayerSettings." + entry.getKey(), null); //$NON-NLS-1$
 			}
 			for (Entry<String, LinkedList<String>[]> playerBlacklists : entry
 					.getValue().entrySet()) {
 				config.set("PlayerSettings." + entry.getKey() + "." //$NON-NLS-1$ //$NON-NLS-2$
-						+ playerBlacklists.getKey() + ".BLACKLIST",
+						+ playerBlacklists.getKey() + ".BLACKLIST", //$NON-NLS-1$
 						playerBlacklists.getValue()[0]);
 			}
 			for (Entry<String, LinkedList<String>[]> playerWhitelists : entry
 					.getValue().entrySet()) {
 				config.set("PlayerSettings." + entry.getKey() + "." //$NON-NLS-1$ //$NON-NLS-2$
-						+ playerWhitelists.getKey() + ".WHITELIST",
+						+ playerWhitelists.getKey() + ".WHITELIST", //$NON-NLS-1$
 						playerWhitelists.getValue()[1]);
 			}
 		}
@@ -174,7 +174,8 @@ public class PlayerSettings {
 	public boolean isBlacklisted(String candidate, String owner,
 			String blockType) {
 		candidate = candidate.toLowerCase();
-		if(blockType.equalsIgnoreCase(Material.CHEST.name())||blockType.equalsIgnoreCase(Material.ENDER_CHEST.name())){
+		if (plugin.getConfig().getBoolean("ServerSettings.enableAutomaticChestProtection")&&(blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
+				|| blockType.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
 			return true;
 		}
 		try {

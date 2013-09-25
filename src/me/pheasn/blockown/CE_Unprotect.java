@@ -44,7 +44,8 @@ public class CE_Unprotect implements CommandExecutor {
 						args[1] = PlayerSettings.ALL_PLAYERS;
 						protectName = Messages.getString("CE_Unprotect.5"); //$NON-NLS-1$
 					}
-					plugin.playerSettings.blacklistRemove(player, args[0].toUpperCase(), args[1]);
+					plugin.playerSettings.blacklistRemove(player,
+							args[0].toUpperCase(), args[1]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else {

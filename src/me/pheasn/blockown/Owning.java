@@ -116,4 +116,8 @@ public class Owning {
 	public void removeOwner(Block block) {
 		ownings.remove(block);
 	}
+
+	public HashMap<Block, String> getOwnings() {
+		return ownings;
+	}
 }

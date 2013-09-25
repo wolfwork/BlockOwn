@@ -1,6 +1,7 @@
-Settings-Version: 0.3.6
+Settings-Version: 0.3.7
 ServerSettings:
   enable: true
   enablePlayerSettings: true
   enableAutomaticChestProtection: true
+  adminsIgnoreProtection: false
 PlayerSettings:

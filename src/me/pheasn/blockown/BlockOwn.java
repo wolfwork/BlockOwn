@@ -86,6 +86,10 @@ public class BlockOwn extends JavaPlugin {
 				Messages.getString("BlockOwn.17")); //$NON-NLS-1$
 		this.getCommand("protection") //$NON-NLS-1$
 				.setDescription(Messages.getString("BlockOwn.20")); //$NON-NLS-1$
+		this.getCommand("makepoor").setExecutor(new CE_MakePoor(this)); //$NON-NLS-1$
+		this.getCommand("makepoor").setUsage(Messages.getString("BlockOwn.3")); //$NON-NLS-1$ //$NON-NLS-2$
+		this.getCommand("makepoor").setDescription( //$NON-NLS-1$
+				Messages.getString("BlockOwn.7")); //$NON-NLS-1$
 		this.getServer().getPluginManager()
 				.registerEvents(new L_BlockClick(this), this);
 		this.getServer().getPluginManager()
@@ -125,7 +129,14 @@ public class BlockOwn extends JavaPlugin {
 		} else {
 			this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 		}
-		this.getConfig().set("Settings-Version",
+		if(!this.getConfig().getBoolean("ServerSettings.enableAutomaticChestProtection")==false){ //$NON-NLS-1$
+			this.getConfig().set("ServerSettings.enableAutomaticChestProtection", true); //$NON-NLS-1$
+		}
+		if (!this.getConfig().getBoolean("ServerSettings.adminsIgnoreProtection")==true) { //$NON-NLS-1$
+			this.getConfig()
+					.set("ServerSettings.adminsIgnoreProtection", false); //$NON-NLS-1$
+		}
+		this.getConfig().set("Settings-Version", //$NON-NLS-1$
 				this.getDescription().getVersion());
 		this.saveConfig();
 	}
