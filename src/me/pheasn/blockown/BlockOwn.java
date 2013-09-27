@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 public class BlockOwn extends JavaPlugin {
 	private ConsoleCommandSender console;
@@ -139,6 +140,12 @@ public class BlockOwn extends JavaPlugin {
 		this.getConfig().set("Settings-Version", //$NON-NLS-1$
 				this.getDescription().getVersion());
 		this.saveConfig();
+		try {
+		    Metrics metrics = new Metrics(this);
+		    metrics.start();
+		} catch (IOException e) {
+		    // Failed to submit the stats :-(
+		}
 	}
 
 	@Override
