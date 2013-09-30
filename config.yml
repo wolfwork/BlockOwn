@@ -1,7 +1,9 @@
-Settings-Version: 0.3.8
+Settings-Version: 0.3.9-alpha
 ServerSettings:
   enable: true
+  enableAutoUpdate: true
   enablePlayerSettings: true
   enableAutomaticChestProtection: true
   adminsIgnoreProtection: false
 PlayerSettings:
+Update-Pending: false

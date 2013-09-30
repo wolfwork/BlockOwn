@@ -2,14 +2,27 @@ package me.pheasn.blockown;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+
+import me.pheasn.mysql.MySql;
+import me.pheasn.mysql.MySqlLocal;
+import me.pheasn.mysql.MySqlNetwork;
+import me.pheasn.mysql.TableDefinition;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
+
+import com.avaje.ebean.annotation.Sql;
 
 public class BlockOwn extends JavaPlugin {
 	private ConsoleCommandSender console;
@@ -18,6 +31,7 @@ public class BlockOwn extends JavaPlugin {
 	private File pluginDir;
 	private File blockOwnerFile;
 	private File settingsFile;
+	private Updater updater;
 
 	@Override
 	public void onDisable() {
@@ -130,22 +144,104 @@ public class BlockOwn extends JavaPlugin {
 		} else {
 			this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 		}
-		if(!this.getConfig().getBoolean("ServerSettings.enableAutomaticChestProtection")==false){ //$NON-NLS-1$
-			this.getConfig().set("ServerSettings.enableAutomaticChestProtection", true); //$NON-NLS-1$
+		if (!this.getConfig().getBoolean(
+				"ServerSettings.enableAutomaticChestProtection") == false) { //$NON-NLS-1$
+			this.getConfig().set(
+					"ServerSettings.enableAutomaticChestProtection", true); //$NON-NLS-1$
 		}
-		if (!this.getConfig().getBoolean("ServerSettings.adminsIgnoreProtection")==true) { //$NON-NLS-1$
+		if (!this.getConfig().getBoolean(
+				"ServerSettings.adminsIgnoreProtection") == true) { //$NON-NLS-1$
 			this.getConfig()
 					.set("ServerSettings.adminsIgnoreProtection", false); //$NON-NLS-1$
 		}
+		if (!this.getConfig().getBoolean("ServerSettings.enableAutoUpdate") == false) {
+			this.getConfig().set("ServerSettings.enableAutoUpdate", true);
+		}
+		if (!this.getConfig().getBoolean("Update-Pending") == true) {
+			this.getConfig().set("Update-Pending", false);
+		}
 		this.getConfig().set("Settings-Version", //$NON-NLS-1$
 				this.getDescription().getVersion());
-		this.saveConfig();
-		try {
-		    Metrics metrics = new Metrics(this);
-		    metrics.start();
-		} catch (IOException e) {
-		    // Failed to submit the stats :-(
+		if (this.getConfig().getBoolean("Update-Pending")) {
+			try {
+				File updateHelperFile = new File("./plugins/UpdateHelper.jar");
+				this.getServer()
+						.getPluginManager()
+						.disablePlugin(
+								this.getServer().getPluginManager()
+										.getPlugin("UpdateHelper"));
+				updateHelperFile.delete();
+			} catch (Exception e) {
+
+			}
+			this.con(ChatColor.GREEN, "Update successful!");
+			this.getConfig().set("Update-Pending", false);
 		}
+		this.saveConfig();
+
+		try {
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		} catch (IOException e) {
+			// Failed to submit the stats :-(
+		}
+		updater = new Updater(this);
+		if (this.getConfig().getBoolean("ServerSettings.enableAutoUpdate")) {
+			updater.start();
+			this.con("Updater started");
+		}
+//		MySql msql =null;
+//		try {
+//			msql= new MySqlLocal();
+//		} catch (ClassNotFoundException e) {
+//			this.con(ChatColor.RED,"Couldn't enable MySQL, disabling plugin...");
+//			this.getServer().getPluginManager().disablePlugin(this);
+//		}
+//		
+//		if(msql.connect("./plugins/BlockOwn/data.db", "bo", "pw")){
+//			this.con(ChatColor.GREEN, "ERFOLGREICH VERBUNDEN!");
+//			TableDefinition[] tables = new TableDefinition[2];
+//			tables[0] = new TableDefinition("player",new String[]{"playerid INTEGER PRIMARY KEY "+msql.getParameter("AUTO_INCREMENT"),"playername VARCHAR(50)"});
+//			tables[1]= new TableDefinition("block", new String[] {"world VARCHAR(50)","x INTEGER", "y INTEGER", "z INTEGER", "ownerid INTEGER","PRIMARY KEY(world, x, y, z)", "FOREIGN KEY(ownerid) REFERENCES player(playerid)"});
+//			if(msql.createTables(tables)){
+//
+//				this.con(ChatColor.GREEN,"Tabelle erstellt!");
+//				msql.doUpdate("INSERT INTO player(playername) VALUES ('PHEASN')");
+//				msql.doUpdate("INSERT INTO player(playername) VALUES ('KILLER')");
+//				msql.doUpdate("INSERT INTO block(world, x, y, z, ownerid) VALUES ('world', 4, 5, 7, 1)");
+//				String sql = "SELECT * FROM block";
+//		    	HashMap<Block, String> hm = new HashMap<Block, String>();
+//		        try {
+//		            Statement stmt =msql.createStatement();
+//		            ResultSet rs = stmt.executeQuery(sql);
+//		            while (rs.next()) {
+//		            	String welt = rs.getString("world");
+//		            	int x = rs.getInt("x");
+//		            	int y = rs.getInt("y");
+//		            	int z = rs.getInt("z");
+//		            	int ownerid= rs.getInt("ownerid");
+//		                Block block = this.getServer().getWorld(welt).getBlockAt(new Location(this.getServer().getWorld(welt),x,y,z));
+//		            ResultSet s =msql.doQuery("SELECT * FROM player WHERE playerid="+ownerid);
+//		            s.next();
+//		        	String owner = s.getString("playername");
+//		                hm.put(block, owner);
+//		                this.con(hm.toString());
+//		                
+//		            }
+//	                this.con(ChatColor.GREEN, "FERTIG!");
+//		            
+//		        } catch(SQLException e) {
+//		            e.printStackTrace();
+//		        }
+//			}else{
+//				this.con(ChatColor.RED,"Tabelle verkackt!");
+//				
+//			}
+//		}else{
+//			this.con(ChatColor.RED,"ERFOLGLOS!");
+//		}
+		
+		
 	}
 
 	@Override
@@ -176,6 +272,15 @@ public class BlockOwn extends JavaPlugin {
 			this.saveConfig();
 			this.tell(sender, ChatColor.GREEN,
 					Messages.getString("BlockOwn.50")); //$NON-NLS-1$
+			if (this.getConfig().getBoolean("ServerSettings.enableAutoUpdate")
+					&& !updater.isAlive()) {
+				updater.start();
+			} else if (!this.getConfig().getBoolean(
+					"ServerSettings.enableAutoUpdate")
+					&& updater.isAlive()) {
+				updater.interrupt();
+				updater = new Updater(this);
+			}
 			return true;
 		}
 		return false;
