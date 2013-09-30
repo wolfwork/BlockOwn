@@ -2,6 +2,7 @@ Settings-Version: 0.4
 ServerSettings:
   enable: true
   enableAutoUpdate: true
+  autoUpdateInterval: 1800
   enablePlayerSettings: true
   enableAutomaticChestProtection: true
   adminsIgnoreProtection: false
@@ -14,4 +15,3 @@ ServerSettings:
     user: foo
     password: bar
 PlayerSettings:
-Update-Pending: false

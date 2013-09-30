@@ -4,9 +4,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.Timer;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.plugin.PluginManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -41,7 +39,7 @@ public class Updater extends Thread {
 
 	public void run() {
 		Timer timer = new Timer();
-		timer.schedule(new UpdateCheckTask(this), 100, 200000);
+		timer.schedule(new UpdateCheckTask(this), 100, plugin.getConfig().getLong("ServerSettings.autoUpdateInterval")*1000);
 	}
 
 	public void update() {
@@ -71,27 +69,8 @@ public class Updater extends Thread {
 			out.close();
 			in.close();
 			ir.close();
-		//	PluginManager pluginManager = plugin.getServer().getPluginManager();
-			PluginManager pluginManager = Bukkit.getPluginManager();
 			plugin.con(ChatColor.GREEN,
-					"A new version has been downloaded and will be installed now.");
-			InputStream i = plugin.getClass().getClassLoader().getResourceAsStream("dist/UpdateHelper.jar");
-			File updateHelperFileTo = new File("./plugins/UpdateHelper.jar");
-			FileOutputStream os = new FileOutputStream(updateHelperFileTo);
-			int read;
-			byte[] helpBuffer = new byte[4096];
-			while ((read= i.read(helpBuffer)) != -1) {
-				os.write(helpBuffer, 0, read);
-			}
-			os.flush();
-			os.close();
-			i.close();
-			plugin.getConfig().set("Update-Pending", true);
-			pluginManager.loadPlugin(updateHelperFileTo);
-			Thread.sleep(1000);
-			pluginManager.enablePlugin(pluginManager.getPlugin("UpdateHelper"));
-			Thread.sleep(500);
-			pluginManager.disablePlugin(plugin);
+					"A new version has been downloaded. Restart the server to install it (Do yourself a favour and don't use /reload).");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

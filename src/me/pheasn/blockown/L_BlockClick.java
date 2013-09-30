@@ -1,5 +1,7 @@
 package me.pheasn.blockown;
 
+import me.pheasn.blockown.BlockOwn.Setting;
+
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -16,10 +18,10 @@ public class L_BlockClick implements Listener {
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
 		if (plugin.getConfig()
-				.getBoolean("ServerSettings.enablePlayerSettings")) { //$NON-NLS-1$
+				.getBoolean(Setting.ENABLE_PLAYERSETTINGS.toString())) { //$NON-NLS-1$
 			if (event.getClickedBlock() != null) {
 				if (plugin.getConfig().getBoolean(
-						"ServerSettings.adminsIgnoreProtection")
+						Setting.ADMINS_IGNORE_PROTECTION.toString())
 						&& event.getPlayer().hasPermission("BlockOwn.admin")) {
 					return;
 				}
