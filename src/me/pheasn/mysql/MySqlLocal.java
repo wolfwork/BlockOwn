@@ -13,6 +13,7 @@ public class MySqlLocal extends MySql{
 public MySqlLocal() throws ClassNotFoundException{
 	Class.forName("org.sqlite.JDBC");
 	parameters.put("AUTO_INCREMENT", "AUTOINCREMENT");
+	parameters.put("INTEGER","INT");
 }
 
 @Override

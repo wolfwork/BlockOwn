@@ -8,6 +8,7 @@ public class MySqlNetwork extends MySql {
 	public MySqlNetwork() throws ClassNotFoundException {
 		Class.forName("com.mysql.jdbc.Driver");
 		parameters.put("AUTO_INCREMENT", "AUTO_INCREMENT");
+		parameters.put("INTEGER", "INTEGER");
 	}
 
 	@Override

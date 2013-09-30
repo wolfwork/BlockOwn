@@ -2,27 +2,14 @@ package me.pheasn.blockown;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-
-import me.pheasn.mysql.MySql;
-import me.pheasn.mysql.MySqlLocal;
-import me.pheasn.mysql.MySqlNetwork;
-import me.pheasn.mysql.TableDefinition;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
-
-import com.avaje.ebean.annotation.Sql;
 
 public class BlockOwn extends JavaPlugin {
 	private ConsoleCommandSender console;
@@ -135,7 +122,19 @@ public class BlockOwn extends JavaPlugin {
 			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.38")); //$NON-NLS-1$
 			this.saveDefaultConfig();
 		}
-		owning = new Owning(this);
+		try {
+			if(this.getConfig().getBoolean("ServerSettings.MySQL.enable")){
+				if(this.getConfig().getString("ServerSettings.MySQL.type").equalsIgnoreCase("local")){
+					owning= new SQLOwningLocal(this);
+				}else{
+					owning = new SQLOwningNetwork(this);
+				}
+			}else{
+				owning= new ClassicOwning(this);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		playerSettings = new PlayerSettings(this);
 		if (!this.getConfig().getBoolean("ServerSettings.enable")) { //$NON-NLS-1$
 			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.40")); //$NON-NLS-1$
@@ -144,22 +143,7 @@ public class BlockOwn extends JavaPlugin {
 		} else {
 			this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 		}
-		if (!this.getConfig().getBoolean(
-				"ServerSettings.enableAutomaticChestProtection") == false) { //$NON-NLS-1$
-			this.getConfig().set(
-					"ServerSettings.enableAutomaticChestProtection", true); //$NON-NLS-1$
-		}
-		if (!this.getConfig().getBoolean(
-				"ServerSettings.adminsIgnoreProtection") == true) { //$NON-NLS-1$
-			this.getConfig()
-					.set("ServerSettings.adminsIgnoreProtection", false); //$NON-NLS-1$
-		}
-		if (!this.getConfig().getBoolean("ServerSettings.enableAutoUpdate") == false) {
-			this.getConfig().set("ServerSettings.enableAutoUpdate", true);
-		}
-		if (!this.getConfig().getBoolean("Update-Pending") == true) {
-			this.getConfig().set("Update-Pending", false);
-		}
+		this.getConfig().options().copyDefaults(true);
 		this.getConfig().set("Settings-Version", //$NON-NLS-1$
 				this.getDescription().getVersion());
 		if (this.getConfig().getBoolean("Update-Pending")) {
@@ -178,7 +162,7 @@ public class BlockOwn extends JavaPlugin {
 			this.getConfig().set("Update-Pending", false);
 		}
 		this.saveConfig();
-
+		
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
@@ -189,59 +173,7 @@ public class BlockOwn extends JavaPlugin {
 		if (this.getConfig().getBoolean("ServerSettings.enableAutoUpdate")) {
 			updater.start();
 			this.con("Updater started");
-		}
-//		MySql msql =null;
-//		try {
-//			msql= new MySqlLocal();
-//		} catch (ClassNotFoundException e) {
-//			this.con(ChatColor.RED,"Couldn't enable MySQL, disabling plugin...");
-//			this.getServer().getPluginManager().disablePlugin(this);
-//		}
-//		
-//		if(msql.connect("./plugins/BlockOwn/data.db", "bo", "pw")){
-//			this.con(ChatColor.GREEN, "ERFOLGREICH VERBUNDEN!");
-//			TableDefinition[] tables = new TableDefinition[2];
-//			tables[0] = new TableDefinition("player",new String[]{"playerid INTEGER PRIMARY KEY "+msql.getParameter("AUTO_INCREMENT"),"playername VARCHAR(50)"});
-//			tables[1]= new TableDefinition("block", new String[] {"world VARCHAR(50)","x INTEGER", "y INTEGER", "z INTEGER", "ownerid INTEGER","PRIMARY KEY(world, x, y, z)", "FOREIGN KEY(ownerid) REFERENCES player(playerid)"});
-//			if(msql.createTables(tables)){
-//
-//				this.con(ChatColor.GREEN,"Tabelle erstellt!");
-//				msql.doUpdate("INSERT INTO player(playername) VALUES ('PHEASN')");
-//				msql.doUpdate("INSERT INTO player(playername) VALUES ('KILLER')");
-//				msql.doUpdate("INSERT INTO block(world, x, y, z, ownerid) VALUES ('world', 4, 5, 7, 1)");
-//				String sql = "SELECT * FROM block";
-//		    	HashMap<Block, String> hm = new HashMap<Block, String>();
-//		        try {
-//		            Statement stmt =msql.createStatement();
-//		            ResultSet rs = stmt.executeQuery(sql);
-//		            while (rs.next()) {
-//		            	String welt = rs.getString("world");
-//		            	int x = rs.getInt("x");
-//		            	int y = rs.getInt("y");
-//		            	int z = rs.getInt("z");
-//		            	int ownerid= rs.getInt("ownerid");
-//		                Block block = this.getServer().getWorld(welt).getBlockAt(new Location(this.getServer().getWorld(welt),x,y,z));
-//		            ResultSet s =msql.doQuery("SELECT * FROM player WHERE playerid="+ownerid);
-//		            s.next();
-//		        	String owner = s.getString("playername");
-//		                hm.put(block, owner);
-//		                this.con(hm.toString());
-//		                
-//		            }
-//	                this.con(ChatColor.GREEN, "FERTIG!");
-//		            
-//		        } catch(SQLException e) {
-//		            e.printStackTrace();
-//		        }
-//			}else{
-//				this.con(ChatColor.RED,"Tabelle verkackt!");
-//				
-//			}
-//		}else{
-//			this.con(ChatColor.RED,"ERFOLGLOS!");
-//		}
-		
-		
+		}		
 	}
 
 	@Override
@@ -256,6 +188,7 @@ public class BlockOwn extends JavaPlugin {
 			return false;
 		}
 		if (args[0].equalsIgnoreCase("save")) { //$NON-NLS-1$
+			if(this.owning instanceof ClassicOwning){
 			if (this.owning.save()) {
 				this.tell(sender, ChatColor.GREEN,
 						Messages.getString("BlockOwn.47")); //$NON-NLS-1$
@@ -264,6 +197,9 @@ public class BlockOwn extends JavaPlugin {
 				this.tell(sender, ChatColor.RED,
 						Messages.getString("BlockOwn.48")); //$NON-NLS-1$
 				return false;
+			}
+			}else{
+				this.tell(sender, "You are using SQL, so you can't save manually.");
 			}
 		}
 		if (args[0].equalsIgnoreCase("reload")) { //$NON-NLS-1$

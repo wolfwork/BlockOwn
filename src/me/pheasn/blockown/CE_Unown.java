@@ -1,5 +1,7 @@
 package me.pheasn.blockown;
 
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,12 +22,22 @@ public class CE_Unown implements CommandExecutor {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
 				Block target = player.getTargetBlock(null, 200);
-				if (target != null
-						&& plugin.owning.getOwner(target).getName()
-								.equalsIgnoreCase(player.getName())) {
-					plugin.owning.removeOwner(target);
-					return true;
+
+				if (target != null) {
+					OfflinePlayer owner = plugin.owning.getOwner(target);
+					if (owner != null
+							&& owner.getName().equalsIgnoreCase(player.getName())) {
+						plugin.owning.removeOwner(target);
+						plugin.say(player, ChatColor.GREEN,
+								"This block is not yours anymore.");
+						return true;
+					} else {
+						plugin.say(player, ChatColor.RED,
+								"You can't unown a block that doesn't belong to you.");
+					}
 				}
+			} else {
+				plugin.con(ChatColor.RED, "This command is just for players.");
 			}
 		} catch (Exception ex) {
 
