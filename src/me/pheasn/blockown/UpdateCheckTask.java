@@ -9,9 +9,7 @@ public UpdateCheckTask(Updater updater){
 }
 	@Override
 	public void run() {
-		System.out.println("UpdateChecking...");
 		if(u.updateAvailible()){
-			System.out.println("UpdateStarting..");
 			u.update();
 		}
 	}

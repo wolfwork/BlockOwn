@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import me.pheasn.blockown.BlockOwn.Setting;
 import me.pheasn.mysql.MySqlNetwork;
 import me.pheasn.mysql.TableDefinition;
 
@@ -20,12 +21,12 @@ public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException, MySQLNot
 }
 	@Override
 	public boolean load() {
-		return	(msql.connect(plugin.getConfig().getString("ServerSettings.MySQL.host")+":"+plugin.getConfig().getInt("ServerSettings.MySQL.port")+"/"+plugin.getConfig().getString("ServerSettings.MySQL.database"), plugin.getConfig().getString("ServerSettings.MySQL.user"), plugin.getConfig().getString("ServerSettings.MySQL.password"))&&createTablesIfNotExist());
+		return	(msql.connect(plugin.getConfig().getString(Setting.MYSQL_HOST.toString())+":"+plugin.getConfig().getInt(Setting.MYSQL_PORT.toString())+"/"+plugin.getConfig().getString(Setting.MYSQL_DATABASE.toString()), plugin.getConfig().getString(Setting.MYSQL_USER.toString()), plugin.getConfig().getString(Setting.MYSQL_PASSWORD.toString()))&&createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	private boolean createTablesIfNotExist(){
 		TableDefinition[] tables = new TableDefinition[2];
-		tables[0] = new TableDefinition("player",new String[]{"playerid INTEGER PRIMARY KEY "+msql.getParameter("AUTO_INCREMENT"),"playername VARCHAR(50) UNIQUE NOT NULL"});
-		tables[1]= new TableDefinition("block", new String[] {"world VARCHAR(50)","x INTEGER", "y INTEGER", "z INTEGER", "ownerid INTEGER","PRIMARY KEY(world, x, y, z)", "FOREIGN KEY(ownerid) REFERENCES player(playerid)"});
+		tables[0] = new TableDefinition("player",new String[]{"playerid INTEGER PRIMARY KEY "+msql.getParameter("AUTO_INCREMENT"),"playername VARCHAR(50) UNIQUE NOT NULL"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		tables[1]= new TableDefinition("block", new String[] {"world VARCHAR(50)","x INTEGER", "y INTEGER", "z INTEGER", "ownerid INTEGER","PRIMARY KEY(world, x, y, z)", "FOREIGN KEY(ownerid) REFERENCES player(playerid)"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 	return	msql.createTables(tables);
 	}
 	@Override
@@ -34,10 +35,10 @@ public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException, MySQLNot
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		ResultSet rs = msql.doQuery("SELECT playername FROM block INNER JOIN player ON block.ownerid=player.playerid WHERE x="+x+" AND y="+y +" AND z="+z + " AND world='"+world+"';");
+		ResultSet rs = msql.doQuery("SELECT playername FROM block INNER JOIN player ON block.ownerid=player.playerid WHERE x="+x+" AND y="+y +" AND z="+z + " AND world='"+world+"';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		try {
 			if(	rs.next()){
-			return plugin.getServer().getOfflinePlayer(rs.getString("playername"));
+			return plugin.getServer().getOfflinePlayer(rs.getString("playername")); //$NON-NLS-1$
 			}else{
 				return null;
 			}
@@ -56,22 +57,22 @@ public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException, MySQLNot
 	@Override
 	public void setOwner(Block block, String player) {
 		if(!playerExists(player)){
-			msql.doUpdate("INSERT INTO player(playername) VALUES('"+player+"');");
+			msql.doUpdate("INSERT INTO player(playername) VALUES('"+player+"');"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		String world = block.getWorld().getName();
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		ResultSet rs =  msql.doQuery("SELECT playerid FROM player WHERE playername='"+player+"';");
+		ResultSet rs =  msql.doQuery("SELECT playerid FROM player WHERE playername='"+player+"';"); //$NON-NLS-1$ //$NON-NLS-2$
 		int playerid=0;
 		try {
 			if(rs.next()){
-			playerid= rs.getInt("playerid");
+			playerid= rs.getInt("playerid"); //$NON-NLS-1$
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		msql.doUpdate("INSERT IGNORE INTO block(world, x, y, z, ownerid) VALUES('"+world+"', '"+x+"', '"+y+"', '"+z+"', '"+playerid+"');");
+		msql.doUpdate("INSERT IGNORE INTO block(world, x, y, z, ownerid) VALUES('"+world+"', '"+x+"', '"+y+"', '"+z+"', '"+playerid+"');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException, MySQLNot
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		msql.doUpdate("DELETE FROM block WHERE x="+x+" AND y="+y+" AND z="+z+" AND world='"+world+"';");
+		msql.doUpdate("DELETE FROM block WHERE x="+x+" AND y="+y+" AND z="+z+" AND world='"+world+"';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	}
 
 	@Override
@@ -90,11 +91,11 @@ public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException, MySQLNot
 	@Override
 	boolean playerExists(String player) {
 		player = plugin.getServer().getOfflinePlayer(player).getName();
-		ResultSet rs = msql.doQuery("SELECT playername FROM player;");
+		ResultSet rs = msql.doQuery("SELECT playername FROM player;"); //$NON-NLS-1$
 		ArrayList<String> players = new ArrayList<String>();
 		try {
 			while(rs.next()){
-				players.add(rs.getString("playername"));
+				players.add(rs.getString("playername")); //$NON-NLS-1$
 			}
 			if(players.contains(player)){
 				return true;
@@ -108,11 +109,11 @@ public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException, MySQLNot
 	}
 	@Override
 	public void deleteOwningsOf(String player) {
-		ResultSet rs = msql.doQuery("SELECT playerid FROM player WHERE playername='"+player+"';");
+		ResultSet rs = msql.doQuery("SELECT playerid FROM player WHERE playername='"+player+"';"); //$NON-NLS-1$ //$NON-NLS-2$
 		try {
 			rs.next();
-			int playerid = rs.getInt("playerid");
-			msql.doUpdate("DELETE FROM block WHERE ownerid="+playerid+";");
+			int playerid = rs.getInt("playerid"); //$NON-NLS-1$
+			msql.doUpdate("DELETE FROM block WHERE ownerid="+playerid+";"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

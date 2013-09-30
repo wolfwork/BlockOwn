@@ -22,7 +22,7 @@ public class L_BlockClick implements Listener {
 			if (event.getClickedBlock() != null) {
 				if (plugin.getConfig().getBoolean(
 						Setting.ADMINS_IGNORE_PROTECTION.toString())
-						&& event.getPlayer().hasPermission("BlockOwn.admin")) {
+						&& event.getPlayer().hasPermission("BlockOwn.admin")) { //$NON-NLS-1$
 					return;
 				}
 				OfflinePlayer owner = plugin.owning.getOwner(event

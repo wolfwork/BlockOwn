@@ -29,15 +29,15 @@ public class CE_Unown implements CommandExecutor {
 							&& owner.getName().equalsIgnoreCase(player.getName())) {
 						plugin.owning.removeOwner(target);
 						plugin.say(player, ChatColor.GREEN,
-								"This block is not yours anymore.");
+								Messages.getString("CE_Unown.0")); //$NON-NLS-1$
 						return true;
 					} else {
 						plugin.say(player, ChatColor.RED,
-								"You can't unown a block that doesn't belong to you.");
+								Messages.getString("CE_Unown.1")); //$NON-NLS-1$
 					}
 				}
 			} else {
-				plugin.con(ChatColor.RED, "This command is just for players.");
+				plugin.con(ChatColor.RED, Messages.getString("CE_Unown.2")); //$NON-NLS-1$
 			}
 		} catch (Exception ex) {
 
