@@ -214,6 +214,7 @@ public class BlockOwn extends JavaPlugin {
 					Messages.getString("BlockOwn.44") + String.valueOf(((Player) sender).hasPermission("blockown.admin"))); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
+		if(args.length==1){
 		if (args[0].equalsIgnoreCase("save")) { //$NON-NLS-1$
 			if (this.owning.save()) {
 				this.tell(sender, ChatColor.GREEN,
@@ -232,6 +233,7 @@ public class BlockOwn extends JavaPlugin {
 			this.tell(sender, ChatColor.GREEN,
 					Messages.getString("BlockOwn.50")); //$NON-NLS-1$
 			return true;
+		}
 		}
 		return false;
 	}
