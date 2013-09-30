@@ -17,8 +17,8 @@ public class L_BlockClick implements Listener {
 
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
-		if (plugin.getConfig()
-				.getBoolean(Setting.ENABLE_PLAYERSETTINGS.toString())) { //$NON-NLS-1$
+		if (plugin.getConfig().getBoolean(
+				Setting.ENABLE_PLAYERSETTINGS.toString())) { //$NON-NLS-1$
 			if (event.getClickedBlock() != null) {
 				if (plugin.getConfig().getBoolean(
 						Setting.ADMINS_IGNORE_PROTECTION.toString())

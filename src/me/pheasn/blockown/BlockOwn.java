@@ -340,7 +340,8 @@ public class BlockOwn extends JavaPlugin {
 						Messages.getString("BlockOwn.50")); //$NON-NLS-1$
 				if (this.getConfig().getBoolean(
 						Setting.ENABLE_AUTOUPDATE.toString())
-						&& !updater.isAlive()) {
+						&& !updater.isAlive() ) {
+					updater = new Updater(this);
 					updater.start();
 				} else if (!this.getConfig().getBoolean(
 						Setting.ENABLE_AUTOUPDATE.toString())

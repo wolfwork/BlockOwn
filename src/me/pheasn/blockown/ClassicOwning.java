@@ -13,7 +13,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-public class ClassicOwning extends Owning{
+public class ClassicOwning extends Owning {
 	private BlockOwn plugin;
 	private HashMap<Block, String> ownings;
 
@@ -116,10 +116,12 @@ public class ClassicOwning extends Owning{
 	public void removeOwner(Block block) {
 		ownings.remove(block);
 	}
-	public void deleteOwningsOf(OfflinePlayer offlinePlayer){
+
+	public void deleteOwningsOf(OfflinePlayer offlinePlayer) {
 		deleteOwningsOf(offlinePlayer.getName());
 	}
-	public void deleteOwningsOf(String player){
+
+	public void deleteOwningsOf(String player) {
 		for (Entry<Block, String> entry : ownings.entrySet()) {
 			if (entry.getValue().equalsIgnoreCase(player)) {
 				plugin.owning.removeOwner(entry.getKey());

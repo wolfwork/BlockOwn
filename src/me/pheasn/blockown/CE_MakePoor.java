@@ -16,14 +16,15 @@ public class CE_MakePoor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String cmd_label, String[] args) {
-		String playerName = plugin.getServer().getOfflinePlayer(args[0]).getName();
+		String playerName = plugin.getServer().getOfflinePlayer(args[0])
+				.getName();
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (args.length == 1) {
 				if (player.hasPermission("blockown.admin")) { //$NON-NLS-1$
 					plugin.owning.deleteOwningsOf(playerName);
-					plugin.say(player, ChatColor.GREEN, playerName
-							+ Messages.getString("CE_MakePoor.1")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.GREEN,
+							playerName + Messages.getString("CE_MakePoor.1")); //$NON-NLS-1$
 					return true;
 				} else {
 					return false;
@@ -35,8 +36,8 @@ public class CE_MakePoor implements CommandExecutor {
 			}
 		} else {
 			plugin.owning.deleteOwningsOf(playerName);
-			plugin.con( ChatColor.GREEN, playerName
-					+ Messages.getString("CE_MakePoor.3")); //$NON-NLS-1$
+			plugin.con(ChatColor.GREEN,
+					playerName + Messages.getString("CE_MakePoor.3")); //$NON-NLS-1$
 			return true;
 		}
 	}

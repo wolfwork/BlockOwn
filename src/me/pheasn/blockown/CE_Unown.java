@@ -26,7 +26,8 @@ public class CE_Unown implements CommandExecutor {
 				if (target != null) {
 					OfflinePlayer owner = plugin.owning.getOwner(target);
 					if (owner != null
-							&& owner.getName().equalsIgnoreCase(player.getName())) {
+							&& owner.getName().equalsIgnoreCase(
+									player.getName())) {
 						plugin.owning.removeOwner(target);
 						plugin.say(player, ChatColor.GREEN,
 								Messages.getString("CE_Unown.0")); //$NON-NLS-1$

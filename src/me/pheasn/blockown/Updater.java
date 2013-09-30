@@ -41,14 +41,16 @@ public class Updater extends Thread {
 
 	public void run() {
 		Timer timer = new Timer();
-		timer.schedule(new UpdateCheckTask(this), 100, plugin.getConfig().getLong(Setting.AUTOUPDATE_INTERVAL.toString())*1000);
+		timer.schedule(new UpdateCheckTask(this), 100, plugin.getConfig()
+				.getLong(Setting.AUTOUPDATE_INTERVAL.toString()) * 1000);
 	}
 
 	public void update() {
 		try {
-			
-			File to = new File("./plugins/"+plugin.getServer().getUpdateFolder() + "/" //$NON-NLS-1$ //$NON-NLS-2$
-					+ plugin.getName() + ".jar").getAbsoluteFile(); //$NON-NLS-1$
+
+			File to = new File(
+					"./plugins/" + plugin.getServer().getUpdateFolder() + "/" //$NON-NLS-1$ //$NON-NLS-2$
+							+ plugin.getName() + ".jar").getAbsoluteFile(); //$NON-NLS-1$
 			if (to.exists()) {
 				to.delete();
 			}
@@ -71,8 +73,7 @@ public class Updater extends Thread {
 			out.close();
 			in.close();
 			ir.close();
-			plugin.con(ChatColor.GREEN,
-					Messages.getString("Updater.12")); //$NON-NLS-1$
+			plugin.con(ChatColor.GREEN, Messages.getString("Updater.12")); //$NON-NLS-1$
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -4,12 +4,14 @@ import java.util.TimerTask;
 
 public class UpdateCheckTask extends TimerTask {
 	private Updater u;
-public UpdateCheckTask(Updater updater){
-	this.u=updater;
-}
+
+	public UpdateCheckTask(Updater updater) {
+		this.u = updater;
+	}
+
 	@Override
 	public void run() {
-		if(u.updateAvailible()){
+		if (u.updateAvailible()) {
 			u.update();
 		}
 	}

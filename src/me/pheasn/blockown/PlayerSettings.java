@@ -174,7 +174,8 @@ public class PlayerSettings {
 	public boolean isBlacklisted(String candidate, String owner,
 			String blockType) {
 		candidate = candidate.toLowerCase();
-		if (plugin.getConfig().getBoolean("ServerSettings.enableAutomaticChestProtection")&&(blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
+		if (plugin.getConfig().getBoolean(
+				"ServerSettings.enableAutomaticChestProtection") && (blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
 				|| blockType.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
 			return true;
 		}

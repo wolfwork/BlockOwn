@@ -11,34 +11,43 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 
 public class SQLOwningLocal extends SQLOwning {
-public SQLOwningLocal(BlockOwn plugin) throws ClassNotFoundException, MySQLNotConnectingException{
-	msql=new MySqlLocal();
-	this.plugin=plugin;
-	if(!this.load()){
-		throw new MySQLNotConnectingException();
+	public SQLOwningLocal(BlockOwn plugin) throws ClassNotFoundException,
+			MySQLNotConnectingException {
+		msql = new MySqlLocal();
+		this.plugin = plugin;
+		if (!this.load()) {
+			throw new MySQLNotConnectingException();
+		}
 	}
-}
+
 	@Override
 	public boolean load() {
-	return	(msql.connect("./plugins/BlockOwn/data.db", plugin.getName(), "pw4242")&&createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$
+		return (msql.connect(
+				"./plugins/BlockOwn/data.db", plugin.getName(), "pw4242") && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-	private boolean createTablesIfNotExist(){
+
+	private boolean createTablesIfNotExist() {
 		TableDefinition[] tables = new TableDefinition[2];
-		tables[0] = new TableDefinition("player",new String[]{"playerid INTEGER PRIMARY KEY "+msql.getParameter("AUTO_INCREMENT"),"playername VARCHAR(50) UNIQUE"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		tables[1]= new TableDefinition("block", new String[] {"world VARCHAR(50)","x INTEGER", "y INTEGER", "z INTEGER", "ownerid INTEGER","PRIMARY KEY(world, x, y, z)", "FOREIGN KEY(ownerid) REFERENCES player(playerid)"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-	return	msql.createTables(tables);
+		tables[0] = new TableDefinition(
+				"player", new String[] { "playerid INTEGER PRIMARY KEY " + msql.getParameter("AUTO_INCREMENT"), "playername VARCHAR(50) UNIQUE" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		tables[1] = new TableDefinition(
+				"block", new String[] { "world VARCHAR(50)", "x INTEGER", "y INTEGER", "z INTEGER", "ownerid INTEGER", "PRIMARY KEY(world, x, y, z)", "FOREIGN KEY(ownerid) REFERENCES player(playerid)" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+		return msql.createTables(tables);
 	}
+
 	@Override
 	public OfflinePlayer getOwner(Block block) {
 		String world = block.getWorld().getName();
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		ResultSet rs = msql.doQuery("SELECT playername FROM block INNER JOIN player ON block.ownerid=player.playerid WHERE x="+x+" AND y="+y +" AND z="+z + " AND world='"+world+"';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		ResultSet rs = msql
+				.doQuery("SELECT playername FROM block INNER JOIN player ON block.ownerid=player.playerid WHERE x=" + x + " AND y=" + y + " AND z=" + z + " AND world='" + world + "';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		try {
-			if(	rs.next()){
-			return plugin.getServer().getOfflinePlayer(rs.getString("playername")); //$NON-NLS-1$
-			}else{
+			if (rs.next()) {
+				return plugin.getServer().getOfflinePlayer(
+						rs.getString("playername")); //$NON-NLS-1$
+			} else {
 				return null;
 			}
 		} catch (SQLException e) {
@@ -54,22 +63,23 @@ public SQLOwningLocal(BlockOwn plugin) throws ClassNotFoundException, MySQLNotCo
 
 	@Override
 	public void setOwner(Block block, String player) {
-		if(!playerExists(player)){
-			msql.doUpdate("INSERT INTO player(playername) VALUES('"+player+"');"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (!playerExists(player)) {
+			msql.doUpdate("INSERT INTO player(playername) VALUES('" + player + "');"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		String world = block.getWorld().getName();
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		ResultSet rs =  msql.doQuery("SELECT playerid FROM player WHERE playername='"+player+"';"); //$NON-NLS-1$ //$NON-NLS-2$
-		Integer playerid=null;
+		ResultSet rs = msql
+				.doQuery("SELECT playerid FROM player WHERE playername='" + player + "';"); //$NON-NLS-1$ //$NON-NLS-2$
+		Integer playerid = null;
 		try {
 			rs.next();
-			playerid= rs.getInt("playerid"); //$NON-NLS-1$
+			playerid = rs.getInt("playerid"); //$NON-NLS-1$
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		msql.doUpdate("INSERT OR IGNORE INTO block(world, x, y, z, ownerid) VALUES('"+world+"', '"+x+"', '"+y+"', '"+z+"', '"+playerid+"');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		msql.doUpdate("INSERT OR IGNORE INTO block(world, x, y, z, ownerid) VALUES('" + world + "', '" + x + "', '" + y + "', '" + z + "', '" + playerid + "');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
 
 	@Override
@@ -78,25 +88,26 @@ public SQLOwningLocal(BlockOwn plugin) throws ClassNotFoundException, MySQLNotCo
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		msql.doUpdate("DELETE FROM block WHERE x="+x+" AND y="+y+" AND z="+z+" AND world='"+world+"';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		msql.doUpdate("DELETE FROM block WHERE x=" + x + " AND y=" + y + " AND z=" + z + " AND world='" + world + "';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	}
 
 	@Override
 	public boolean save() {
 		return msql.close();
 	}
+
 	@Override
 	boolean playerExists(String player) {
 		player = plugin.getServer().getOfflinePlayer(player).getName();
 		ResultSet rs = msql.doQuery("SELECT playername FROM player;"); //$NON-NLS-1$
 		ArrayList<String> players = new ArrayList<String>();
 		try {
-			while(rs.next()){
+			while (rs.next()) {
 				players.add(rs.getString("playername")); //$NON-NLS-1$
 			}
-			if(players.contains(player)){
+			if (players.contains(player)) {
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		} catch (SQLException e) {
@@ -104,14 +115,16 @@ public SQLOwningLocal(BlockOwn plugin) throws ClassNotFoundException, MySQLNotCo
 			return false;
 		}
 	}
+
 	@Override
 	public void deleteOwningsOf(String player) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	@Override
 	public void deleteOwningsOf(OfflinePlayer offlinePlayer) {
 		deleteOwningsOf(offlinePlayer.getName());
 	}
-	
+
 }
