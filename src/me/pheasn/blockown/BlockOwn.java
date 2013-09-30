@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +15,8 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
+import org.mcstats.Metrics.Plotter;
 
 public class BlockOwn extends JavaPlugin {
 	private ConsoleCommandSender console;
@@ -22,6 +25,59 @@ public class BlockOwn extends JavaPlugin {
 	private File pluginDir;
 	private File blockOwnerFile;
 	private File settingsFile;
+	private Updater updater;
+
+	public enum Setting {
+		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
+		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
+		ENABLE_AUTOUPDATE("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
+		AUTOUPDATE_INTERVAL("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
+		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
+		ENABLE_AUTOMATIC_CHEST_PROTECTION(
+				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
+		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
+		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), MYSQL_ENABLE(
+				"ServerSettings.MySQL.enable"), //$NON-NLS-1$
+		MYSQL_TYPE("ServerSettings.MySQL.type"), //$NON-NLS-1$
+		MYSQL_HOST("ServerSettings.MySQL.host"), //$NON-NLS-1$
+		MYSQL_PORT("ServerSettings.MySQL.port"), //$NON-NLS-1$
+		MYSQL_DATABASE("ServerSettings.MySQL.database"), //$NON-NLS-1$
+		MYSQL_USER("ServerSettings.MySQL.user"), //$NON-NLS-1$
+		MYSQL_PASSWORD("ServerSettings.MySQL.password"); //$NON-NLS-1$
+		private String s;
+
+		private Setting(String s) {
+			this.s = s;
+		}
+
+		@Override
+		public String toString() {
+			return s;
+		}
+	}
+
+	public enum Commands {
+		OWNER("owner"), //$NON-NLS-1$
+		OWN("own"), //$NON-NLS-1$
+		UNOWN("unown"), //$NON-NLS-1$
+		BLOCKOWN("blockown"), //$NON-NLS-1$
+		PROTECT("protect"), //$NON-NLS-1$
+		UNPROTECT("unprotect"), //$NON-NLS-1$
+		WHITELIST("whitelist"), //$NON-NLS-1$
+		UNWHITELIST("unwhitelist"), //$NON-NLS-1$
+		PROTECTION("protection"), //$NON-NLS-1$
+		MAKE_POOR("makepoor"); //$NON-NLS-1$
+		private String s;
+
+		private Commands(String s) {
+			this.s = s;
+		}
+
+		@Override
+		public String toString() {
+			return s;
+		}
+	}
 
 	@Override
 	public void onDisable() {
@@ -38,72 +94,76 @@ public class BlockOwn extends JavaPlugin {
 		pluginDir = new File("./plugins/" + this.getName() + "/"); //$NON-NLS-1$ //$NON-NLS-2$
 		blockOwnerFile = new File(pluginDir.getPath() + "/blocks.dat"); //$NON-NLS-1$
 		settingsFile = new File(pluginDir.getPath() + "/config.yml"); //$NON-NLS-1$
-		this.getCommand("blockown").setExecutor(this); //$NON-NLS-1$
-		this.getCommand("blockown") //$NON-NLS-1$
-				.setUsage(ChatColor.RED + Messages.getString("BlockOwn.6")); //$NON-NLS-1$
-		this.getCommand("blockown").setDescription( //$NON-NLS-1$
+		this.getCommand(Commands.BLOCKOWN.toString()).setExecutor(this);
+		this.getCommand(Commands.BLOCKOWN.toString()).setUsage(
+				ChatColor.RED + Messages.getString("BlockOwn.6")); //$NON-NLS-1$
+		this.getCommand(Commands.BLOCKOWN.toString()).setDescription(
 				Messages.getString("BlockOwn.8")); //$NON-NLS-1$
-		this.getCommand("own").setExecutor(new CE_Own(this)); //$NON-NLS-1$
-		this.getCommand("own").setUsage( //$NON-NLS-1$
+		this.getCommand(Commands.OWN.toString()).setExecutor(new CE_Own(this));
+		this.getCommand(Commands.OWN.toString()).setUsage(
 				ChatColor.RED + Messages.getString("BlockOwn.11")); //$NON-NLS-1$
-		this.getCommand("own") //$NON-NLS-1$
-				.setDescription(Messages.getString("BlockOwn.13")); //$NON-NLS-1$
-		this.getCommand("unown").setExecutor(new CE_Unown(this)); //$NON-NLS-1$
-		this.getCommand("unown").setUsage( //$NON-NLS-1$
+		this.getCommand(Commands.OWN.toString()).setDescription(
+				Messages.getString("BlockOwn.13")); //$NON-NLS-1$
+		this.getCommand(Commands.UNOWN.toString()).setExecutor(
+				new CE_Unown(this));
+		this.getCommand(Commands.UNOWN.toString()).setUsage(
 				ChatColor.RED + Messages.getString("BlockOwn.16")); //$NON-NLS-1$
-		this.getCommand("unown").setDescription( //$NON-NLS-1$
+		this.getCommand(Commands.UNOWN.toString()).setDescription(
 				Messages.getString("BlockOwn.18")); //$NON-NLS-1$
-		this.getCommand("owner").setExecutor(new CE_Owner(this)); //$NON-NLS-1$
-		this.getCommand("owner").setUsage( //$NON-NLS-1$
+		this.getCommand(Commands.OWNER.toString()).setExecutor(
+				new CE_Owner(this));
+		this.getCommand(Commands.OWNER.toString()).setUsage(
 				ChatColor.RED + Messages.getString("BlockOwn.21")); //$NON-NLS-1$
-		this.getCommand("owner").setDescription( //$NON-NLS-1$
+		this.getCommand(Commands.OWNER.toString()).setDescription(
 				Messages.getString("BlockOwn.23")); //$NON-NLS-1$
 		if (!this.getConfig().getBoolean(
-				"ServerSettings.cascadeProtectionCommands")) {
-			this.getCommand("protect").setExecutor(new CE_Protect(this)); //$NON-NLS-1$
-			this.getCommand("protect") //$NON-NLS-1$
-					.setUsage(ChatColor.RED + Messages.getString("BlockOwn.26")); //$NON-NLS-1$
-			this.getCommand("protect") //$NON-NLS-1$
-					.setDescription(Messages.getString("BlockOwn.28")); //$NON-NLS-1$
-			this.getCommand("unprotect").setExecutor(new CE_Unprotect(this)); //$NON-NLS-1$
-			this.getCommand("unprotect") //$NON-NLS-1$
-					.setUsage(ChatColor.RED + Messages.getString("BlockOwn.31")); //$NON-NLS-1$
-			this.getCommand("unprotect") //$NON-NLS-1$
-					.setDescription(Messages.getString("BlockOwn.33")); //$NON-NLS-1$
-			this.getCommand("whitelist").setExecutor(new CE_Whitelist(this)); //$NON-NLS-1$
-			this.getCommand("whitelist") //$NON-NLS-1$
-					.setUsage(
-							ChatColor.RED
-									+ Messages.getString(Messages
-											.getString("BlockOwn.2"))); //$NON-NLS-1$
-			this.getCommand("whitelist") //$NON-NLS-1$
-					.setDescription(
-							Messages.getString(Messages.getString("BlockOwn.4"))); //$NON-NLS-1$
-			this.getCommand("unwhitelist").setExecutor(new CE_Unwhitelist(this)); //$NON-NLS-1$
-			this.getCommand("unwhitelist") //$NON-NLS-1$
-					.setUsage(
-							ChatColor.RED
-									+ Messages.getString(Messages
-											.getString("BlockOwn.9"))); //$NON-NLS-1$
-			this.getCommand("unwhitelist") //$NON-NLS-1$
-					.setDescription(
-							Messages.getString(Messages
-									.getString("BlockOwn.12"))); //$NON-NLS-1$
-			this.getCommand("protection").setExecutor(new CE_Protection(this)); //$NON-NLS-1$
-			this.getCommand("protection").setUsage( //$NON-NLS-1$
+				Setting.CASCADE_PROTECTION_COMMANDS.toString())) {
+			this.getCommand(Commands.PROTECT.toString()).setExecutor(
+					new CE_Protect(this));
+			this.getCommand(Commands.PROTECT.toString()).setUsage(
+					ChatColor.RED + Messages.getString("BlockOwn.26")); //$NON-NLS-1$
+			this.getCommand(Commands.PROTECT.toString()).setDescription(
+					Messages.getString("BlockOwn.28")); //$NON-NLS-1$
+			this.getCommand(Commands.UNPROTECT.toString()).setExecutor(
+					new CE_Unprotect(this));
+			this.getCommand(Commands.UNPROTECT.toString()).setUsage(
+					ChatColor.RED + Messages.getString("BlockOwn.31")); //$NON-NLS-1$
+			this.getCommand(Commands.UNPROTECT.toString()).setDescription(
+					Messages.getString("BlockOwn.33")); //$NON-NLS-1$
+			this.getCommand(Commands.WHITELIST.toString()).setExecutor(
+					new CE_Whitelist(this));
+			this.getCommand(Commands.WHITELIST.toString()).setUsage(
+					ChatColor.RED
+							+ Messages.getString(Messages
+									.getString("BlockOwn.2"))); //$NON-NLS-1$
+			this.getCommand(Commands.WHITELIST.toString()).setDescription(
+					Messages.getString(Messages.getString("BlockOwn.4"))); //$NON-NLS-1$
+			this.getCommand(Commands.UNWHITELIST.toString()).setExecutor(
+					new CE_Unwhitelist(this));
+			this.getCommand(Commands.UNWHITELIST.toString()).setUsage(
+					ChatColor.RED
+							+ Messages.getString(Messages
+									.getString("BlockOwn.9"))); //$NON-NLS-1$
+			this.getCommand(Commands.UNWHITELIST.toString()).setDescription(
+					Messages.getString(Messages.getString("BlockOwn.12"))); //$NON-NLS-1$
+			this.getCommand(Commands.PROTECTION.toString()).setExecutor(
+					new CE_Protection(this));
+			this.getCommand(Commands.PROTECTION.toString()).setUsage(
 					Messages.getString("BlockOwn.17")); //$NON-NLS-1$
-			this.getCommand("protection") //$NON-NLS-1$
-					.setDescription(Messages.getString("BlockOwn.20")); //$NON-NLS-1$
+			this.getCommand(Commands.PROTECTION.toString()).setDescription(
+					Messages.getString("BlockOwn.20")); //$NON-NLS-1$
 		} else {
-				this.unRegisterBukkitCommand(this.getCommand("protection"));
-				this.unRegisterBukkitCommand(this.getCommand("whitelist"));
-				this.unRegisterBukkitCommand(this.getCommand("unwhitelist"));
-				this.unRegisterBukkitCommand(this.getCommand("protect"));
-				this.unRegisterBukkitCommand(this.getCommand("unprotect"));
+			this.unRegisterBukkitCommand(this.getCommand("protection"));
+			this.unRegisterBukkitCommand(this.getCommand("whitelist"));
+			this.unRegisterBukkitCommand(this.getCommand("unwhitelist"));
+			this.unRegisterBukkitCommand(this.getCommand("protect"));
+			this.unRegisterBukkitCommand(this.getCommand("unprotect"));
 		}
-		this.getCommand("makepoor").setExecutor(new CE_MakePoor(this)); //$NON-NLS-1$
-		this.getCommand("makepoor").setUsage(Messages.getString("BlockOwn.3")); //$NON-NLS-1$ //$NON-NLS-2$
-		this.getCommand("makepoor").setDescription( //$NON-NLS-1$
+		this.getCommand(Commands.MAKE_POOR.toString()).setExecutor(
+				new CE_MakePoor(this));
+		this.getCommand(Commands.MAKE_POOR.toString()).setUsage(
+				Messages.getString("BlockOwn.3")); //$NON-NLS-1$
+		this.getCommand(Commands.MAKE_POOR.toString()).setDescription(
 				Messages.getString("BlockOwn.7")); //$NON-NLS-1$
 		this.getServer().getPluginManager()
 				.registerEvents(new L_BlockClick(this), this);
@@ -135,39 +195,81 @@ public class BlockOwn extends JavaPlugin {
 			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.38")); //$NON-NLS-1$
 			this.saveDefaultConfig();
 		}
-		owning = new Owning(this);
+		try {
+			if (this.getConfig().getBoolean(Setting.MYSQL_ENABLE.toString())) {
+				if (this.getConfig().getString(Setting.MYSQL_TYPE.toString())
+						.equalsIgnoreCase("local")) { //$NON-NLS-1$
+					owning = new SQLOwningLocal(this);
+				} else {
+					owning = new SQLOwningNetwork(this);
+				}
+			} else {
+				owning = new ClassicOwning(this);
+			}
+			this.con(Messages.getString("BlockOwn.0")); //$NON-NLS-1$
+		} catch (ClassNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (MySQLNotConnectingException e2) {
+			this.con(ChatColor.RED, Messages.getString("BlockOwn.86")); //$NON-NLS-1$
+			Bukkit.getPluginManager().disablePlugin(this);
+		}
 		playerSettings = new PlayerSettings(this);
-		if (!this.getConfig().getBoolean("ServerSettings.enable")) { //$NON-NLS-1$
+		if (!this.getConfig().getBoolean(Setting.ENABLE.toString())) {
 			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.40")); //$NON-NLS-1$
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		} else {
 			this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 		}
-		if (this.getConfig().getBoolean(
-				"ServerSettings.enableAutomaticChestProtection")) { //$NON-NLS-1$
-			this.getConfig().set(
-					"ServerSettings.enableAutomaticChestProtection", true); //$NON-NLS-1$
-		}
-		if (!this.getConfig().getBoolean(
-				"ServerSettings.adminsIgnoreProtection")) { //$NON-NLS-1$
-			this.getConfig()
-					.set("ServerSettings.adminsIgnoreProtection", false); //$NON-NLS-1$
-		}
-		if (!this.getConfig().getBoolean(
-				"ServerSettings.cascadeProtectionCommands")) {
-			this.getConfig().set("ServerSettings.cascadeProtectionCommands",
-					false);
-		}
 
-		this.getConfig().set("Settings-Version", //$NON-NLS-1$
+		this.getConfig().options().copyDefaults(true);
+		this.getConfig().set(Setting.SETTINGS_VERSION.toString(),
 				this.getDescription().getVersion());
 		this.saveConfig();
+
 		try {
 			Metrics metrics = new Metrics(this);
+
+			Graph owningSystemGraph = metrics
+					.createGraph("Type of owning system used"); //$NON-NLS-1$
+			owningSystemGraph.addPlotter(new Plotter("LocalSQL") { //$NON-NLS-1$
+						@Override
+						public int getValue() {
+							if (owning instanceof SQLOwningLocal) {
+								return 1;
+							} else {
+								return 0;
+							}
+						}
+					});
+			owningSystemGraph.addPlotter(new Plotter("NetworkSQL") { //$NON-NLS-1$
+						@Override
+						public int getValue() {
+							if (owning instanceof SQLOwningNetwork) {
+								return 1;
+							} else {
+								return 0;
+							}
+						}
+					});
+			owningSystemGraph.addPlotter(new Plotter("Classic") { //$NON-NLS-1$
+						@Override
+						public int getValue() {
+							if (owning instanceof ClassicOwning) {
+								return 1;
+							} else {
+								return 0;
+							}
+						}
+					});
 			metrics.start();
 		} catch (IOException e) {
 			// Failed to submit the stats :-(
+		}
+		updater = new Updater(this);
+		if (this.getConfig().getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
+			updater.start();
+			this.con(Messages.getString("BlockOwn.93")); //$NON-NLS-1$
 		}
 	}
 
@@ -175,7 +277,7 @@ public class BlockOwn extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String cmd_label, String[] args) {
 		if (this.getConfig().getBoolean(
-				"ServerSettings.cascadeProtectionCommands")) {
+				Setting.CASCADE_PROTECTION_COMMANDS.toString())) {
 			String[] newargs;
 			try {
 				newargs = new String[args.length - 1];
@@ -185,23 +287,23 @@ public class BlockOwn extends JavaPlugin {
 			for (int i = 1; i < args.length; i++) {
 				newargs[i - 1] = args[i];
 			}
-			if (args[0].equalsIgnoreCase("whitelist")) {
+			if (args[0].equalsIgnoreCase(Commands.WHITELIST.toString())) {
 				return new CE_Whitelist(this).onCommand(sender, cmd, cmd_label,
 						newargs);
 			}
-			if (args[0].equalsIgnoreCase("unwhitelist")) {
+			if (args[0].equalsIgnoreCase(Commands.UNWHITELIST.toString())) {
 				return new CE_Unwhitelist(this).onCommand(sender, cmd,
 						cmd_label, newargs);
 			}
-			if (args[0].equalsIgnoreCase("protect")) {
+			if (args[0].equalsIgnoreCase(Commands.PROTECT.toString())) {
 				return new CE_Protect(this).onCommand(sender, cmd, cmd_label,
 						newargs);
 			}
-			if (args[0].equalsIgnoreCase("unprotect")) {
+			if (args[0].equalsIgnoreCase(Commands.UNPROTECT.toString())) {
 				return new CE_Unprotect(this).onCommand(sender, cmd, cmd_label,
 						newargs);
 			}
-			if (args[0].equalsIgnoreCase("protection")) {
+			if (args[0].equalsIgnoreCase(Commands.PROTECTION.toString())) {
 				return new CE_Protection(this).onCommand(sender, cmd,
 						cmd_label, newargs);
 			}
@@ -214,26 +316,40 @@ public class BlockOwn extends JavaPlugin {
 					Messages.getString("BlockOwn.44") + String.valueOf(((Player) sender).hasPermission("blockown.admin"))); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
-		if(args.length==1){
-		if (args[0].equalsIgnoreCase("save")) { //$NON-NLS-1$
-			if (this.owning.save()) {
-				this.tell(sender, ChatColor.GREEN,
-						Messages.getString("BlockOwn.47")); //$NON-NLS-1$
-				return true;
-			} else {
-				this.tell(sender, ChatColor.RED,
-						Messages.getString("BlockOwn.48")); //$NON-NLS-1$
-				return false;
+		if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("save")) { //$NON-NLS-1$
+				if (this.owning instanceof ClassicOwning) {
+					if (this.owning.save()) {
+						this.tell(sender, ChatColor.GREEN,
+								Messages.getString("BlockOwn.47")); //$NON-NLS-1$
+						return true;
+					} else {
+						this.tell(sender, ChatColor.RED,
+								Messages.getString("BlockOwn.48")); //$NON-NLS-1$
+						return false;
+					}
+				} else {
+					this.tell(sender, Messages.getString("BlockOwn.100")); //$NON-NLS-1$
+				}
 			}
-		}
-		if (args[0].equalsIgnoreCase("reload")) { //$NON-NLS-1$
-			this.reloadConfig();
-			playerSettings.save();
-			this.saveConfig();
-			this.tell(sender, ChatColor.GREEN,
-					Messages.getString("BlockOwn.50")); //$NON-NLS-1$
-			return true;
-		}
+			if (args[0].equalsIgnoreCase("reload")) { //$NON-NLS-1$
+				this.reloadConfig();
+				playerSettings.save();
+				this.saveConfig();
+				this.tell(sender, ChatColor.GREEN,
+						Messages.getString("BlockOwn.50")); //$NON-NLS-1$
+				if (this.getConfig().getBoolean(
+						Setting.ENABLE_AUTOUPDATE.toString())
+						&& !updater.isAlive()) {
+					updater.start();
+				} else if (!this.getConfig().getBoolean(
+						Setting.ENABLE_AUTOUPDATE.toString())
+						&& updater.isAlive()) {
+					updater.interrupt();
+					updater = new Updater(this);
+				}
+				return true;
+			}
 		}
 		return false;
 	}
@@ -299,7 +415,8 @@ public class BlockOwn extends JavaPlugin {
 	public String serverNameInBrackets() {
 		return this.inBrackets(this.getServer().getServerName());
 	}
-// CREDITS FOR THIS GO TO zeeveener ! 
+
+	// CREDITS FOR THIS GO TO zeeveener !
 	private static Object getPrivateField(Object object, String field)
 			throws SecurityException, NoSuchFieldException,
 			IllegalArgumentException, IllegalAccessException {
