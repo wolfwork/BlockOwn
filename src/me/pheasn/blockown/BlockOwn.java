@@ -25,7 +25,7 @@ public class BlockOwn extends JavaPlugin {
 	private File pluginDir;
 	private File blockOwnerFile;
 	private File settingsFile;
-//	private Updater updater;
+	private Thread updateThread;
 
 	public enum Setting {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
@@ -225,8 +225,6 @@ public class BlockOwn extends JavaPlugin {
 		this.getConfig().options().copyDefaults(true);
 		this.getConfig().set(Setting.SETTINGS_VERSION.toString(),
 				this.getDescription().getVersion());
-		this.getConfig().set(Setting.AUTOUPDATE_INTERVAL.toString(), null);
-		this.getConfig().set(Setting.ENABLE_AUTOUPDATE.toString(), null);
 		this.saveConfig();
 
 		try {
@@ -268,11 +266,12 @@ public class BlockOwn extends JavaPlugin {
 		} catch (IOException e) {
 			// Failed to submit the stats :-(
 		}
-//		updater = new Updater(this);
-//		if (this.getConfig().getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
-//			updater.start();
-//			this.con(Messages.getString("BlockOwn.93")); //$NON-NLS-1$
-//		}
+		
+		updateThread = new UpdateThread(this, this.getFile());
+	if (this.getConfig().getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
+		updateThread.start();
+			this.con(Messages.getString("BlockOwn.93")); //$NON-NLS-1$
+		}
 	}
 
 	@Override
@@ -341,17 +340,17 @@ public class BlockOwn extends JavaPlugin {
 				this.saveConfig();
 				this.tell(sender, ChatColor.GREEN,
 						Messages.getString("BlockOwn.50")); //$NON-NLS-1$
-//				if (this.getConfig().getBoolean(
-//						Setting.ENABLE_AUTOUPDATE.toString())
-//						&& !updater.isAlive() ) {
-//					updater = new Updater(this);
-//					updater.start();
-//				} else if (!this.getConfig().getBoolean(
-//						Setting.ENABLE_AUTOUPDATE.toString())
-//						&& updater.isAlive()) {
-//					updater.interrupt();
-//					updater = new Updater(this);
-//				}
+				if (this.getConfig().getBoolean(
+						Setting.ENABLE_AUTOUPDATE.toString())
+						&& !updateThread.isAlive() ) {
+					updateThread = new UpdateThread(this, this.getFile());
+					updateThread.start();
+				} else if (!this.getConfig().getBoolean(
+						Setting.ENABLE_AUTOUPDATE.toString())
+						&& updateThread.isAlive()) {
+					updateThread.interrupt();
+					updateThread = new UpdateThread(this, this.getFile());
+				}
 				return true;
 			}
 		}
