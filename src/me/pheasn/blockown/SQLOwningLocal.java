@@ -3,7 +3,9 @@ package me.pheasn.blockown;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import me.pheasn.blockown.BlockOwn.DatabaseType;
 import me.pheasn.mysql.MySqlLocal;
 import me.pheasn.mysql.TableDefinition;
 
@@ -13,6 +15,7 @@ import org.bukkit.block.Block;
 public class SQLOwningLocal extends SQLOwning {
 	public SQLOwningLocal(BlockOwn plugin) throws ClassNotFoundException,
 			MySQLNotConnectingException {
+		this.type = DatabaseType.SQL_LOCAL;
 		msql = new MySqlLocal();
 		this.plugin = plugin;
 		if (!this.load()) {
@@ -118,8 +121,15 @@ public class SQLOwningLocal extends SQLOwning {
 
 	@Override
 	public void deleteOwningsOf(String player) {
-		// TODO Auto-generated method stub
-
+		ResultSet rs = msql
+				.doQuery("SELECT playerid FROM player WHERE playername='" + player + "';"); //$NON-NLS-1$ //$NON-NLS-2$
+		try {
+			rs.next();
+			int playerid = rs.getInt("playerid"); //$NON-NLS-1$
+			msql.doUpdate("DELETE FROM block WHERE ownerid=" + playerid + ";"); //$NON-NLS-1$ //$NON-NLS-2$
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -127,4 +137,25 @@ public class SQLOwningLocal extends SQLOwning {
 		deleteOwningsOf(offlinePlayer.getName());
 	}
 
+	@Override
+	public HashMap<Block, String> getOwnings() {
+		HashMap<Block, String> result = new HashMap<Block, String>();
+		ResultSet rs = msql
+				.doQuery("SELECT * FROM block INNER JOIN player ON block.ownerid=player.playerid;"); //$NON-NLS-1$
+		try {
+			while (rs.next()) {
+				String world = rs.getString("world"); //$NON-NLS-1$
+				int x = rs.getInt("x"); //$NON-NLS-1$
+				int y = rs.getInt("y"); //$NON-NLS-1$
+				int z = rs.getInt("z"); //$NON-NLS-1$
+				result.put(
+						plugin.getServer().getWorld(world).getBlockAt(x, y, z),
+						rs.getString("playername")); //$NON-NLS-1$
+			}
+			rs.close();
+			return result;
+		} catch (SQLException e) {
+			return new HashMap<Block, String>();
+		}
+	}
 }

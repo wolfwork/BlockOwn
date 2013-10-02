@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import me.pheasn.blockown.BlockOwn.DatabaseType;
+
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -18,11 +20,13 @@ public class ClassicOwning extends Owning {
 	private HashMap<Block, String> ownings;
 
 	public ClassicOwning(BlockOwn plugin) {
+		this.type = DatabaseType.CLASSIC;
 		this.plugin = plugin;
 		ownings = new HashMap<Block, String>();
 		this.load();
 	}
 
+	@Override
 	public boolean load() {
 		if (plugin.getBlockOwnerFile().exists()) {
 			try {
@@ -67,6 +71,7 @@ public class ClassicOwning extends Owning {
 		}
 	}
 
+	@Override
 	public boolean save() {
 		if (!plugin.getBlockOwnerFile().exists()) {
 			plugin.con(ChatColor.YELLOW, Messages.getString("Owning.3")); //$NON-NLS-1$
@@ -97,6 +102,7 @@ public class ClassicOwning extends Owning {
 		return false;
 	}
 
+	@Override
 	public OfflinePlayer getOwner(Block block) {
 		try {
 			return plugin.getServer().getOfflinePlayer(ownings.get(block));
@@ -105,27 +111,37 @@ public class ClassicOwning extends Owning {
 		}
 	}
 
+	@Override
 	public void setOwner(Block block, OfflinePlayer offlinePlayer) {
 		ownings.put(block, offlinePlayer.getName());
 	}
 
+	@Override
 	public void setOwner(Block block, String player) {
 		ownings.put(block, player);
 	}
 
+	@Override
 	public void removeOwner(Block block) {
 		ownings.remove(block);
 	}
 
+	@Override
 	public void deleteOwningsOf(OfflinePlayer offlinePlayer) {
 		deleteOwningsOf(offlinePlayer.getName());
 	}
 
+	@Override
 	public void deleteOwningsOf(String player) {
 		for (Entry<Block, String> entry : ownings.entrySet()) {
 			if (entry.getValue().equalsIgnoreCase(player)) {
-				plugin.owning.removeOwner(entry.getKey());
+				this.removeOwner(entry.getKey());
 			}
 		}
+	}
+
+	@Override
+	public HashMap<Block, String> getOwnings() {
+		return ownings;
 	}
 }

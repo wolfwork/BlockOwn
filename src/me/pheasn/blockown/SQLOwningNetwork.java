@@ -3,7 +3,9 @@ package me.pheasn.blockown;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import me.pheasn.blockown.BlockOwn.DatabaseType;
 import me.pheasn.blockown.BlockOwn.Setting;
 import me.pheasn.mysql.MySqlNetwork;
 import me.pheasn.mysql.TableDefinition;
@@ -14,6 +16,7 @@ import org.bukkit.block.Block;
 public class SQLOwningNetwork extends SQLOwning {
 	public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException,
 			MySQLNotConnectingException {
+		this.type = DatabaseType.SQL_NETWORK;
 		msql = new MySqlNetwork();
 		this.plugin = plugin;
 		if (!this.load()) {
@@ -23,7 +26,7 @@ public class SQLOwningNetwork extends SQLOwning {
 
 	@Override
 	public boolean load() {
-		return (msql
+	return (msql
 				.connect(
 						plugin.getConfig().getString(
 								Setting.MYSQL_HOST.toString())
@@ -55,7 +58,6 @@ public class SQLOwningNetwork extends SQLOwning {
 				return null;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return null;
 		}
 
@@ -83,7 +85,6 @@ public class SQLOwningNetwork extends SQLOwning {
 				playerid = rs.getInt("playerid"); //$NON-NLS-1$
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 		msql.doUpdate("INSERT IGNORE INTO block(world, x, y, z, ownerid) VALUES('" + world + "', '" + x + "', '" + y + "', '" + z + "', '" + playerid + "');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
@@ -117,7 +118,6 @@ public class SQLOwningNetwork extends SQLOwning {
 				return false;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -131,7 +131,6 @@ public class SQLOwningNetwork extends SQLOwning {
 			int playerid = rs.getInt("playerid"); //$NON-NLS-1$
 			msql.doUpdate("DELETE FROM block WHERE ownerid=" + playerid + ";"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -140,4 +139,25 @@ public class SQLOwningNetwork extends SQLOwning {
 		deleteOwningsOf(offlinePlayer.getName());
 	}
 
+	@Override
+	public HashMap<Block, String> getOwnings() {
+		HashMap<Block, String> result = new HashMap<Block, String>();
+		ResultSet rs = msql
+				.doQuery("SELECT * FROM block INNER JOIN player ON block.ownerid=player.playerid;"); //$NON-NLS-1$
+		try {
+			while (rs.next()) {
+				String world = rs.getString("world"); //$NON-NLS-1$
+				int x = rs.getInt("x"); //$NON-NLS-1$
+				int y = rs.getInt("y"); //$NON-NLS-1$
+				int z = rs.getInt("z"); //$NON-NLS-1$
+				result.put(
+						plugin.getServer().getWorld(world).getBlockAt(x, y, z),
+						rs.getString("playername")); //$NON-NLS-1$
+			}
+			rs.close();
+			return result;
+		} catch (SQLException e) {
+			return new HashMap<Block, String>();
+		}
+	}
 }

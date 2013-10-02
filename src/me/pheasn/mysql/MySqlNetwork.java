@@ -18,7 +18,6 @@ public class MySqlNetwork extends MySql {
 					+ user + "&password=" + password + "&autoReconnect=true");
 			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}

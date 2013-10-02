@@ -1,10 +1,15 @@
 package me.pheasn.blockown;
 
+import java.util.HashMap;
+
+import me.pheasn.blockown.BlockOwn.DatabaseType;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 
 public abstract class Owning {
 	BlockOwn plugin;
+	DatabaseType type;
 
 	public abstract boolean load();
 
@@ -22,4 +27,9 @@ public abstract class Owning {
 
 	public abstract void deleteOwningsOf(OfflinePlayer offlinePlayer);
 
+	public DatabaseType getType() {
+		return type;
+	}
+
+	public abstract HashMap<Block, String> getOwnings();
 }

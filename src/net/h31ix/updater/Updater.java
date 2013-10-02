@@ -484,7 +484,6 @@ public class Updater
                     sb.append(c);
                 }
             }
-            plugin.con(ChatColor.YELLOW,"Version : "+ s);
             return Integer.parseInt(sb.toString());
         }
         return Integer.parseInt(s);

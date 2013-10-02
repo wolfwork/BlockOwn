@@ -36,7 +36,7 @@ public class BlockOwn extends JavaPlugin {
 		ENABLE_AUTOMATIC_CHEST_PROTECTION(
 				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
 		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
-		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), MYSQL_ENABLE(
+		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), MYSQL_ENABLE( //$NON-NLS-1$
 				"ServerSettings.MySQL.enable"), //$NON-NLS-1$
 		MYSQL_TYPE("ServerSettings.MySQL.type"), //$NON-NLS-1$
 		MYSQL_HOST("ServerSettings.MySQL.host"), //$NON-NLS-1$
@@ -79,10 +79,28 @@ public class BlockOwn extends JavaPlugin {
 		}
 	}
 
+	public enum DatabaseType {
+		SQL_LOCAL("local"), SQL_NETWORK("network"), CLASSIC("classic"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		private String s;
+
+		private DatabaseType(String s) {
+			this.s = s;
+		}
+
+		@Override
+		public String toString() {
+			return s;
+		}
+	}
+
 	@Override
 	public void onDisable() {
+		if(owning !=null){
 		this.owning.save();
+		}
+		if(playerSettings!=null){
 		this.playerSettings.save();
+		}
 		this.saveConfig();
 		super.onDisable();
 	}
@@ -153,11 +171,11 @@ public class BlockOwn extends JavaPlugin {
 			this.getCommand(Commands.PROTECTION.toString()).setDescription(
 					Messages.getString("BlockOwn.20")); //$NON-NLS-1$
 		} else {
-			this.unRegisterBukkitCommand(this.getCommand("protection"));
-			this.unRegisterBukkitCommand(this.getCommand("whitelist"));
-			this.unRegisterBukkitCommand(this.getCommand("unwhitelist"));
-			this.unRegisterBukkitCommand(this.getCommand("protect"));
-			this.unRegisterBukkitCommand(this.getCommand("unprotect"));
+			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECTION.toString())); //$NON-NLS-1$
+			this.unRegisterBukkitCommand(this.getCommand(Commands.WHITELIST.toString())); //$NON-NLS-1$
+			this.unRegisterBukkitCommand(this.getCommand(Commands.UNWHITELIST.toString())); //$NON-NLS-1$
+			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECT.toString())); //$NON-NLS-1$
+			this.unRegisterBukkitCommand(this.getCommand(Commands.UNPROTECT.toString())); //$NON-NLS-1$
 		}
 		this.getCommand(Commands.MAKE_POOR.toString()).setExecutor(
 				new CE_MakePoor(this));
@@ -208,10 +226,10 @@ public class BlockOwn extends JavaPlugin {
 			}
 			this.con(Messages.getString("BlockOwn.0")); //$NON-NLS-1$
 		} catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
 		} catch (MySQLNotConnectingException e2) {
 			this.con(ChatColor.RED, Messages.getString("BlockOwn.86")); //$NON-NLS-1$
 			Bukkit.getPluginManager().disablePlugin(this);
+			return;
 		}
 		playerSettings = new PlayerSettings(this);
 		if (!this.getConfig().getBoolean(Setting.ENABLE.toString())) {
@@ -266,10 +284,10 @@ public class BlockOwn extends JavaPlugin {
 		} catch (IOException e) {
 			// Failed to submit the stats :-(
 		}
-		
+
 		updateThread = new UpdateThread(this, this.getFile());
-	if (this.getConfig().getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
-		updateThread.start();
+		if (this.getConfig().getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
+			updateThread.start();
 			this.con(Messages.getString("BlockOwn.93")); //$NON-NLS-1$
 		}
 	}
@@ -277,83 +295,129 @@ public class BlockOwn extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String cmd_label, String[] args) {
-		if(args.length>0){
-		if (this.getConfig().getBoolean(
-				Setting.CASCADE_PROTECTION_COMMANDS.toString())) {
-			String[] newargs;
-			try {
-				newargs = new String[args.length - 1];
-			} catch (NegativeArraySizeException e) {
-				newargs = new String[0];
+		if (args.length > 0) {
+			if (this.getConfig().getBoolean(
+					Setting.CASCADE_PROTECTION_COMMANDS.toString())) {
+				String[] newargs;
+				try {
+					newargs = new String[args.length - 1];
+				} catch (NegativeArraySizeException e) {
+					newargs = new String[0];
+				}
+				for (int i = 1; i < args.length; i++) {
+					newargs[i - 1] = args[i];
+				}
+				if (args[0].equalsIgnoreCase(Commands.WHITELIST.toString())) {
+					return new CE_Whitelist(this).onCommand(sender, cmd,
+							cmd_label, newargs);
+				}
+				if (args[0].equalsIgnoreCase(Commands.UNWHITELIST.toString())) {
+					return new CE_Unwhitelist(this).onCommand(sender, cmd,
+							cmd_label, newargs);
+				}
+				if (args[0].equalsIgnoreCase(Commands.PROTECT.toString())) {
+					return new CE_Protect(this).onCommand(sender, cmd,
+							cmd_label, newargs);
+				}
+				if (args[0].equalsIgnoreCase(Commands.UNPROTECT.toString())) {
+					return new CE_Unprotect(this).onCommand(sender, cmd,
+							cmd_label, newargs);
+				}
+				if (args[0].equalsIgnoreCase(Commands.PROTECTION.toString())) {
+					return new CE_Protection(this).onCommand(sender, cmd,
+							cmd_label, newargs);
+				}
 			}
-			for (int i = 1; i < args.length; i++) {
-				newargs[i - 1] = args[i];
+			boolean isPlayer = sender instanceof Player;
+			if (isPlayer && !((Player) sender).hasPermission("blockown.admin")) { //$NON-NLS-1$
+				this.tell(
+						sender,
+						ChatColor.RED,
+						Messages.getString("BlockOwn.44") + String.valueOf(((Player) sender).hasPermission("blockown.admin"))); //$NON-NLS-1$ //$NON-NLS-2$
+				return false;
 			}
-			if (args[0].equalsIgnoreCase(Commands.WHITELIST.toString())) {
-				return new CE_Whitelist(this).onCommand(sender, cmd, cmd_label,
-						newargs);
-			}
-			if (args[0].equalsIgnoreCase(Commands.UNWHITELIST.toString())) {
-				return new CE_Unwhitelist(this).onCommand(sender, cmd,
-						cmd_label, newargs);
-			}
-			if (args[0].equalsIgnoreCase(Commands.PROTECT.toString())) {
-				return new CE_Protect(this).onCommand(sender, cmd, cmd_label,
-						newargs);
-			}
-			if (args[0].equalsIgnoreCase(Commands.UNPROTECT.toString())) {
-				return new CE_Unprotect(this).onCommand(sender, cmd, cmd_label,
-						newargs);
-			}
-			if (args[0].equalsIgnoreCase(Commands.PROTECTION.toString())) {
-				return new CE_Protection(this).onCommand(sender, cmd,
-						cmd_label, newargs);
-			}
-		}
-		boolean isPlayer = sender instanceof Player;
-		if (isPlayer && !((Player) sender).hasPermission("blockown.admin")) { //$NON-NLS-1$
-			this.tell(
-					sender,
-					ChatColor.RED,
-					Messages.getString("BlockOwn.44") + String.valueOf(((Player) sender).hasPermission("blockown.admin"))); //$NON-NLS-1$ //$NON-NLS-2$
-			return false;
-		}
-		if (args.length == 1) {
-			if (args[0].equalsIgnoreCase("save")) { //$NON-NLS-1$
-				if (this.owning instanceof ClassicOwning) {
-					if (this.owning.save()) {
-						this.tell(sender, ChatColor.GREEN,
-								Messages.getString("BlockOwn.47")); //$NON-NLS-1$
+			if (args.length == 1) {
+				if (args[0].equalsIgnoreCase("save")) { //$NON-NLS-1$
+					if (this.owning instanceof ClassicOwning) {
+						if (this.owning.save()) {
+							this.tell(sender, ChatColor.GREEN,
+									Messages.getString("BlockOwn.47")); //$NON-NLS-1$
+							return true;
+						} else {
+							this.tell(sender, ChatColor.RED,
+									Messages.getString("BlockOwn.48")); //$NON-NLS-1$
+							return false;
+						}
+					} else {
+						this.tell(sender, Messages.getString("BlockOwn.100")); //$NON-NLS-1$
+					}
+				}
+				if (args[0].equalsIgnoreCase("reload")) { //$NON-NLS-1$
+					this.reloadConfig();
+					playerSettings.save();
+					this.saveConfig();
+					this.tell(sender, ChatColor.GREEN,
+							Messages.getString("BlockOwn.50")); //$NON-NLS-1$
+					if (this.getConfig().getBoolean(
+							Setting.ENABLE_AUTOUPDATE.toString())
+							&& !updateThread.isAlive()) {
+						updateThread = new UpdateThread(this, this.getFile());
+						updateThread.start();
+					} else if (!this.getConfig().getBoolean(
+							Setting.ENABLE_AUTOUPDATE.toString())
+							&& updateThread.isAlive()) {
+						updateThread.interrupt();
+						updateThread = new UpdateThread(this, this.getFile());
+					}
+					return true;
+				}
+
+			} else if (args.length == 2) {
+				if (args[0].equalsIgnoreCase("import")) { //$NON-NLS-1$
+					if (!args[1].equalsIgnoreCase(owning.getType().toString())) {
+						Owning oldOwning = null;
+						if (args[1].equalsIgnoreCase(DatabaseType.CLASSIC
+								.toString())) {
+							oldOwning = new ClassicOwning(this);
+						} else if (args[1]
+								.equalsIgnoreCase(DatabaseType.SQL_LOCAL
+										.toString())) {
+							try {
+								oldOwning = new SQLOwningLocal(this);
+							} catch (Exception e) {
+								return false;
+							}
+						} else if (args[1]
+								.equalsIgnoreCase(DatabaseType.SQL_NETWORK
+										.toString())) {
+
+							try {
+								oldOwning = new SQLOwningNetwork(this);
+							} catch (ClassNotFoundException
+									| MySQLNotConnectingException e) {
+								this.tell(sender, ChatColor.RED,
+										Messages.getString("BlockOwn.29")); //$NON-NLS-1$
+								return false;
+							}
+
+						} else {
+							return false;
+						}
+						Thread importThread = new ImportThread(sender, this,
+								oldOwning);
+						importThread.start();
+						this.tell(
+								sender,
+								ChatColor.GREEN,
+								Messages.getString("BlockOwn.30")); //$NON-NLS-1$
 						return true;
 					} else {
 						this.tell(sender, ChatColor.RED,
-								Messages.getString("BlockOwn.48")); //$NON-NLS-1$
+								Messages.getString("BlockOwn.32")); //$NON-NLS-1$
 						return false;
 					}
-				} else {
-					this.tell(sender, Messages.getString("BlockOwn.100")); //$NON-NLS-1$
 				}
 			}
-			if (args[0].equalsIgnoreCase("reload")) { //$NON-NLS-1$
-				this.reloadConfig();
-				playerSettings.save();
-				this.saveConfig();
-				this.tell(sender, ChatColor.GREEN,
-						Messages.getString("BlockOwn.50")); //$NON-NLS-1$
-				if (this.getConfig().getBoolean(
-						Setting.ENABLE_AUTOUPDATE.toString())
-						&& !updateThread.isAlive() ) {
-					updateThread = new UpdateThread(this, this.getFile());
-					updateThread.start();
-				} else if (!this.getConfig().getBoolean(
-						Setting.ENABLE_AUTOUPDATE.toString())
-						&& updateThread.isAlive()) {
-					updateThread.interrupt();
-					updateThread = new UpdateThread(this, this.getFile());
-				}
-				return true;
-			}
-		}
 		}
 		return false;
 	}
@@ -435,9 +499,9 @@ public class BlockOwn extends JavaPlugin {
 	public void unRegisterBukkitCommand(PluginCommand cmd) {
 		try {
 			Object result = getPrivateField(
-					this.getServer().getPluginManager(), "commandMap");
+					this.getServer().getPluginManager(), "commandMap"); //$NON-NLS-1$
 			SimpleCommandMap commandMap = (SimpleCommandMap) result;
-			Object map = getPrivateField(commandMap, "knownCommands");
+			Object map = getPrivateField(commandMap, "knownCommands"); //$NON-NLS-1$
 			@SuppressWarnings("unchecked")
 			HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
 			knownCommands.remove(cmd.getName());
