@@ -26,7 +26,7 @@ public class SQLOwningNetwork extends SQLOwning {
 
 	@Override
 	public boolean load() {
-	return (msql
+		return (msql
 				.connect(
 						plugin.getConfig().getString(
 								Setting.MYSQL_HOST.toString())

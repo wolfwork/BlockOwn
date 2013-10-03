@@ -247,6 +247,7 @@ public class Updater
                 unzip(dFile.getCanonicalPath());
             }
             plugin.con(ChatColor.GREEN,Messages.getString("Updater.12"));
+            plugin.updatePending=true;
         }
         catch (Exception ex)
         {

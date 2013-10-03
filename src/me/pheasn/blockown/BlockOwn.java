@@ -26,6 +26,7 @@ public class BlockOwn extends JavaPlugin {
 	private File blockOwnerFile;
 	private File settingsFile;
 	private Thread updateThread;
+	public boolean updatePending = false;
 
 	public enum Setting {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
@@ -95,11 +96,11 @@ public class BlockOwn extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		if(owning !=null){
-		this.owning.save();
+		if (owning != null) {
+			this.owning.save();
 		}
-		if(playerSettings!=null){
-		this.playerSettings.save();
+		if (playerSettings != null) {
+			this.playerSettings.save();
 		}
 		this.saveConfig();
 		super.onDisable();
@@ -171,11 +172,16 @@ public class BlockOwn extends JavaPlugin {
 			this.getCommand(Commands.PROTECTION.toString()).setDescription(
 					Messages.getString("BlockOwn.20")); //$NON-NLS-1$
 		} else {
-			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECTION.toString())); //$NON-NLS-1$
-			this.unRegisterBukkitCommand(this.getCommand(Commands.WHITELIST.toString())); //$NON-NLS-1$
-			this.unRegisterBukkitCommand(this.getCommand(Commands.UNWHITELIST.toString())); //$NON-NLS-1$
-			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECT.toString())); //$NON-NLS-1$
-			this.unRegisterBukkitCommand(this.getCommand(Commands.UNPROTECT.toString())); //$NON-NLS-1$
+			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECTION
+					.toString())); 
+			this.unRegisterBukkitCommand(this.getCommand(Commands.WHITELIST
+					.toString())); 
+			this.unRegisterBukkitCommand(this.getCommand(Commands.UNWHITELIST
+					.toString())); 
+			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECT
+					.toString())); 
+			this.unRegisterBukkitCommand(this.getCommand(Commands.UNPROTECT
+					.toString())); 
 		}
 		this.getCommand(Commands.MAKE_POOR.toString()).setExecutor(
 				new CE_MakePoor(this));
@@ -406,9 +412,7 @@ public class BlockOwn extends JavaPlugin {
 						Thread importThread = new ImportThread(sender, this,
 								oldOwning);
 						importThread.start();
-						this.tell(
-								sender,
-								ChatColor.GREEN,
+						this.tell(sender, ChatColor.GREEN,
 								Messages.getString("BlockOwn.30")); //$NON-NLS-1$
 						return true;
 					} else {
