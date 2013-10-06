@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
@@ -173,15 +174,15 @@ public class BlockOwn extends JavaPlugin {
 					Messages.getString("BlockOwn.20")); //$NON-NLS-1$
 		} else {
 			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECTION
-					.toString())); 
+					.toString()));
 			this.unRegisterBukkitCommand(this.getCommand(Commands.WHITELIST
-					.toString())); 
+					.toString()));
 			this.unRegisterBukkitCommand(this.getCommand(Commands.UNWHITELIST
-					.toString())); 
+					.toString()));
 			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECT
-					.toString())); 
+					.toString()));
 			this.unRegisterBukkitCommand(this.getCommand(Commands.UNPROTECT
-					.toString())); 
+					.toString()));
 		}
 		this.getCommand(Commands.MAKE_POOR.toString()).setExecutor(
 				new CE_MakePoor(this));
@@ -362,19 +363,47 @@ public class BlockOwn extends JavaPlugin {
 					this.reloadConfig();
 					playerSettings.save();
 					this.saveConfig();
-					this.tell(sender, ChatColor.GREEN,
-							Messages.getString("BlockOwn.50")); //$NON-NLS-1$
-					if (this.getConfig().getBoolean(
-							Setting.ENABLE_AUTOUPDATE.toString())
+					FileConfiguration config = this.getConfig();
+					if (config.getBoolean(Setting.ENABLE_AUTOUPDATE.toString())
 							&& !updateThread.isAlive()) {
 						updateThread = new UpdateThread(this, this.getFile());
 						updateThread.start();
-					} else if (!this.getConfig().getBoolean(
-							Setting.ENABLE_AUTOUPDATE.toString())
-							&& updateThread.isAlive()) {
+					} else if (!config.getBoolean(Setting.ENABLE_AUTOUPDATE
+							.toString()) && updateThread.isAlive()) {
 						updateThread.interrupt();
 						updateThread = new UpdateThread(this, this.getFile());
 					}
+					if (config.getBoolean(Setting.MYSQL_ENABLE.toString())) {
+						if (config.getString(Setting.MYSQL_TYPE.toString())
+								.equalsIgnoreCase(
+										DatabaseType.SQL_LOCAL.toString())
+								&& owning.getType() != DatabaseType.SQL_LOCAL) {
+							owning.save();
+							try {
+								owning = new SQLOwningLocal(this);
+							} catch (Exception e) {
+								this.tell(sender, ChatColor.RED,
+										Messages.getString("BlockOwn.1")); //$NON-NLS-1$
+								this.getServer().getPluginManager()
+										.disablePlugin(this);
+							}
+						} else if (owning.getType() != DatabaseType.SQL_NETWORK) {
+							owning.save();
+							try {
+								owning = new SQLOwningNetwork(this);
+							} catch (Exception e) {
+								this.tell(sender, ChatColor.RED,
+										Messages.getString("BlockOwn.5")); //$NON-NLS-1$
+								this.getServer().getPluginManager()
+										.disablePlugin(this);
+							}
+						}
+					} else if (owning.getType() != DatabaseType.CLASSIC) {
+						owning.save();
+						owning = new ClassicOwning(this);
+					}
+					this.tell(sender, ChatColor.GREEN,
+							Messages.getString("BlockOwn.50")); //$NON-NLS-1$
 					return true;
 				}
 

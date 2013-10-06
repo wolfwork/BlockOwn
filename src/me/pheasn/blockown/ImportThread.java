@@ -26,6 +26,7 @@ public class ImportThread extends Thread {
 				plugin.owning.setOwner(entry.getKey(), entry.getValue());
 			}
 		}
+		oldOwning.save();
 		plugin.tell(sender, ChatColor.GREEN,
 				Messages.getString("ImportThread.0")); //$NON-NLS-1$
 	}
