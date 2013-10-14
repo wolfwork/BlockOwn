@@ -1,8 +1,9 @@
-Settings-Version: 0.4.6
+Settings-Version: 0.4.7
 ServerSettings:
   enable: true
   enableAutoUpdate: true
   autoUpdateInterval: 1800
+  autoSaveInterval: 1200
   enablePlayerSettings: true
   enableAutomaticChestProtection: true
   adminsIgnoreProtection: false

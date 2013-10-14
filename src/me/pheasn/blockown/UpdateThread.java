@@ -6,10 +6,10 @@ import java.util.Timer;
 import me.pheasn.blockown.BlockOwn.Setting;
 
 public class UpdateThread extends Thread {
-	private Timer timer;
+	private int task;
 	private BlockOwn plugin;
 	private File file;
-
+	private Timer timer;
 	public UpdateThread(BlockOwn plugin, File file) {
 		this.plugin = plugin;
 		this.file = file;
@@ -18,17 +18,16 @@ public class UpdateThread extends Thread {
 	@Override
 	public void run() {
 		super.run();
-		timer = new Timer();
-		timer.schedule(
-				new UpdateCheckTask(plugin, file),
-				1000,
-				plugin.getConfig().getLong(
-						Setting.AUTOUPDATE_INTERVAL.toString()) * 1000);
+		timer =new Timer();
+	timer.schedule(new UpdateCheckTask(plugin, file),
+						100l,
+						(long) (((double)(plugin.getConfig().getLong(
+								Setting.AUTOUPDATE_INTERVAL.toString()))) *1000));
 	}
 
 	@Override
 	public void interrupt() {
-		timer.cancel();
+plugin.getServer().getScheduler().cancelTask(task);
 		super.interrupt();
 	}
 

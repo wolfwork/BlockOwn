@@ -27,6 +27,7 @@ public class BlockOwn extends JavaPlugin {
 	private File blockOwnerFile;
 	private File settingsFile;
 	private Thread updateThread;
+	private Thread autoSaveThread;
 	public boolean updatePending = false;
 
 	public enum Setting {
@@ -34,7 +35,8 @@ public class BlockOwn extends JavaPlugin {
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
 		ENABLE_AUTOUPDATE("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
 		AUTOUPDATE_INTERVAL("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
-		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
+		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), ENABLE_PLAYERSETTINGS(
+				"ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
 		ENABLE_AUTOMATIC_CHEST_PROTECTION(
 				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
 		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
@@ -104,6 +106,12 @@ public class BlockOwn extends JavaPlugin {
 			this.playerSettings.save();
 		}
 		this.saveConfig();
+		if(this.updateThread.isAlive()){
+			updateThread.interrupt();
+		}
+		if(this.autoSaveThread.isAlive()){
+			autoSaveThread.interrupt();
+		}
 		super.onDisable();
 	}
 
@@ -297,6 +305,11 @@ public class BlockOwn extends JavaPlugin {
 			updateThread.start();
 			this.con(Messages.getString("BlockOwn.93")); //$NON-NLS-1$
 		}
+		autoSaveThread = new AutoSaveThread(this);
+		if (this.getConfig().getLong(Setting.AUTOSAVE_INTERVAL.toString()) != 0
+				&& this.owning.getType().equals(DatabaseType.CLASSIC)) {
+			autoSaveThread.start();
+		}
 	}
 
 	@Override
@@ -364,14 +377,16 @@ public class BlockOwn extends JavaPlugin {
 					playerSettings.save();
 					this.saveConfig();
 					FileConfiguration config = this.getConfig();
-					if (config.getBoolean(Setting.ENABLE_AUTOUPDATE.toString())
-							&& !updateThread.isAlive()) {
+					if(updateThread.isAlive()){
+						updateThread.interrupt();
+					}
+					if (config.getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
 						updateThread = new UpdateThread(this, this.getFile());
 						updateThread.start();
-					} else if (!config.getBoolean(Setting.ENABLE_AUTOUPDATE
-							.toString()) && updateThread.isAlive()) {
-						updateThread.interrupt();
-						updateThread = new UpdateThread(this, this.getFile());
+						this.con("Updater started");
+					}
+					if(autoSaveThread.isAlive()){
+						autoSaveThread.interrupt();
 					}
 					if (config.getBoolean(Setting.MYSQL_ENABLE.toString())) {
 						if (config.getString(Setting.MYSQL_TYPE.toString())
@@ -401,6 +416,12 @@ public class BlockOwn extends JavaPlugin {
 					} else if (owning.getType() != DatabaseType.CLASSIC) {
 						owning.save();
 						owning = new ClassicOwning(this);
+					}
+					if (config.getLong(Setting.AUTOSAVE_INTERVAL.toString()) != 0
+							&& owning.getType().equals(DatabaseType.CLASSIC)
+							) {
+						autoSaveThread = new AutoSaveThread(this);
+						autoSaveThread.start();
 					}
 					this.tell(sender, ChatColor.GREEN,
 							Messages.getString("BlockOwn.50")); //$NON-NLS-1$
