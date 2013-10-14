@@ -44,7 +44,7 @@ public class CE_Protection implements CommandExecutor {
 							player,
 							plugin.playerSettings.getBlacklist(player,
 									args[0].toUpperCase()),
-							plugin.playerSettings.getWhitelist(player, args[0]));
+							plugin.playerSettings.getWhitelist(player, args[0].toUpperCase()));
 				}
 				return true;
 			} else {

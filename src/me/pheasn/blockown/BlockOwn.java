@@ -35,7 +35,7 @@ public class BlockOwn extends JavaPlugin {
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
 		ENABLE_AUTOUPDATE("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
 		AUTOUPDATE_INTERVAL("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
-		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), ENABLE_PLAYERSETTINGS(
+		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), ENABLE_PLAYERSETTINGS( //$NON-NLS-1$
 				"ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
 		ENABLE_AUTOMATIC_CHEST_PROTECTION(
 				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
@@ -383,7 +383,7 @@ public class BlockOwn extends JavaPlugin {
 					if (config.getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
 						updateThread = new UpdateThread(this, this.getFile());
 						updateThread.start();
-						this.con("Updater started");
+						this.con(Messages.getString("BlockOwn.14")); //$NON-NLS-1$
 					}
 					if(autoSaveThread.isAlive()){
 						autoSaveThread.interrupt();

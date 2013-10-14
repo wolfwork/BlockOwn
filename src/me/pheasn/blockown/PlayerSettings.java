@@ -41,24 +41,45 @@ public class PlayerSettings {
 						outdatedSettings = true;
 					}
 					if (outdatedSettings) {
-						for (String blacklistedPlayer : config
+						for (String blacklistedPlayerName : config
 								.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
 										+ blockType)) {
-							lists.get(player).get(blockType)[0]
-									.add(blacklistedPlayer.toLowerCase());
+							OfflinePlayer blacklistedPlayer = plugin
+									.getServer().getOfflinePlayer(
+											blacklistedPlayerName);
+							if (blacklistedPlayer != null) {
+								blacklistedPlayerName = blacklistedPlayer
+										.getName();
+								lists.get(player).get(blockType)[0]
+										.add(blacklistedPlayerName);
+							}
 						}
 					} else {
-						for (String blacklistedPlayer : config
+						for (String blacklistedPlayerName : config
 								.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
 										+ blockType + ".BLACKLIST")) { //$NON-NLS-1$
-							lists.get(player).get(blockType)[0]
-									.add(blacklistedPlayer.toLowerCase());
+							OfflinePlayer blacklistedPlayer = plugin
+									.getServer().getOfflinePlayer(
+											blacklistedPlayerName);
+							if (blacklistedPlayer != null) {
+								blacklistedPlayerName = blacklistedPlayer
+										.getName();
+								lists.get(player).get(blockType)[0]
+										.add(blacklistedPlayerName);
+							}
 						}
-						for (String whitelistedPlayer : config
+						for (String whitelistedPlayerName : config
 								.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
 										+ blockType + ".WHITELIST")) { //$NON-NLS-1$
-							lists.get(player).get(blockType)[1]
-									.add(whitelistedPlayer.toLowerCase());
+							OfflinePlayer whitelistedPlayer = plugin
+									.getServer().getOfflinePlayer(
+											whitelistedPlayerName);
+							if (whitelistedPlayer != null) {
+								whitelistedPlayerName = whitelistedPlayer
+										.getName();
+								lists.get(player).get(blockType)[1]
+										.add(whitelistedPlayerName);
+							}
 						}
 					}
 				}
@@ -68,22 +89,26 @@ public class PlayerSettings {
 
 	public void save() {
 		FileConfiguration config = plugin.getConfig();
+		config.set("PlayerSettings", null); //$NON-NLS-1$
 		for (Entry<String, HashMap<String, LinkedList<String>[]>> entry : lists
 				.entrySet()) {
-			if (outdatedSettings) {
-				config.set("PlayerSettings." + entry.getKey(), null); //$NON-NLS-1$
-			}
 			for (Entry<String, LinkedList<String>[]> playerBlacklists : entry
 					.getValue().entrySet()) {
-				config.set("PlayerSettings." + entry.getKey() + "." //$NON-NLS-1$ //$NON-NLS-2$
-						+ playerBlacklists.getKey() + ".BLACKLIST", //$NON-NLS-1$
-						playerBlacklists.getValue()[0]);
+				if (playerBlacklists.getValue()[0].size() > 0
+						|| playerBlacklists.getValue()[1].size() > 0) {
+					config.set("PlayerSettings." + entry.getKey() + "." //$NON-NLS-1$ //$NON-NLS-2$
+							+ playerBlacklists.getKey() + ".BLACKLIST", //$NON-NLS-1$
+							playerBlacklists.getValue()[0]);
+				}
 			}
 			for (Entry<String, LinkedList<String>[]> playerWhitelists : entry
 					.getValue().entrySet()) {
-				config.set("PlayerSettings." + entry.getKey() + "." //$NON-NLS-1$ //$NON-NLS-2$
-						+ playerWhitelists.getKey() + ".WHITELIST", //$NON-NLS-1$
-						playerWhitelists.getValue()[1]);
+				if (playerWhitelists.getValue()[1].size() > 0
+						|| playerWhitelists.getValue()[0].size() > 0) {
+					config.set("PlayerSettings." + entry.getKey() + "." //$NON-NLS-1$ //$NON-NLS-2$
+							+ playerWhitelists.getKey() + ".WHITELIST", //$NON-NLS-1$
+							playerWhitelists.getValue()[1]);
+				}
 			}
 		}
 
@@ -131,16 +156,21 @@ public class PlayerSettings {
 	}
 
 	public void blacklistAdd(String owner, String blockType,
-			String blacklistedPlayer) {
-		blacklistedPlayer = blacklistedPlayer.toLowerCase();
-		if (!lists.containsKey(owner)) {
-			lists.put(owner, new HashMap<String, LinkedList<String>[]>());
-		}
-		if (!lists.get(owner).containsKey(blockType)) {
-			lists.get(owner).put(blockType, newLinkedList());
-		}
-		if (!lists.get(owner).get(blockType)[0].contains(blacklistedPlayer)) {
-			lists.get(owner).get(blockType)[0].add(blacklistedPlayer);
+			String blacklistedPlayerName) {
+		OfflinePlayer blacklistedPlayer = plugin.getServer().getOfflinePlayer(
+				blacklistedPlayerName);
+		if (blacklistedPlayer != null) {
+			blacklistedPlayerName = blacklistedPlayer.getName();
+			if (!lists.containsKey(owner)) {
+				lists.put(owner, new HashMap<String, LinkedList<String>[]>());
+			}
+			if (!lists.get(owner).containsKey(blockType)) {
+				lists.get(owner).put(blockType, newLinkedList());
+			}
+			if (!lists.get(owner).get(blockType)[0]
+					.contains(blacklistedPlayerName)) {
+				lists.get(owner).get(blockType)[0].add(blacklistedPlayerName);
+			}
 		}
 	}
 
@@ -150,10 +180,15 @@ public class PlayerSettings {
 	}
 
 	public void blacklistRemove(String owner, String blockType,
-			String blacklistedPlayer) {
-		if (isBlacklisted(blacklistedPlayer, owner, blockType)) {
-			lists.get(owner).get(blockType)[0].remove(blacklistedPlayer
-					.toLowerCase());
+			String blacklistedPlayerName) {
+		OfflinePlayer blacklistedPlayer = plugin.getServer().getOfflinePlayer(
+				blacklistedPlayerName);
+		if (blacklistedPlayer != null) {
+			blacklistedPlayerName = blacklistedPlayer.getName();
+			if (isBlacklisted(blacklistedPlayerName, owner, blockType)) {
+				lists.get(owner).get(blockType)[0].remove(blacklistedPlayerName
+						.toLowerCase());
+			}
 		}
 	}
 
@@ -171,23 +206,30 @@ public class PlayerSettings {
 		}
 	}
 
-	public boolean isBlacklisted(String candidate, String owner,
+	public boolean isBlacklisted(String candidateName, String owner,
 			String blockType) {
-		candidate = candidate.toLowerCase();
+		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
+				candidateName);
 		if (plugin.getConfig().getBoolean(
 				"ServerSettings.enableAutomaticChestProtection") && (blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
 				|| blockType.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
 			return true;
 		}
-		try {
-			LinkedList<String> blacklist = this.getBlacklist(owner, blockType);
-			if (blacklist.contains(candidate)
-					|| blacklist.contains(ALL_PLAYERS)) {
-				return true;
-			} else {
+		if (candidate != null) {
+			candidateName = candidate.getName();
+			try {
+				LinkedList<String> blacklist = this.getBlacklist(owner,
+						blockType);
+				if (blacklist.contains(candidateName)
+						|| blacklist.contains(ALL_PLAYERS)) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (Exception ex) {
 				return false;
 			}
-		} catch (Exception ex) {
+		} else {
 			return false;
 		}
 	}
@@ -234,16 +276,21 @@ public class PlayerSettings {
 	}
 
 	public void whitelistAdd(String owner, String blockType,
-			String whitelistedPlayer) {
-		whitelistedPlayer = whitelistedPlayer.toLowerCase();
-		if (!lists.containsKey(owner)) {
-			lists.put(owner, new HashMap<String, LinkedList<String>[]>());
-		}
-		if (!lists.get(owner).containsKey(blockType)) {
-			lists.get(owner).put(blockType, newLinkedList());
-		}
-		if (!lists.get(owner).get(blockType)[1].contains(whitelistedPlayer)) {
-			lists.get(owner).get(blockType)[1].add(whitelistedPlayer);
+			String whitelistedPlayerName) {
+		OfflinePlayer whitelistedPlayer = plugin.getServer().getOfflinePlayer(
+				whitelistedPlayerName);
+		if (whitelistedPlayer != null) {
+			whitelistedPlayerName = whitelistedPlayer.getName();
+			if (!lists.containsKey(owner)) {
+				lists.put(owner, new HashMap<String, LinkedList<String>[]>());
+			}
+			if (!lists.get(owner).containsKey(blockType)) {
+				lists.get(owner).put(blockType, newLinkedList());
+			}
+			if (!lists.get(owner).get(blockType)[1]
+					.contains(whitelistedPlayerName)) {
+				lists.get(owner).get(blockType)[1].add(whitelistedPlayerName);
+			}
 		}
 	}
 
@@ -253,10 +300,15 @@ public class PlayerSettings {
 	}
 
 	public void whitelistRemove(String owner, String blockType,
-			String whitelistedPlayer) {
-		if (isWhitelisted(whitelistedPlayer, owner, blockType)) {
-			lists.get(owner).get(blockType)[1].remove(whitelistedPlayer
-					.toLowerCase());
+			String whitelistedPlayerName) {
+		OfflinePlayer whitelistedPlayer = plugin.getServer().getOfflinePlayer(
+				whitelistedPlayerName);
+		if (whitelistedPlayer != null) {
+			whitelistedPlayerName = whitelistedPlayer.getName();
+			if (isWhitelisted(whitelistedPlayerName, owner, blockType)) {
+				lists.get(owner).get(blockType)[1].remove(whitelistedPlayerName
+						.toLowerCase());
+			}
 		}
 	}
 
@@ -274,18 +326,25 @@ public class PlayerSettings {
 		}
 	}
 
-	public boolean isWhitelisted(String candidate, String owner,
+	public boolean isWhitelisted(String candidateName, String owner,
 			String blockType) {
-		candidate = candidate.toLowerCase();
-		try {
-			LinkedList<String> whitelist = this.getWhitelist(owner, blockType);
-			if (whitelist.contains(candidate)
-					|| whitelist.contains(ALL_PLAYERS)) {
-				return true;
-			} else {
+		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
+				candidateName);
+		if (candidate != null) {
+			candidateName = candidate.getName();
+			try {
+				LinkedList<String> whitelist = this.getWhitelist(owner,
+						blockType);
+				if (whitelist.contains(candidateName)
+						|| whitelist.contains(ALL_PLAYERS)) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (Exception ex) {
 				return false;
 			}
-		} catch (Exception ex) {
+		} else {
 			return false;
 		}
 	}
