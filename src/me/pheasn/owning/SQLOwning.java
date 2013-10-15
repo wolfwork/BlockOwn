@@ -1,4 +1,4 @@
-package me.pheasn.blockown;
+package me.pheasn.owning;
 
 import me.pheasn.mysql.MySql;
 

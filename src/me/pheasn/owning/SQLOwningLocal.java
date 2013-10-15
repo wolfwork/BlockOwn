@@ -1,23 +1,22 @@
-package me.pheasn.blockown;
+package me.pheasn.owning;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import me.pheasn.blockown.BlockOwn.DatabaseType;
-import me.pheasn.blockown.BlockOwn.Setting;
-import me.pheasn.mysql.MySqlNetwork;
+import me.pheasn.blockown.BlockOwn;
+import me.pheasn.mysql.MySqlLocal;
 import me.pheasn.mysql.TableDefinition;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 
-public class SQLOwningNetwork extends SQLOwning {
-	public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException,
+public class SQLOwningLocal extends SQLOwning {
+	public SQLOwningLocal(BlockOwn plugin) throws ClassNotFoundException,
 			MySQLNotConnectingException {
-		this.type = DatabaseType.SQL_NETWORK;
-		msql = new MySqlNetwork();
+		this.type = DatabaseType.SQL_LOCAL;
+		msql = new MySqlLocal();
 		this.plugin = plugin;
 		if (!this.load()) {
 			throw new MySQLNotConnectingException();
@@ -26,17 +25,14 @@ public class SQLOwningNetwork extends SQLOwning {
 
 	@Override
 	public boolean load() {
-		return (msql
-				.connect(
-						plugin.getConfig().getString(
-								Setting.MYSQL_HOST.toString())
-								+ ":" + plugin.getConfig().getInt(Setting.MYSQL_PORT.toString()) + "/" + plugin.getConfig().getString(Setting.MYSQL_DATABASE.toString()), plugin.getConfig().getString(Setting.MYSQL_USER.toString()), plugin.getConfig().getString(Setting.MYSQL_PASSWORD.toString())) && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$
+		return (msql.connect(
+				"./plugins/BlockOwn/data.db", plugin.getName(), "pw4242") && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private boolean createTablesIfNotExist() {
 		TableDefinition[] tables = new TableDefinition[2];
 		tables[0] = new TableDefinition(
-				"player", new String[] { "playerid INTEGER PRIMARY KEY " + msql.getParameter("AUTO_INCREMENT"), "playername VARCHAR(50) UNIQUE NOT NULL" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				"player", new String[] { "playerid INTEGER PRIMARY KEY " + msql.getParameter("AUTO_INCREMENT"), "playername VARCHAR(50) UNIQUE" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		tables[1] = new TableDefinition(
 				"block", new String[] { "world VARCHAR(50)", "x INTEGER", "y INTEGER", "z INTEGER", "ownerid INTEGER", "PRIMARY KEY(world, x, y, z)", "FOREIGN KEY(ownerid) REFERENCES player(playerid)" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 		return msql.createTables(tables);
@@ -58,9 +54,9 @@ public class SQLOwningNetwork extends SQLOwning {
 				return null;
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return null;
 		}
-
 	}
 
 	@Override
@@ -79,14 +75,14 @@ public class SQLOwningNetwork extends SQLOwning {
 		int z = block.getZ();
 		ResultSet rs = msql
 				.doQuery("SELECT playerid FROM player WHERE playername='" + player + "';"); //$NON-NLS-1$ //$NON-NLS-2$
-		int playerid = 0;
+		Integer playerid = null;
 		try {
-			if (rs.next()) {
-				playerid = rs.getInt("playerid"); //$NON-NLS-1$
-			}
+			rs.next();
+			playerid = rs.getInt("playerid"); //$NON-NLS-1$
 		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		msql.doUpdate("INSERT IGNORE INTO block(world, x, y, z, ownerid) VALUES('" + world + "', '" + x + "', '" + y + "', '" + z + "', '" + playerid + "');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		msql.doUpdate("INSERT OR IGNORE INTO block(world, x, y, z, ownerid) VALUES('" + world + "', '" + x + "', '" + y + "', '" + z + "', '" + playerid + "');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
 
 	@Override
@@ -118,6 +114,7 @@ public class SQLOwningNetwork extends SQLOwning {
 				return false;
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -131,6 +128,7 @@ public class SQLOwningNetwork extends SQLOwning {
 			int playerid = rs.getInt("playerid"); //$NON-NLS-1$
 			msql.doUpdate("DELETE FROM block WHERE ownerid=" + playerid + ";"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 

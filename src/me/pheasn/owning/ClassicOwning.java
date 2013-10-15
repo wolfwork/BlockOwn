@@ -1,4 +1,4 @@
-package me.pheasn.blockown;
+package me.pheasn.owning;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import me.pheasn.blockown.BlockOwn.DatabaseType;
+import me.pheasn.blockown.BlockOwn;
+import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;

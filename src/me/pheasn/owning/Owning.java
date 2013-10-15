@@ -1,15 +1,30 @@
-package me.pheasn.blockown;
+package me.pheasn.owning;
 
 import java.util.HashMap;
 
-import me.pheasn.blockown.BlockOwn.DatabaseType;
+
+
+import me.pheasn.PheasnPlugin;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 
 public abstract class Owning {
-	BlockOwn plugin;
-	DatabaseType type;
+	protected PheasnPlugin plugin;
+	protected DatabaseType type;
+	public enum DatabaseType {
+		SQL_LOCAL("local"), SQL_NETWORK("network"), CLASSIC("classic"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		private String s;
+
+		private DatabaseType(String s) {
+			this.s = s;
+		}
+
+		@Override
+		public String toString() {
+			return s;
+		}
+	}
 
 	public abstract boolean load();
 

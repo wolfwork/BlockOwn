@@ -2,6 +2,8 @@ package me.pheasn.updater;
 
 import java.util.TimerTask;
 
+import me.pheasn.PheasnPlugin;
+
 import org.bukkit.ChatColor;
 
 public class UpdateCheckTask extends TimerTask {

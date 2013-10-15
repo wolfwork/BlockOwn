@@ -1,4 +1,6 @@
-package me.pheasn.updater;
+package me.pheasn;
+
+import me.pheasn.owning.Owning;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -8,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class PheasnPlugin extends JavaPlugin {
 	public boolean updatePending = false;
+	public Owning owning=null;
 	protected ConsoleCommandSender console;
 
 	public void con(ChatColor cc, String s) {

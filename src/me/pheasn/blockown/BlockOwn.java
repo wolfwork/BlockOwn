@@ -5,7 +5,14 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import me.pheasn.updater.PheasnPlugin;
+import me.pheasn.PheasnPlugin;
+import me.pheasn.owning.ClassicOwning;
+import me.pheasn.owning.ImportThread;
+import me.pheasn.owning.MySQLNotConnectingException;
+import me.pheasn.owning.Owning;
+import me.pheasn.owning.Owning.DatabaseType;
+import me.pheasn.owning.SQLOwningLocal;
+import me.pheasn.owning.SQLOwningNetwork;
 import me.pheasn.updater.Updater;
 
 import org.bukkit.Bukkit;
@@ -21,7 +28,6 @@ import org.mcstats.Metrics.Graph;
 import org.mcstats.Metrics.Plotter;
 
 public class BlockOwn extends PheasnPlugin {
-	public Owning owning;
 	public PlayerSettings playerSettings;
 	private File pluginDir;
 	private File blockOwnerFile;
@@ -85,19 +91,7 @@ public class BlockOwn extends PheasnPlugin {
 		}
 	}
 
-	public enum DatabaseType {
-		SQL_LOCAL("local"), SQL_NETWORK("network"), CLASSIC("classic"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		private String s;
-
-		private DatabaseType(String s) {
-			this.s = s;
-		}
-
-		@Override
-		public String toString() {
-			return s;
-		}
-	}
+	
 
 	@Override
 	public void onDisable() {
