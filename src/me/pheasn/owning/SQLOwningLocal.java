@@ -25,8 +25,9 @@ public class SQLOwningLocal extends SQLOwning {
 
 	@Override
 	public boolean load() {
-		return (msql.connect(
-				"./plugins/"+plugin.getName()+"/data.db", plugin.getName().toLowerCase(), "pw4242") && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$
+		return (msql
+				.connect(
+						"./plugins/" + plugin.getName() + "/data.db", plugin.getName().toLowerCase(), "pw4242") && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	private boolean createTablesIfNotExist() {

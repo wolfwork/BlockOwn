@@ -2,8 +2,6 @@ package me.pheasn.owning;
 
 import java.util.HashMap;
 
-
-
 import me.pheasn.PheasnPlugin;
 
 import org.bukkit.OfflinePlayer;
@@ -12,6 +10,7 @@ import org.bukkit.block.Block;
 public abstract class Owning {
 	protected PheasnPlugin plugin;
 	protected DatabaseType type;
+
 	public enum DatabaseType {
 		SQL_LOCAL("local"), SQL_NETWORK("network"), CLASSIC("classic"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		private String s;

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import me.pheasn.PheasnPlugin;
-import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -15,7 +14,8 @@ public class ImportThread extends Thread {
 	private Owning oldOwning;
 	private CommandSender sender;
 
-	public ImportThread(CommandSender sender, PheasnPlugin plugin, Owning oldOwning) {
+	public ImportThread(CommandSender sender, PheasnPlugin plugin,
+			Owning oldOwning) {
 		this.plugin = plugin;
 		this.oldOwning = oldOwning;
 		this.sender = sender;
@@ -31,6 +31,6 @@ public class ImportThread extends Thread {
 		}
 		oldOwning.save();
 		plugin.tell(sender, ChatColor.GREEN,
-				Messages.getString("ImportThread.0")); //$NON-NLS-1$
+				Messages.getString("ImportThread.0"));  //$NON-NLS-1$
 	}
 }
