@@ -12,10 +12,12 @@ public class AutoSaveTask extends TimerTask {
 
 	@Override
 	public void run() {
-		if(plugin.owning.save()){
-			plugin.getLogger().log(Level.FINEST, "Owners saved.");
-		}else{
-			plugin.getLogger().log(Level.WARNING,"Owners couldn't be saved.");
+		if (plugin.owning.save()) {
+			plugin.getLogger().log(Level.FINEST,
+					Messages.getString("AutoSaveTask.0")); //$NON-NLS-1$
+		} else {
+			plugin.getLogger().log(Level.WARNING,
+					Messages.getString("AutoSaveTask.1")); //$NON-NLS-1$
 		}
 	}
 

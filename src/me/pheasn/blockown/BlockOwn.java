@@ -5,36 +5,38 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import me.pheasn.updater.PheasnPlugin;
+import me.pheasn.updater.Updater;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 import org.mcstats.Metrics.Plotter;
 
-public class BlockOwn extends JavaPlugin {
-	private ConsoleCommandSender console;
+public class BlockOwn extends PheasnPlugin {
 	public Owning owning;
 	public PlayerSettings playerSettings;
 	private File pluginDir;
 	private File blockOwnerFile;
 	private File settingsFile;
-	private Thread updateThread;
+	private Updater updater;
 	private Thread autoSaveThread;
-	public boolean updatePending = false;
+	private final int pluginId = 62749;
+	private String apiKey;
 
 	public enum Setting {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
 		ENABLE_AUTOUPDATE("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
-		AUTOUPDATE_INTERVAL("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
+		API_KEY("ServerSettings.apiKey"), AUTOUPDATE_INTERVAL( //$NON-NLS-1$
+				"ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
 		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), ENABLE_PLAYERSETTINGS( //$NON-NLS-1$
 				"ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
 		ENABLE_AUTOMATIC_CHEST_PROTECTION(
@@ -106,10 +108,8 @@ public class BlockOwn extends JavaPlugin {
 			this.playerSettings.save();
 		}
 		this.saveConfig();
-		if(this.updateThread.isAlive()){
-			updateThread.interrupt();
-		}
-		if(this.autoSaveThread.isAlive()){
+		updater.cancel();
+		if (this.autoSaveThread.isAlive()) {
 			autoSaveThread.interrupt();
 		}
 		super.onDisable();
@@ -299,10 +299,13 @@ public class BlockOwn extends JavaPlugin {
 		} catch (IOException e) {
 			// Failed to submit the stats :-(
 		}
-
-		updateThread = new UpdateThread(this, this.getFile());
+		this.apiKey = this.getConfig().getString(Setting.API_KEY.toString());
+		updater = new Updater(this, this.pluginId, this.getFile(), apiKey);
 		if (this.getConfig().getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
-			updateThread.start();
+			updater.schedule(
+					100l,
+					this.getConfig().getLong(
+							Setting.AUTOSAVE_INTERVAL.toString()) * 1000);
 			this.con(Messages.getString("BlockOwn.93")); //$NON-NLS-1$
 		}
 		autoSaveThread = new AutoSaveThread(this);
@@ -377,15 +380,15 @@ public class BlockOwn extends JavaPlugin {
 					playerSettings.save();
 					this.saveConfig();
 					FileConfiguration config = this.getConfig();
-					if(updateThread.isAlive()){
-						updateThread.interrupt();
-					}
+					updater.cancel();
 					if (config.getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
-						updateThread = new UpdateThread(this, this.getFile());
-						updateThread.start();
+						updater.schedule(
+								100l,
+								this.getConfig().getLong(
+										Setting.AUTOSAVE_INTERVAL.toString()) * 1000);
 						this.con(Messages.getString("BlockOwn.14")); //$NON-NLS-1$
 					}
-					if(autoSaveThread.isAlive()){
+					if (autoSaveThread.isAlive()) {
 						autoSaveThread.interrupt();
 					}
 					if (config.getBoolean(Setting.MYSQL_ENABLE.toString())) {
@@ -418,8 +421,7 @@ public class BlockOwn extends JavaPlugin {
 						owning = new ClassicOwning(this);
 					}
 					if (config.getLong(Setting.AUTOSAVE_INTERVAL.toString()) != 0
-							&& owning.getType().equals(DatabaseType.CLASSIC)
-							) {
+							&& owning.getType().equals(DatabaseType.CLASSIC)) {
 						autoSaveThread = new AutoSaveThread(this);
 						autoSaveThread.start();
 					}
@@ -476,66 +478,8 @@ public class BlockOwn extends JavaPlugin {
 		return false;
 	}
 
-	public void con(ChatColor cc, String s) {
-		console.sendMessage(cc + inBrackets(this.getName()) + s);
-	}
-
-	public void con(String s) {
-		console.sendMessage(inBrackets(this.getName()) + s);
-	}
-
-	public void tell(CommandSender sender, ChatColor cc, String s) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			player.sendMessage(cc + serverNameInBrackets() + s);
-		} else {
-			con(cc, s);
-		}
-	}
-
-	public void tell(CommandSender sender, String s) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			player.sendMessage(serverNameInBrackets() + s);
-		} else {
-			con(s);
-		}
-	}
-
-	public void say(Player player, ChatColor cc, String s) {
-		player.sendMessage(cc + serverNameInBrackets() + s);
-	}
-
-	public void say(Player player, String s) {
-		player.sendMessage(serverNameInBrackets() + s);
-	}
-
-	public void say(ChatColor cc, String s) {
-		this.getServer().broadcastMessage(cc + serverNameInBrackets() + s);
-	}
-
-	public void say(String s) {
-		this.getServer().broadcastMessage(serverNameInBrackets() + s);
-	}
-
-	public File getPluginDir() {
-		return pluginDir;
-	}
-
-	public File getSettingsFile() {
-		return settingsFile;
-	}
-
 	public File getBlockOwnerFile() {
 		return blockOwnerFile;
-	}
-
-	public String inBrackets(String s) {
-		return "[" + s + "] "; //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
-	public String serverNameInBrackets() {
-		return this.inBrackets(this.getServer().getServerName());
 	}
 
 	// CREDITS FOR THIS GO TO zeeveener !

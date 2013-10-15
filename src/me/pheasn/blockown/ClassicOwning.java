@@ -83,7 +83,11 @@ public class ClassicOwning extends Owning {
 		try {
 			FileWriter fileWriter = new FileWriter(plugin.getBlockOwnerFile(),
 					false);
-			for (Entry<Block, String> entry : ownings.entrySet()) {
+			// TODO check this!!!
+			@SuppressWarnings("unchecked")
+			final HashMap<Block, String> curOwnings = (HashMap<Block, String>) ownings
+					.clone();
+			for (Entry<Block, String> entry : curOwnings.entrySet()) {
 				Block block = entry.getKey();
 				fileWriter
 						.write(block.getWorld().getName()

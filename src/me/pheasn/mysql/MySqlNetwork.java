@@ -37,22 +37,22 @@ public class MySqlNetwork extends MySql {
 
 	@Override
 	public boolean createTables(TableDefinition[] tables) {
-		for(TableDefinition table:tables){
-		try {
-			StringBuffer updateString = new StringBuffer();
-			updateString.append("CREATE TABLE IF NOT EXISTS `"
-					+ table.getName() + "` (");
-			for (String entry : table.getEntries()) {
-				updateString.append(entry + ", ");
+		for (TableDefinition table : tables) {
+			try {
+				StringBuffer updateString = new StringBuffer();
+				updateString.append("CREATE TABLE IF NOT EXISTS `"
+						+ table.getName() + "` (");
+				for (String entry : table.getEntries()) {
+					updateString.append(entry + ", ");
+				}
+				updateString.delete(updateString.length() - 2,
+						updateString.length());
+				updateString.append(")");
+				con.createStatement().executeUpdate(updateString.toString());
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
 			}
-			updateString.delete(updateString.length() - 2,
-					updateString.length());
-			updateString.append(")");
-			con.createStatement().executeUpdate(updateString.toString());
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
 		}
 		return true;
 	}
@@ -79,11 +79,11 @@ public class MySqlNetwork extends MySql {
 
 	@Override
 	public void doUpdate(String sql) {
-try {
-	con.createStatement().execute(sql);
-} catch (SQLException e) {
-	e.printStackTrace();
-}
+		try {
+			con.createStatement().execute(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -95,6 +95,5 @@ try {
 			return null;
 		}
 	}
-
 
 }
