@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import me.pheasn.blockown.BlockOwn;
+import me.pheasn.PheasnPlugin;
 import me.pheasn.mysql.MySqlLocal;
 import me.pheasn.mysql.TableDefinition;
 
@@ -13,7 +13,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 
 public class SQLOwningLocal extends SQLOwning {
-	public SQLOwningLocal(BlockOwn plugin) throws ClassNotFoundException,
+	public SQLOwningLocal(PheasnPlugin plugin) throws ClassNotFoundException,
 			MySQLNotConnectingException {
 		this.type = DatabaseType.SQL_LOCAL;
 		msql = new MySqlLocal();
@@ -26,7 +26,7 @@ public class SQLOwningLocal extends SQLOwning {
 	@Override
 	public boolean load() {
 		return (msql.connect(
-				"./plugins/BlockOwn/data.db", plugin.getName(), "pw4242") && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$
+				"./plugins/"+plugin.getName()+"/data.db", plugin.getName().toLowerCase(), "pw4242") && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private boolean createTablesIfNotExist() {

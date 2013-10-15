@@ -1,5 +1,7 @@
 package me.pheasn;
 
+import java.io.File;
+
 import me.pheasn.owning.Owning;
 
 import org.bukkit.ChatColor;
@@ -12,7 +14,6 @@ public abstract class PheasnPlugin extends JavaPlugin {
 	public boolean updatePending = false;
 	public Owning owning=null;
 	protected ConsoleCommandSender console;
-
 	public void con(ChatColor cc, String s) {
 		console.sendMessage(cc + inBrackets(this.getName()) + s);
 	}
@@ -62,4 +63,5 @@ public abstract class PheasnPlugin extends JavaPlugin {
 	public String serverNameInBrackets() {
 		return this.inBrackets(this.getServer().getServerName());
 	}
+	public abstract File getBlockOwnerFile();
 }

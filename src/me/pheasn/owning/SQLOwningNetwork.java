@@ -5,8 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import me.pheasn.blockown.BlockOwn;
-import me.pheasn.blockown.BlockOwn.Setting;
+import me.pheasn.PheasnPlugin;
 import me.pheasn.mysql.MySqlNetwork;
 import me.pheasn.mysql.TableDefinition;
 
@@ -14,7 +13,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 
 public class SQLOwningNetwork extends SQLOwning {
-	public SQLOwningNetwork(BlockOwn plugin) throws ClassNotFoundException,
+	public SQLOwningNetwork(PheasnPlugin plugin) throws ClassNotFoundException,
 			MySQLNotConnectingException {
 		this.type = DatabaseType.SQL_NETWORK;
 		msql = new MySqlNetwork();

@@ -48,14 +48,7 @@ public class BlockOwn extends PheasnPlugin {
 		ENABLE_AUTOMATIC_CHEST_PROTECTION(
 				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
 		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
-		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), MYSQL_ENABLE( //$NON-NLS-1$
-				"ServerSettings.MySQL.enable"), //$NON-NLS-1$
-		MYSQL_TYPE("ServerSettings.MySQL.type"), //$NON-NLS-1$
-		MYSQL_HOST("ServerSettings.MySQL.host"), //$NON-NLS-1$
-		MYSQL_PORT("ServerSettings.MySQL.port"), //$NON-NLS-1$
-		MYSQL_DATABASE("ServerSettings.MySQL.database"), //$NON-NLS-1$
-		MYSQL_USER("ServerSettings.MySQL.user"), //$NON-NLS-1$
-		MYSQL_PASSWORD("ServerSettings.MySQL.password"); //$NON-NLS-1$
+		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands");
 		private String s;
 
 		private Setting(String s) {
@@ -223,8 +216,8 @@ public class BlockOwn extends PheasnPlugin {
 			this.saveDefaultConfig();
 		}
 		try {
-			if (this.getConfig().getBoolean(Setting.MYSQL_ENABLE.toString())) {
-				if (this.getConfig().getString(Setting.MYSQL_TYPE.toString())
+			if (this.getConfig().getBoolean(me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
+				if (this.getConfig().getString(me.pheasn.owning.SQLOwning.Setting.MYSQL_TYPE.toString())
 						.equalsIgnoreCase("local")) { //$NON-NLS-1$
 					owning = new SQLOwningLocal(this);
 				} else {
@@ -385,8 +378,8 @@ public class BlockOwn extends PheasnPlugin {
 					if (autoSaveThread.isAlive()) {
 						autoSaveThread.interrupt();
 					}
-					if (config.getBoolean(Setting.MYSQL_ENABLE.toString())) {
-						if (config.getString(Setting.MYSQL_TYPE.toString())
+					if (config.getBoolean(me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
+						if (config.getString(me.pheasn.owning.SQLOwning.Setting.MYSQL_TYPE.toString())
 								.equalsIgnoreCase(
 										DatabaseType.SQL_LOCAL.toString())
 								&& owning.getType() != DatabaseType.SQL_LOCAL) {

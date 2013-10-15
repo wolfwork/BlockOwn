@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import me.pheasn.blockown.BlockOwn;
-import me.pheasn.blockown.Messages;
+import me.pheasn.PheasnPlugin;
 
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -17,10 +16,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public class ClassicOwning extends Owning {
-	private BlockOwn plugin;
 	private HashMap<Block, String> ownings;
 
-	public ClassicOwning(BlockOwn plugin) {
+	public ClassicOwning(PheasnPlugin plugin) {
 		this.type = DatabaseType.CLASSIC;
 		this.plugin = plugin;
 		ownings = new HashMap<Block, String>();
@@ -67,7 +65,7 @@ public class ClassicOwning extends Owning {
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("Owning.2")); //$NON-NLS-1$
+			plugin.con(ChatColor.RED, "BlockOwners file not found."); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -75,7 +73,7 @@ public class ClassicOwning extends Owning {
 	@Override
 	public boolean save() {
 		if (!plugin.getBlockOwnerFile().exists()) {
-			plugin.con(ChatColor.YELLOW, Messages.getString("Owning.3")); //$NON-NLS-1$
+			plugin.con(ChatColor.YELLOW, "BlockOwners file not found. Creating a new one..."); 
 			try {
 				plugin.getBlockOwnerFile().createNewFile();
 			} catch (IOException e) {

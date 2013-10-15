@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import me.pheasn.PheasnPlugin;
-import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
@@ -16,7 +15,7 @@ public class ImportThread extends Thread {
 	private Owning oldOwning;
 	private CommandSender sender;
 
-	public ImportThread(CommandSender sender, BlockOwn plugin, Owning oldOwning) {
+	public ImportThread(CommandSender sender, PheasnPlugin plugin, Owning oldOwning) {
 		this.plugin = plugin;
 		this.oldOwning = oldOwning;
 		this.sender = sender;
