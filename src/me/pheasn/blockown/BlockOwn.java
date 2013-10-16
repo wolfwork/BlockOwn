@@ -368,6 +368,7 @@ public class BlockOwn extends PheasnPlugin {
 					this.saveConfig();
 					FileConfiguration config = this.getConfig();
 					updater.cancel();
+					updater = new Updater(this, this.pluginId,this.getFile(),this.getConfig().getString(Setting.API_KEY.toString()));
 					if (config.getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
 						updater.schedule(
 								100l,
