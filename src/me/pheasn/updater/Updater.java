@@ -67,7 +67,7 @@ public class Updater extends Thread {
 				JSONObject latest = (JSONObject) array.get(array.size() - 1);
 				String versionLink = (String) latest.get(API_LINK_VALUE);
 				String versionName = (String) latest.get(API_NAME_VALUE);
-				int later = compare(versionName.replace("v", ""), plugin //$NON-NLS-1$ //$NON-NLS-2$
+				int later = compare(versionName, plugin //$NON-NLS-1$ //$NON-NLS-2$
 						.getDescription().getVersion());
 				if (later == 1) {
 					URL dwnurl = new URL(versionLink);
@@ -105,8 +105,8 @@ public class Updater extends Thread {
 	}
 
 	private int compare(String v1, String v2) {
-		v1 = v1.replace(".", "").trim(); //$NON-NLS-1$ //$NON-NLS-2$
-		v2 = v2.replace(".", "").trim(); //$NON-NLS-1$ //$NON-NLS-2$
+		v1= removeNonNumeric(v1);
+		v2= removeNonNumeric(v2);
 		while (v1.length() < 3) {
 			v1 += "0"; //$NON-NLS-1$
 		}
@@ -126,6 +126,16 @@ public class Updater extends Thread {
 		} catch (Exception e) {
 			return -1;
 		}
+	}
+	private String removeNonNumeric(String input){
+		String output = new String();
+		for(char c : input.toCharArray()){
+			if(Character.isDigit(c)){
+				output += c;
+			}
+		}
+		return output;
+		
 	}
 
 	public void cancel() {
