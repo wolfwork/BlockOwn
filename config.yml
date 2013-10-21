@@ -1,14 +1,16 @@
-Settings-Version: 0.4.8
+Settings-Version: 0.4.9
 ServerSettings:
   enable: true
-  enableAutoUpdate: true
-  apiKey:
-  autoUpdateInterval: 1800
   autoSaveInterval: 1200
   enablePlayerSettings: true
   enableAutomaticChestProtection: true
+  enableAutomaticUniversalProtection: false
   adminsIgnoreProtection: false
   cascadeProtectionCommands: false
+  AutoUpdater:
+    enableAutoUpdater: true
+    apiKey:
+    autoUpdateInterval: 1800
   MySQL:
     enable: false
     type: local

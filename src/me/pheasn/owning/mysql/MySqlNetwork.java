@@ -1,4 +1,4 @@
-package me.pheasn.mysql;
+package me.pheasn.owning.mysql;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;

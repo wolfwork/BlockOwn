@@ -1,4 +1,4 @@
-package me.pheasn.mysql;
+package me.pheasn.owning.mysql;
 
 public class TableDefinition {
 	private String name;

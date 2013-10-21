@@ -40,13 +40,16 @@ public class BlockOwn extends PheasnPlugin {
 	public enum Setting {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
-		ENABLE_AUTOUPDATE("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
-		API_KEY("ServerSettings.apiKey"), AUTOUPDATE_INTERVAL( //$NON-NLS-1$
-				"ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
-		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), ENABLE_PLAYERSETTINGS( //$NON-NLS-1$
-				"ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
-		ENABLE_AUTOMATIC_CHEST_PROTECTION(
-				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
+		ENABLE_AUTOUPDATE_old("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
+		API_KEY_old("ServerSettings.apiKey"), //$NON-NLS-1$
+		AUTOUPDATE_INTERVAL_old("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
+		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"),  //$NON-NLS-1$
+		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
+		ENABLE_AUTOUPDATE("ServerSettings.AutoUpdater.enableAutoUpdate"), //$NON-NLS-1$
+		API_KEY("ServerSettings.AutoUpdater.apiKey"), //$NON-NLS-1$
+		AUTOUPDATE_INTERVAL("ServerSettings.AutoUpdater.autoUpdateInterval"), //$NON-NLS-1$
+		ENABLE_AUTOMATIC_CHEST_PROTECTION("ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
+		ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION("ServerSettings.enableAutomaticUniversalProtection"), //$NON-NLS-1$
 		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
 		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands");
 		private String s;
@@ -83,8 +86,6 @@ public class BlockOwn extends PheasnPlugin {
 			return s;
 		}
 	}
-
-	
 
 	@Override
 	public void onDisable() {
@@ -216,9 +217,12 @@ public class BlockOwn extends PheasnPlugin {
 			this.saveDefaultConfig();
 		}
 		try {
-			if (this.getConfig().getBoolean(me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
-				if (this.getConfig().getString(me.pheasn.owning.SQLOwning.Setting.MYSQL_TYPE.toString())
-						.equalsIgnoreCase("local")) { //$NON-NLS-1$
+			if (this.getConfig().getBoolean(
+					me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
+				if (this.getConfig()
+						.getString(
+								me.pheasn.owning.SQLOwning.Setting.MYSQL_TYPE
+										.toString()).equalsIgnoreCase("local")) { //$NON-NLS-1$
 					owning = new SQLOwningLocal(this);
 				} else {
 					owning = new SQLOwningNetwork(this);
@@ -243,6 +247,24 @@ public class BlockOwn extends PheasnPlugin {
 		}
 
 		this.getConfig().options().copyDefaults(true);
+		this.saveConfig();
+		if (Updater
+				.compare(
+						this.getConfig().getString(
+								Setting.SETTINGS_VERSION.toString()), this
+								.getDescription().getVersion()) == -1) {
+			FileConfiguration config = this.getConfig();
+			config.set(Setting.ENABLE_AUTOUPDATE.toString(),
+					config.getBoolean(Setting.ENABLE_AUTOUPDATE_old.toString()));
+			config.set(Setting.AUTOUPDATE_INTERVAL.toString(),
+					config.getLong(Setting.AUTOUPDATE_INTERVAL_old.toString()));
+			config.set(Setting.API_KEY.toString(),
+					config.getString(Setting.API_KEY_old.toString()));
+			config.set(Setting.ENABLE_AUTOUPDATE_old.toString(), null);
+			config.set(Setting.AUTOUPDATE_INTERVAL_old.toString(), null);
+			config.set(Setting.API_KEY_old.toString(), null);
+			this.saveConfig();
+		}
 		this.getConfig().set(Setting.SETTINGS_VERSION.toString(),
 				this.getDescription().getVersion());
 		this.saveConfig();
@@ -368,7 +390,9 @@ public class BlockOwn extends PheasnPlugin {
 					this.saveConfig();
 					FileConfiguration config = this.getConfig();
 					updater.cancel();
-					updater = new Updater(this, this.pluginId,this.getFile(),this.getConfig().getString(Setting.API_KEY.toString()));
+					updater = new Updater(this, this.pluginId, this.getFile(),
+							this.getConfig().getString(
+									Setting.API_KEY.toString()));
 					if (config.getBoolean(Setting.ENABLE_AUTOUPDATE.toString())) {
 						updater.schedule(
 								100l,
@@ -379,10 +403,13 @@ public class BlockOwn extends PheasnPlugin {
 					if (autoSaveThread.isAlive()) {
 						autoSaveThread.interrupt();
 					}
-					if (config.getBoolean(me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
-						if (config.getString(me.pheasn.owning.SQLOwning.Setting.MYSQL_TYPE.toString())
-								.equalsIgnoreCase(
-										DatabaseType.SQL_LOCAL.toString())
+					if (config
+							.getBoolean(me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE
+									.toString())) {
+						if (config.getString(
+								me.pheasn.owning.SQLOwning.Setting.MYSQL_TYPE
+										.toString()).equalsIgnoreCase(
+								DatabaseType.SQL_LOCAL.toString())
 								&& owning.getType() != DatabaseType.SQL_LOCAL) {
 							owning.save();
 							try {

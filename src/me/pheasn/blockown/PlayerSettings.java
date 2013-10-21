@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.pheasn.blockown.BlockOwn.Setting;
+
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -210,11 +212,15 @@ public class PlayerSettings {
 			String blockType) {
 		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
 				candidateName);
+		if(plugin.getConfig().getBoolean(Setting.ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.toString())){
+		return true;	
+		}
 		if (plugin.getConfig().getBoolean(
-				"ServerSettings.enableAutomaticChestProtection") && (blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
+				Setting.ENABLE_AUTOMATIC_CHEST_PROTECTION.toString()) && (blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
 				|| blockType.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
 			return true;
 		}
+		
 		if (candidate != null) {
 			candidateName = candidate.getName();
 			try {

@@ -104,7 +104,8 @@ public class Updater extends Thread {
 		timer.schedule(new UpdateCheckTask(this, plugin), delay, interval);
 	}
 
-	private int compare(String v1, String v2) {
+	public static int compare(String v1, String v2) {
+		if(v1!=null && v2!=null){
 		v1= removeNonNumeric(v1);
 		v2= removeNonNumeric(v2);
 		while (v1.length() < 3) {
@@ -126,8 +127,12 @@ public class Updater extends Thread {
 		} catch (Exception e) {
 			return -1;
 		}
+		}else{
+			return -1;
+		}
+		
 	}
-	private String removeNonNumeric(String input){
+	private static String removeNonNumeric(String input){
 		String output = new String();
 		for(char c : input.toCharArray()){
 			if(Character.isDigit(c)){
