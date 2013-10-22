@@ -27,6 +27,8 @@ import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 import org.mcstats.Metrics.Plotter;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+
 public class BlockOwn extends PheasnPlugin {
 	public PlayerSettings playerSettings;
 	private File pluginDir;
@@ -36,7 +38,7 @@ public class BlockOwn extends PheasnPlugin {
 	private Thread autoSaveThread;
 	private final int pluginId = 62749;
 	private String apiKey;
-
+	private WorldEditPlugin worldEdit = null;
 	public enum Setting {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
@@ -51,7 +53,7 @@ public class BlockOwn extends PheasnPlugin {
 		ENABLE_AUTOMATIC_CHEST_PROTECTION("ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
 		ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION("ServerSettings.enableAutomaticUniversalProtection"), //$NON-NLS-1$
 		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
-		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands");
+		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"); //$NON-NLS-1$
 		private String s;
 
 		private Setting(String s) {
@@ -322,6 +324,9 @@ public class BlockOwn extends PheasnPlugin {
 				&& this.owning.getType().equals(DatabaseType.CLASSIC)) {
 			autoSaveThread.start();
 		}
+		
+		//Soft dependency to WorldEdit
+		worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -528,5 +533,8 @@ public class BlockOwn extends PheasnPlugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	public WorldEditPlugin getWorldEdit(){
+		return worldEdit;
 	}
 }

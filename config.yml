@@ -1,4 +1,4 @@
-Settings-Version: 0.4.9
+Settings-Version: 0.5.0
 ServerSettings:
   enable: true
   autoSaveInterval: 1200

@@ -1,7 +1,9 @@
 name: BlockOwn
-version: 0.4.9
+version: 0.5.0
 
 author: Pheasn
+
+softdepend: [WorldEdit]
 
 main: me.pheasn.blockown.BlockOwn
 
