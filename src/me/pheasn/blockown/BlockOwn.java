@@ -269,6 +269,7 @@ public class BlockOwn extends PheasnPlugin {
 		}
 		this.getConfig().set(Setting.SETTINGS_VERSION.toString(),
 				this.getDescription().getVersion());
+		this.getConfig().set("ServerSettings.AutoUpdater.enableAutoUpdater", null);
 		this.saveConfig();
 
 		try {
