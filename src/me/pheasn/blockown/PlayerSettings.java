@@ -2,6 +2,7 @@ package me.pheasn.blockown;
 
 import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import me.pheasn.blockown.BlockOwn.Setting;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public class PlayerSettings {
 	private BlockOwn plugin;
@@ -208,23 +210,40 @@ public class PlayerSettings {
 		}
 	}
 
-	public boolean isBlacklisted(String candidateName, String owner,
+	@SuppressWarnings("unchecked")
+	public boolean isBlacklisted(String candidateName, String ownerName,
 			String blockType) {
 		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
 				candidateName);
-		if(plugin.getConfig().getBoolean(Setting.ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.toString())){
-		return true;	
+		List<String> disabledWorlds = null;
+		if (plugin.getConfig().getList(Setting.DISABLE_IN_WORLDS.toString()) != null) {
+			disabledWorlds = (List<String>) plugin.getConfig().getList(
+					Setting.DISABLE_IN_WORLDS.toString());
+			if (candidate.isOnline()) {
+				Player candidateOnline = candidate.getPlayer();
+				for (String worldName : disabledWorlds) {
+					if (worldName.equalsIgnoreCase(candidateOnline.getWorld()
+							.getName())) {
+						return false;
+					}
+				}
+			}
 		}
 		if (plugin.getConfig().getBoolean(
-				Setting.ENABLE_AUTOMATIC_CHEST_PROTECTION.toString()) && (blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
+				Setting.ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.toString())) {
+			return true;
+		}
+		if (plugin.getConfig().getBoolean(
+				Setting.ENABLE_AUTOMATIC_CHEST_PROTECTION.toString())
+				&& (blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
 				|| blockType.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
 			return true;
 		}
-		
+
 		if (candidate != null) {
 			candidateName = candidate.getName();
 			try {
-				LinkedList<String> blacklist = this.getBlacklist(owner,
+				LinkedList<String> blacklist = this.getBlacklist(ownerName,
 						blockType);
 				if (blacklist.contains(candidateName)
 						|| blacklist.contains(ALL_PLAYERS)) {

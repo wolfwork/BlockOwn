@@ -53,7 +53,8 @@ public class BlockOwn extends PheasnPlugin {
 		ENABLE_AUTOMATIC_CHEST_PROTECTION("ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
 		ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION("ServerSettings.enableAutomaticUniversalProtection"), //$NON-NLS-1$
 		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
-		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"); //$NON-NLS-1$
+		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), //$NON-NLS-1$
+		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds");
 		private String s;
 
 		private Setting(String s) {
