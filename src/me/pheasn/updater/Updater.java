@@ -105,42 +105,43 @@ public class Updater extends Thread {
 	}
 
 	public static int compare(String v1, String v2) {
-		if(v1!=null && v2!=null){
-		v1= removeNonNumeric(v1);
-		v2= removeNonNumeric(v2);
-		while (v1.length() < 3) {
-			v1 += "0"; //$NON-NLS-1$
-		}
-		while (v2.length() < 3) {
-			v2 += "0"; //$NON-NLS-1$
-		}
-		try {
-			int version1 = Integer.valueOf(v1);
-			int version2 = Integer.valueOf(v2);
-			if (version1 > version2) {
-				return 1;
-			} else if (version1 == version2) {
-				return 0;
-			} else {
+		if (v1 != null && v2 != null) {
+			v1 = removeNonNumeric(v1);
+			v2 = removeNonNumeric(v2);
+			while (v1.length() < 3) {
+				v1 += "0"; //$NON-NLS-1$
+			}
+			while (v2.length() < 3) {
+				v2 += "0"; //$NON-NLS-1$
+			}
+			try {
+				int version1 = Integer.valueOf(v1);
+				int version2 = Integer.valueOf(v2);
+				if (version1 > version2) {
+					return 1;
+				} else if (version1 == version2) {
+					return 0;
+				} else {
+					return -1;
+				}
+			} catch (Exception e) {
 				return -1;
 			}
-		} catch (Exception e) {
+		} else {
 			return -1;
 		}
-		}else{
-			return -1;
-		}
-		
+
 	}
-	private static String removeNonNumeric(String input){
+
+	private static String removeNonNumeric(String input) {
 		String output = new String();
-		for(char c : input.toCharArray()){
-			if(Character.isDigit(c)){
+		for (char c : input.toCharArray()) {
+			if (Character.isDigit(c)) {
 				output += c;
 			}
 		}
 		return output;
-		
+
 	}
 
 	public void cancel() {

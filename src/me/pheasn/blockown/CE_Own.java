@@ -46,8 +46,9 @@ public class CE_Own implements CommandExecutor {
 				}
 			} else if (args.length == 1
 					&& args[0].equalsIgnoreCase("selection")) { //$NON-NLS-1$
-				if(plugin.getWorldEdit()==null){
-					plugin.tell(sender, ChatColor.RED,Messages.getString("CE_Own.3")); //$NON-NLS-1$
+				if (plugin.getWorldEdit() == null) {
+					plugin.tell(sender, ChatColor.RED,
+							Messages.getString("CE_Own.3")); //$NON-NLS-1$
 					return false;
 				}
 				Selection selection;
@@ -81,9 +82,12 @@ public class CE_Own implements CommandExecutor {
 					plugin.tell(sender, ChatColor.GREEN,
 							Messages.getString("CE_Own.5")); //$NON-NLS-1$
 					if (failed > 0) {
-						plugin.tell(sender, ChatColor.YELLOW, Messages.getString("CE_Own.6") //$NON-NLS-1$
-								+ failed
-								+ Messages.getString("CE_Own.7")); //$NON-NLS-1$
+						plugin.tell(
+								sender,
+								ChatColor.YELLOW,
+								Messages.getString("CE_Own.6") //$NON-NLS-1$
+										+ failed
+										+ Messages.getString("CE_Own.7")); //$NON-NLS-1$
 					}
 					return true;
 				} else {

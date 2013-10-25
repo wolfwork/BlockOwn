@@ -44,8 +44,9 @@ public class CE_Unown implements CommandExecutor {
 					}
 				} else if (args.length == 1
 						&& args[0].equalsIgnoreCase("selection")) { //$NON-NLS-1$
-					if(plugin.getWorldEdit()==null){
-						plugin.tell(sender, ChatColor.RED,Messages.getString("CE_Unown.3")); //$NON-NLS-1$
+					if (plugin.getWorldEdit() == null) {
+						plugin.tell(sender, ChatColor.RED,
+								Messages.getString("CE_Unown.3")); //$NON-NLS-1$
 						return false;
 					}
 					Selection selection;

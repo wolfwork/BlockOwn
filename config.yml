@@ -12,6 +12,7 @@ ServerSettings:
     enableAutoUpdate: true
     apiKey:
     autoUpdateInterval: 1800
+    broadcastToOperators: true
   MySQL:
     enable: false
     type: local

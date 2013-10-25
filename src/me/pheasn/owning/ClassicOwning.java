@@ -65,7 +65,7 @@ public class ClassicOwning extends Owning {
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("ClassicOwning.1"));  //$NON-NLS-1$
+			plugin.con(ChatColor.RED, Messages.getString("ClassicOwning.1")); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -73,8 +73,7 @@ public class ClassicOwning extends Owning {
 	@Override
 	public boolean save() {
 		if (!plugin.getBlockOwnerFile().exists()) {
-			plugin.con(ChatColor.YELLOW,
-					Messages.getString("ClassicOwning.0")); //$NON-NLS-1$
+			plugin.con(ChatColor.YELLOW, Messages.getString("ClassicOwning.0")); //$NON-NLS-1$
 			try {
 				plugin.getBlockOwnerFile().createNewFile();
 			} catch (IOException e) {

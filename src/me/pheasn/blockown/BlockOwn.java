@@ -39,22 +39,27 @@ public class BlockOwn extends PheasnPlugin {
 	private final int pluginId = 62749;
 	private String apiKey;
 	private WorldEditPlugin worldEdit = null;
+
 	public enum Setting {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
 		ENABLE_AUTOUPDATE_old("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
 		API_KEY_old("ServerSettings.apiKey"), //$NON-NLS-1$
 		AUTOUPDATE_INTERVAL_old("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
-		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"),  //$NON-NLS-1$
+		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
 		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
 		ENABLE_AUTOUPDATE("ServerSettings.AutoUpdater.enableAutoUpdate"), //$NON-NLS-1$
+		BROADCAST_TO_OPERATORS(
+				"ServerSettings.AutoUpdater.broadcastToOperators"), //$NON-NLS-1$
 		API_KEY("ServerSettings.AutoUpdater.apiKey"), //$NON-NLS-1$
 		AUTOUPDATE_INTERVAL("ServerSettings.AutoUpdater.autoUpdateInterval"), //$NON-NLS-1$
-		ENABLE_AUTOMATIC_CHEST_PROTECTION("ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
-		ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION("ServerSettings.enableAutomaticUniversalProtection"), //$NON-NLS-1$
+		ENABLE_AUTOMATIC_CHEST_PROTECTION(
+				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
+		ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION(
+				"ServerSettings.enableAutomaticUniversalProtection"), //$NON-NLS-1$
 		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
 		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), //$NON-NLS-1$
-		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds");
+		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"); //$NON-NLS-1$
 		private String s;
 
 		private Setting(String s) {
@@ -270,7 +275,8 @@ public class BlockOwn extends PheasnPlugin {
 		}
 		this.getConfig().set(Setting.SETTINGS_VERSION.toString(),
 				this.getDescription().getVersion());
-		this.getConfig().set("ServerSettings.AutoUpdater.enableAutoUpdater", null);
+		this.getConfig().set("ServerSettings.AutoUpdater.enableAutoUpdater", //$NON-NLS-1$
+				null);
 		this.saveConfig();
 
 		try {
@@ -326,9 +332,10 @@ public class BlockOwn extends PheasnPlugin {
 				&& this.owning.getType().equals(DatabaseType.CLASSIC)) {
 			autoSaveThread.start();
 		}
-		
-		//Soft dependency to WorldEdit
-		worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit"); //$NON-NLS-1$
+
+		// Soft dependency to WorldEdit
+		worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager()
+				.getPlugin("WorldEdit"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -536,7 +543,8 @@ public class BlockOwn extends PheasnPlugin {
 			e.printStackTrace();
 		}
 	}
-	public WorldEditPlugin getWorldEdit(){
+
+	public WorldEditPlugin getWorldEdit() {
 		return worldEdit;
 	}
 }
