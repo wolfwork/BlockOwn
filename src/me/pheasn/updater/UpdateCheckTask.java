@@ -26,9 +26,9 @@ public class UpdateCheckTask extends TimerTask {
 						Messages.getString("UpdateCheckTask.0")); //$NON-NLS-1$
 				if (plugin.getConfig().getBoolean(
 						Setting.BROADCAST_TO_OPERATORS.toString()) == true) {
-					this.broadcastToOps(Messages
-							.getString("UpdateCheckTask.0")); //$NON-NLS-1$
+					this.broadcastToOps(Messages.getString("UpdateCheckTask.0")); //$NON-NLS-1$
 				}
+				plugin.updatePending = true;
 			}
 		} else {
 			plugin.con(ChatColor.YELLOW,
