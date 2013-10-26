@@ -216,7 +216,7 @@ public class PlayerSettings {
 		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
 				candidateName);
 		List<String> disabledWorlds = null;
-		if (plugin.getConfig().getList(Setting.DISABLE_IN_WORLDS.toString()) != null) {
+		if (Setting.DISABLE_IN_WORLDS.getList(plugin) != null) {
 			disabledWorlds = (List<String>) plugin.getConfig().getList(
 					Setting.DISABLE_IN_WORLDS.toString());
 			if (candidate.isOnline()) {
@@ -229,14 +229,12 @@ public class PlayerSettings {
 				}
 			}
 		}
-		if (plugin.getConfig().getBoolean(
-				Setting.ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.toString())) {
+		if (Setting.ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.getBoolean(plugin)) {
 			return true;
 		}
-		if (plugin.getConfig().getBoolean(
-				Setting.ENABLE_AUTOMATIC_CHEST_PROTECTION.toString())
-				&& (blockType.equalsIgnoreCase(Material.CHEST.name()) //$NON-NLS-1$
-				|| blockType.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
+		if (Setting.ENABLE_AUTOMATIC_CHEST_PROTECTION.getBoolean(plugin)
+				&& (blockType.equalsIgnoreCase(Material.CHEST.name()) || blockType
+						.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
 			return true;
 		}
 

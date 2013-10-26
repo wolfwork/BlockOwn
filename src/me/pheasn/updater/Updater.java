@@ -67,8 +67,8 @@ public class Updater extends Thread {
 				JSONObject latest = (JSONObject) array.get(array.size() - 1);
 				String versionLink = (String) latest.get(API_LINK_VALUE);
 				String versionName = (String) latest.get(API_NAME_VALUE);
-				int later = compare(versionName, plugin //$NON-NLS-1$ //$NON-NLS-2$
-						.getDescription().getVersion());
+				int later = compare(versionName, plugin.getDescription()
+						.getVersion());
 				if (later == 1) {
 					URL dwnurl = new URL(versionLink);
 					InputStream in = dwnurl.openStream();

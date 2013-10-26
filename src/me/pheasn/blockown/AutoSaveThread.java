@@ -19,8 +19,7 @@ public class AutoSaveThread extends Thread {
 		timer.schedule(
 				new AutoSaveTask(plugin),
 				100L,
-				(long) (((double) (plugin.getConfig()
-						.getLong(Setting.AUTOSAVE_INTERVAL.toString()))) * 1000));
+				(long) (((double) (Setting.AUTOSAVE_INTERVAL.getLong(plugin))) * 1000));
 	}
 
 	@Override

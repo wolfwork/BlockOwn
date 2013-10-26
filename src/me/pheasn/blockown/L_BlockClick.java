@@ -1,5 +1,6 @@
 package me.pheasn.blockown;
 
+import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
 import org.bukkit.ChatColor;
@@ -17,12 +18,11 @@ public class L_BlockClick implements Listener {
 
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
-		if (plugin.getConfig().getBoolean(
-				Setting.ENABLE_PLAYERSETTINGS.toString())) {
+		if (Setting.ENABLE_PLAYERSETTINGS.getBoolean(plugin)) {
 			if (event.getClickedBlock() != null) {
-				if (plugin.getConfig().getBoolean(
-						Setting.ADMINS_IGNORE_PROTECTION.toString())
-						&& event.getPlayer().hasPermission("BlockOwn.admin")) { //$NON-NLS-1$
+				if (Setting.ADMINS_IGNORE_PROTECTION.getBoolean(plugin)
+						&& event.getPlayer().hasPermission(
+								Permission.ADMIN.toString())) { //$NON-NLS-1$
 					return;
 				}
 				OfflinePlayer owner = plugin.owning.getOwner(event

@@ -24,8 +24,7 @@ public class UpdateCheckTask extends TimerTask {
 			if (updater.check()) {
 				plugin.con(ChatColor.GREEN,
 						Messages.getString("UpdateCheckTask.0")); //$NON-NLS-1$
-				if (plugin.getConfig().getBoolean(
-						Setting.BROADCAST_TO_OPERATORS.toString()) == true) {
+				if (Setting.BROADCAST_TO_OPERATORS.getBoolean(plugin) == true) {
 					this.broadcastToOps(Messages.getString("UpdateCheckTask.0")); //$NON-NLS-1$
 				}
 				plugin.updatePending = true;

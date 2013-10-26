@@ -1,5 +1,7 @@
 package me.pheasn.blockown;
 
+import me.pheasn.blockown.BlockOwn.Permission;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,7 +23,7 @@ public class CE_MakePoor implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (args.length == 1) {
-				if (player.hasPermission("blockown.admin")) { //$NON-NLS-1$
+				if (player.hasPermission(Permission.ADMIN.toString())) {
 					plugin.owning.deleteOwningsOf(playerName);
 					plugin.say(player, ChatColor.GREEN,
 							playerName + Messages.getString("CE_MakePoor.1")); //$NON-NLS-1$
