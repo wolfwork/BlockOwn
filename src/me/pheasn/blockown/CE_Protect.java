@@ -1,5 +1,7 @@
 package me.pheasn.blockown;
 
+import me.pheasn.blockown.BlockOwn.Setting;
+
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -19,6 +21,13 @@ public class CE_Protect implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			if (plugin.getConfig().getBoolean(
+					Setting.PERMISSION_NEEDED_FOR_PROTECT_COMMAND.toString())
+					&& !player.hasPermission("BlockOwn.protect")) { //$NON-NLS-1$
+				plugin.say(player, ChatColor.RED,
+						Messages.getString("CE_Protect.3")); //$NON-NLS-1$
+				return false;
+			}
 			Block target = player.getTargetBlock(null, 200);
 			String protectName;
 			if (target != null) {

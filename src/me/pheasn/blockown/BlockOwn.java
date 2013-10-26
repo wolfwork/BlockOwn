@@ -59,13 +59,15 @@ public class BlockOwn extends PheasnPlugin {
 				"ServerSettings.enableAutomaticUniversalProtection"), //$NON-NLS-1$
 		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
 		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), //$NON-NLS-1$
-		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"); //$NON-NLS-1$
+		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"), //$NON-NLS-1$
+		PERMISSION_NEEDED_FOR_PROTECT_COMMAND(
+				"ServerSettings.permissionNeededForProtectCommand"); //$NON-NLS-1$
 		private String s;
 
 		private Setting(String s) {
 			this.s = s;
 		}
-
+		
 		@Override
 		public String toString() {
 			return s;
