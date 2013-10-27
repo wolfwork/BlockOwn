@@ -9,6 +9,7 @@ ServerSettings:
   cascadeProtectionCommands: false
   disableInWorlds: []
   permissionNeededForProtectCommand: false
+  permissionNeededForOwnCommand: false
   AutoUpdater:
     enableAutoUpdate: true
     apiKey:

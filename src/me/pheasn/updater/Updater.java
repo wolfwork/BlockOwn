@@ -8,10 +8,14 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Set;
 import java.util.Timer;
 
 import me.pheasn.PheasnPlugin;
+import me.pheasn.blockown.BlockOwn.Setting;
 
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -70,6 +74,8 @@ public class Updater extends Thread {
 				int later = compare(versionName, plugin.getDescription()
 						.getVersion());
 				if (later == 1) {
+					this.notifyIfNewMainVersion(versionName, plugin
+							.getDescription().getVersion());
 					URL dwnurl = new URL(versionLink);
 					InputStream in = dwnurl.openStream();
 					File file = new File(
@@ -131,6 +137,41 @@ public class Updater extends Thread {
 			return -1;
 		}
 
+	}
+
+	private void notifyIfNewMainVersion(String v1, String v2) {
+		if (v1 != null && v2 != null) {
+			v1 = removeNonNumeric(v1);
+			v2 = removeNonNumeric(v2);
+			while (v1.length() < 3) {
+				v1 += "0"; //$NON-NLS-1$
+			}
+			while (v2.length() < 3) {
+				v2 += "0"; //$NON-NLS-1$
+			}
+			try {
+				if (Integer.valueOf(v1.toCharArray()[1]) > Integer.valueOf(v2
+						.toCharArray()[1])) {
+					plugin.con(
+							ChatColor.YELLOW,
+							Messages.getString("Updater.0")); //$NON-NLS-1$
+					if (Setting.BROADCAST_TO_OPERATORS.getBoolean(plugin)) {
+						this.broadcastToOps(Messages.getString("Updater.1")); //$NON-NLS-1$
+					}
+				}
+			} catch (Exception e) {
+
+			}
+		}
+	}
+
+	private void broadcastToOps(String message) {
+		Set<OfflinePlayer> ops = plugin.getServer().getOperators();
+		for (OfflinePlayer op : ops) {
+			if (op.isOnline()) {
+				plugin.say(op.getPlayer(), ChatColor.GREEN, message);
+			}
+		}
 	}
 
 	private static String removeNonNumeric(String input) {

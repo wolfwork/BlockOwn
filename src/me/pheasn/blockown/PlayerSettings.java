@@ -1,5 +1,6 @@
 package me.pheasn.blockown;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import me.pheasn.blockown.BlockOwn.Setting;
+import me.pheasn.updater.Updater;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -18,33 +20,75 @@ public class PlayerSettings {
 	public static final String ALL_PLAYERS = "#all#"; //$NON-NLS-1$
 	public static final String ALL_BLOCKS = "#ALL#"; //$NON-NLS-1$
 	private HashMap<String, HashMap<String, LinkedList<String>[]>> lists;
-
-	private boolean outdatedSettings = false;
-
 	// Player > BlockType > 0=Black 1= White > Playername
+	private HashMap<String, LinkedList<Material>> privateLists;
+	private HashMap<String, LinkedList<String>> friendLists;
+	private boolean outdatedSettingsBLACKWHITE = false;
+
 	public PlayerSettings(BlockOwn plugin) {
 		this.plugin = plugin;
 		lists = new HashMap<String, HashMap<String, LinkedList<String>[]>>();
-		initialize();
+		privateLists = new HashMap<String, LinkedList<Material>>();
+		if (Updater.compare(plugin.getConfig().getString("SettingsVersion"), //$NON-NLS-1$
+				"0.6.0") == -1) { //$NON-NLS-1$
+			if (Updater.compare(plugin.getDescription().getVersion(), "0.6.0") == -1) { //$NON-NLS-1$
+				initializeOld();
+			} else {
+				importOld();
+			}
+		} else {
+			initialize();
+		}
 	}
 
 	private void initialize() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void importOld() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Deprecated
+	private void initializeOld() {
 		FileConfiguration config = plugin.getConfig();
+		// ABSOLUTELY PRIVATE TYPES
+		if (config.get("PrivateBlocks") != null) { //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("PrivateBlocks") //$NON-NLS-1$
+					.getKeys(false);
+			for (String player : keys) {
+				privateLists.put(player, new LinkedList<Material>());
+				List<String> privateTypes = config
+						.getStringList("PrivateBlocks." + player); //$NON-NLS-1$
+				for (String privateTypeName : privateTypes) {
+					try {
+						Material privateType = Material
+								.getMaterial(privateTypeName);
+						if (privateType != null) {
+							privateLists.get(player).add(privateType);
+						}
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
+		// BLACK- AND WHITELISTS
 		if (config.get("PlayerSettings") != null) { //$NON-NLS-1$
 			Set<String> keys = config.getConfigurationSection("PlayerSettings") //$NON-NLS-1$
 					.getKeys(false);
 			for (String player : keys) {
 				lists.put(player, new HashMap<String, LinkedList<String>[]>());
-
 				for (String blockType : config.getConfigurationSection(
 						"PlayerSettings." + player).getKeys(false)) { //$NON-NLS-1$
 					lists.get(player).put(blockType, newLinkedList());
-					if (!outdatedSettings
+					if (!outdatedSettingsBLACKWHITE
 							&& config.getConfigurationSection("PlayerSettings." //$NON-NLS-1$
 									+ player + "." + blockType) == null) { //$NON-NLS-1$
-						outdatedSettings = true;
+						outdatedSettingsBLACKWHITE = true;
 					}
-					if (outdatedSettings) {
+					if (outdatedSettingsBLACKWHITE) {
 						for (String blacklistedPlayerName : config
 								.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
 										+ blockType)) {
@@ -93,6 +137,19 @@ public class PlayerSettings {
 
 	public void save() {
 		FileConfiguration config = plugin.getConfig();
+		// ABSOLUTELY PRIVATE TYPES
+		config.set("PrivateBlocks", null); //$NON-NLS-1$
+		for (Entry<String, LinkedList<Material>> entry : privateLists
+				.entrySet()) {
+			if (entry.getValue().size() != 0) {
+				ArrayList<String> privateTypeNames = new ArrayList<String>();
+				for (Material privateType : entry.getValue()) {
+					privateTypeNames.add(privateType.name());
+				}
+				config.set("PrivateBlocks." + entry.getKey(), privateTypeNames); //$NON-NLS-1$
+			}
+		}
+		// BLACK- AND WHITELISTS
 		config.set("PlayerSettings", null); //$NON-NLS-1$
 		for (Entry<String, HashMap<String, LinkedList<String>[]>> entry : lists
 				.entrySet()) {
@@ -257,6 +314,7 @@ public class PlayerSettings {
 		}
 	}
 
+	@Deprecated
 	public HashMap<String, LinkedList<String>[]> getWhitelists(String player) {
 		if (lists.containsKey(player)) {
 			return lists.get(player);
@@ -265,11 +323,13 @@ public class PlayerSettings {
 		}
 	}
 
+	@Deprecated
 	public HashMap<String, LinkedList<String>[]> getWhitelists(
 			OfflinePlayer player) {
 		return getWhitelists(player.getName());
 	}
 
+	@Deprecated
 	public LinkedList<String> getWhitelist(String owner, String blockType) {
 		if (lists.containsKey(owner)) {
 			HashMap<String, LinkedList<String>[]> playerWhitelists = lists
@@ -294,10 +354,12 @@ public class PlayerSettings {
 		}
 	}
 
+	@Deprecated
 	public LinkedList<String> getWhitelist(OfflinePlayer owner, String blockType) {
 		return getWhitelist(owner.getName(), blockType);
 	}
 
+	@Deprecated
 	public void whitelistAdd(String owner, String blockType,
 			String whitelistedPlayerName) {
 		OfflinePlayer whitelistedPlayer = plugin.getServer().getOfflinePlayer(
@@ -317,11 +379,13 @@ public class PlayerSettings {
 		}
 	}
 
+	@Deprecated
 	public void whitelistAdd(OfflinePlayer owner, String blockType,
 			String whitelistedPlayer) {
 		whitelistAdd(owner.getName(), blockType, whitelistedPlayer);
 	}
 
+	@Deprecated
 	public void whitelistRemove(String owner, String blockType,
 			String whitelistedPlayerName) {
 		OfflinePlayer whitelistedPlayer = plugin.getServer().getOfflinePlayer(
@@ -335,11 +399,13 @@ public class PlayerSettings {
 		}
 	}
 
+	@Deprecated
 	public void whitelistRemove(OfflinePlayer owner, String blockType,
 			String whitelistedPlayer) {
 		whitelistRemove(owner.getName(), blockType, whitelistedPlayer);
 	}
 
+	@Deprecated
 	public boolean isWhitelisted(OfflinePlayer player, OfflinePlayer owner,
 			String blockType) {
 		try {
@@ -349,6 +415,7 @@ public class PlayerSettings {
 		}
 	}
 
+	@Deprecated
 	public boolean isWhitelisted(String candidateName, String owner,
 			String blockType) {
 		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
@@ -370,6 +437,126 @@ public class PlayerSettings {
 		} else {
 			return false;
 		}
+	}
+
+	public void privateListAdd(String playerName, String blockTypeName) {
+		try {
+			OfflinePlayer player = plugin.getServer().getOfflinePlayer(
+					playerName);
+			Material blockType = Material.getMaterial(blockTypeName);
+			privateListAdd(player, blockType);
+		} catch (Exception e) {
+			return;
+		}
+	}
+
+	public void privateListAdd(OfflinePlayer player, Material blockType) {
+		if (privateLists.get(player.getName()) == null) {
+			privateLists.put(player.getName(), new LinkedList<Material>());
+		}
+		if (!privateLists.get(player.getName()).contains(blockType)) {
+			privateLists.get(player.getName()).add(blockType);
+		}
+
+	}
+
+	public void privateListRemove(OfflinePlayer player, Material blockType) {
+		if (privateLists.get(player.getName()) != null
+				&& privateLists.get(player.getName()).contains(blockType)) {
+			privateLists.get(player.getName()).remove(blockType);
+		}
+	}
+
+	public void privateListRemove(String playerName, String blockTypeName) {
+		try {
+			OfflinePlayer player = plugin.getServer().getOfflinePlayer(
+					playerName);
+			Material blockType = Material.getMaterial(blockTypeName);
+			privateListRemove(player, blockType);
+		} catch (Exception e) {
+			return;
+		}
+	}
+
+	public boolean isAbsolutelyPrivate(OfflinePlayer owner, Material blockType) {
+		try {
+			if (privateLists.get(owner.getName()).contains(blockType)) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public boolean isAbsolutelyPrivate(String ownerName, String blockTypeName) {
+		try {
+			OfflinePlayer owner = plugin.getServer()
+					.getOfflinePlayer(ownerName);
+			Material blockType = Material.getMaterial(blockTypeName);
+			return isAbsolutelyPrivate(owner, blockType);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public void friendListRemove(OfflinePlayer candidate, OfflinePlayer owner) {
+		try {
+			if (friendLists.get(owner.getName()) != null) {
+				if (friendLists.get(owner.getName()).contains(
+						candidate.getName())) {
+					friendLists.get(owner.getName())
+							.remove(candidate.getName());
+				}
+			}
+		} catch (Exception e) {
+		}
+	}
+
+	public void friendListRemove(String candidateName, String ownerName) {
+		OfflinePlayer owner = plugin.getServer().getOfflinePlayer(ownerName);
+		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
+				candidateName);
+		this.friendListRemove(candidate, owner);
+	}
+
+	public void friendListAdd(OfflinePlayer candidate, OfflinePlayer owner) {
+		try {
+			if (friendLists.get(owner.getName()) == null) {
+				friendLists.put(owner.getName(), new LinkedList<String>());
+			}
+			if (!friendLists.get(owner.getName()).contains(candidate.getName())) {
+				friendLists.get(owner.getName()).add(candidate.getName());
+			}
+		} catch (Exception e) {
+		}
+	}
+
+	public void friendListAdd(String candidateName, String ownerName) {
+		OfflinePlayer owner = plugin.getServer().getOfflinePlayer(ownerName);
+		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
+				candidateName);
+		this.friendListAdd(candidate, owner);
+	}
+
+	public boolean isFriend(OfflinePlayer candidate, OfflinePlayer owner) {
+		try {
+			if (friendLists.get(owner.getName()).contains(candidate.getName())) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public boolean isFriend(String candidateName, String ownerName) {
+		OfflinePlayer owner = plugin.getServer().getOfflinePlayer(ownerName);
+		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
+				candidateName);
+		return this.isFriend(candidate, owner);
 	}
 
 	@SuppressWarnings("unchecked")

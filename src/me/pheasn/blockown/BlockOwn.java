@@ -62,7 +62,9 @@ public class BlockOwn extends PheasnPlugin {
 		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), //$NON-NLS-1$
 		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"), //$NON-NLS-1$
 		PERMISSION_NEEDED_FOR_PROTECT_COMMAND(
-				"ServerSettings.permissionNeededForProtectCommand"); //$NON-NLS-1$
+				"ServerSettings.permissionNeededForProtectCommand"), //$NON-NLS-1$
+		PERMISSION_NEEDED_FOR_OWN_COMMAND(
+				"ServerSettings.permissionNeededForOwnCommand"); //$NON-NLS-1$
 		private String s;
 
 		private Setting(String s) {
@@ -102,10 +104,16 @@ public class BlockOwn extends PheasnPlugin {
 		BLOCKOWN("blockown"), //$NON-NLS-1$
 		PROTECT("protect"), //$NON-NLS-1$
 		UNPROTECT("unprotect"), //$NON-NLS-1$
+		@Deprecated
 		WHITELIST("whitelist"), //$NON-NLS-1$
+		@Deprecated
 		UNWHITELIST("unwhitelist"), //$NON-NLS-1$
 		PROTECTION("protection"), //$NON-NLS-1$
-		MAKE_POOR("makepoor"); //$NON-NLS-1$
+		MAKE_POOR("makepoor"), //$NON-NLS-1$
+		PRIVATIZE("privatize"), //$NON-NLS-1$
+		UNPRIVATIZE("unprivatize"), //$NON-NLS-1$
+		FRIEND("friend"), //$NON-NLS-1$
+		UNFRIEND("unfriend"); //$NON-NLS-1$
 		private String s;
 
 		private Commands(String s) {
@@ -116,10 +124,16 @@ public class BlockOwn extends PheasnPlugin {
 		public String toString() {
 			return s;
 		}
+
+		public PluginCommand getCommand(PheasnPlugin plugin) {
+			return plugin.getCommand(s);
+		}
 	}
 
 	public enum Permission {
-		PROTECT("blockown.protect"), ADMIN("blockown.admin");
+		PROTECT("blockown.protect"), //$NON-NLS-1$
+		ADMIN("blockown.admin"), //$NON-NLS-1$
+		OWN("blockown.own"); //$NON-NLS-1$
 		private String s;
 
 		private Permission(String s) {
@@ -378,81 +392,93 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	private void registerCommands() {
-		this.getCommand(Commands.BLOCKOWN.toString()).setExecutor(this);
-		this.getCommand(Commands.BLOCKOWN.toString()).setUsage(
+
+		Commands.BLOCKOWN.getCommand(this).setExecutor(this);
+		Commands.BLOCKOWN.getCommand(this).setUsage(
 				ChatColor.RED + Messages.getString("BlockOwn.6")); //$NON-NLS-1$
-		this.getCommand(Commands.BLOCKOWN.toString()).setDescription(
+		Commands.BLOCKOWN.getCommand(this).setDescription(
 				Messages.getString("BlockOwn.8")); //$NON-NLS-1$
-		this.getCommand(Commands.OWN.toString()).setExecutor(new CE_Own(this));
-		this.getCommand(Commands.OWN.toString()).setUsage(
+
+		Commands.OWN.getCommand(this).setExecutor(new CE_Own(this));
+		Commands.OWN.getCommand(this).setUsage(
 				ChatColor.RED + Messages.getString("BlockOwn.11")); //$NON-NLS-1$
-		this.getCommand(Commands.OWN.toString()).setDescription(
+		Commands.OWN.getCommand(this).setDescription(
 				Messages.getString("BlockOwn.13")); //$NON-NLS-1$
-		this.getCommand(Commands.UNOWN.toString()).setExecutor(
-				new CE_Unown(this));
-		this.getCommand(Commands.UNOWN.toString()).setUsage(
+
+		Commands.UNOWN.getCommand(this).setExecutor(new CE_Unown(this));
+		Commands.UNOWN.getCommand(this).setUsage(
 				ChatColor.RED + Messages.getString("BlockOwn.16")); //$NON-NLS-1$
-		this.getCommand(Commands.UNOWN.toString()).setDescription(
+		Commands.UNOWN.getCommand(this).setDescription(
 				Messages.getString("BlockOwn.18")); //$NON-NLS-1$
-		this.getCommand(Commands.OWNER.toString()).setExecutor(
-				new CE_Owner(this));
-		this.getCommand(Commands.OWNER.toString()).setUsage(
+
+		Commands.OWNER.getCommand(this).setExecutor(new CE_Owner(this));
+		Commands.OWNER.getCommand(this).setUsage(
 				ChatColor.RED + Messages.getString("BlockOwn.21")); //$NON-NLS-1$
-		this.getCommand(Commands.OWNER.toString()).setDescription(
+		Commands.OWNER.getCommand(this).setDescription(
 				Messages.getString("BlockOwn.23")); //$NON-NLS-1$
+		Commands.MAKE_POOR.getCommand(this).setExecutor(new CE_MakePoor(this));
+		Commands.MAKE_POOR.getCommand(this).setUsage(
+				Messages.getString("BlockOwn.3")); //$NON-NLS-1$
+		Commands.MAKE_POOR.getCommand(this).setDescription(
+				Messages.getString("BlockOwn.7")); //$NON-NLS-1$
 		if (!Setting.CASCADE_PROTECTION_COMMANDS.getBoolean(this)) {
-			this.getCommand(Commands.PROTECT.toString()).setExecutor(
-					new CE_Protect(this));
-			this.getCommand(Commands.PROTECT.toString()).setUsage(
+			Commands.PROTECT.getCommand(this).setExecutor(new CE_Protect(this));
+			Commands.PROTECT.getCommand(this).setUsage(
 					ChatColor.RED + Messages.getString("BlockOwn.26")); //$NON-NLS-1$
-			this.getCommand(Commands.PROTECT.toString()).setDescription(
+			Commands.PROTECT.getCommand(this).setDescription(
 					Messages.getString("BlockOwn.28")); //$NON-NLS-1$
-			this.getCommand(Commands.UNPROTECT.toString()).setExecutor(
+
+			Commands.UNPROTECT.getCommand(this).setExecutor(
 					new CE_Unprotect(this));
-			this.getCommand(Commands.UNPROTECT.toString()).setUsage(
+			Commands.UNPROTECT.getCommand(this).setUsage(
 					ChatColor.RED + Messages.getString("BlockOwn.31")); //$NON-NLS-1$
-			this.getCommand(Commands.UNPROTECT.toString()).setDescription(
+			Commands.UNPROTECT.getCommand(this).setDescription(
 					Messages.getString("BlockOwn.33")); //$NON-NLS-1$
-			this.getCommand(Commands.WHITELIST.toString()).setExecutor(
+
+			Commands.WHITELIST.getCommand(this).setExecutor(
 					new CE_Whitelist(this));
-			this.getCommand(Commands.WHITELIST.toString()).setUsage(
+			Commands.WHITELIST.getCommand(this).setUsage(
 					ChatColor.RED
 							+ Messages.getString(Messages
 									.getString("BlockOwn.2"))); //$NON-NLS-1$
-			this.getCommand(Commands.WHITELIST.toString()).setDescription(
+			Commands.WHITELIST.getCommand(this).setDescription(
 					Messages.getString(Messages.getString("BlockOwn.4"))); //$NON-NLS-1$
-			this.getCommand(Commands.UNWHITELIST.toString()).setExecutor(
+
+			Commands.UNWHITELIST.getCommand(this).setExecutor(
 					new CE_Unwhitelist(this));
-			this.getCommand(Commands.UNWHITELIST.toString()).setUsage(
+			Commands.UNWHITELIST.getCommand(this).setUsage(
 					ChatColor.RED
 							+ Messages.getString(Messages
 									.getString("BlockOwn.9"))); //$NON-NLS-1$
-			this.getCommand(Commands.UNWHITELIST.toString()).setDescription(
+			Commands.UNWHITELIST.getCommand(this).setDescription(
 					Messages.getString(Messages.getString("BlockOwn.12"))); //$NON-NLS-1$
-			this.getCommand(Commands.PROTECTION.toString()).setExecutor(
+
+			Commands.PROTECTION.getCommand(this).setExecutor(
 					new CE_Protection(this));
-			this.getCommand(Commands.PROTECTION.toString()).setUsage(
+			Commands.PROTECTION.getCommand(this).setUsage(
 					Messages.getString("BlockOwn.17")); //$NON-NLS-1$
-			this.getCommand(Commands.PROTECTION.toString()).setDescription(
+			Commands.PROTECTION.getCommand(this).setDescription(
 					Messages.getString("BlockOwn.20")); //$NON-NLS-1$
+
+			// Commands.PRIVATIZE.getCommand(this).setExecutor(
+			// new CE_Privatize(this));
+			// Commands.UNPRIVATIZE.getCommand(this).setExecutor(
+			// new CE_Unprivatize(this));
+			// Commands.FRIEND.getCommand(this).setExceutor(new
+			// CE_Friend(this));
+			// Commands.UNFRIEND.getCommand(this).setExceutor(
+			// new CE_Unfriend(this));
 		} else {
-			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECTION
-					.toString()));
-			this.unRegisterBukkitCommand(this.getCommand(Commands.WHITELIST
-					.toString()));
-			this.unRegisterBukkitCommand(this.getCommand(Commands.UNWHITELIST
-					.toString()));
-			this.unRegisterBukkitCommand(this.getCommand(Commands.PROTECT
-					.toString()));
-			this.unRegisterBukkitCommand(this.getCommand(Commands.UNPROTECT
-					.toString()));
+			this.unRegisterBukkitCommand(Commands.PROTECTION.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.WHITELIST.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.UNWHITELIST.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.PROTECT.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.UNPROTECT.getCommand(this));
+			// this.unRegisterBukkitCommand(Commands.PRIVATIZE.getCommand(this));
+			// this.unRegisterBukkitCommand(Commands.UNPRIVATIZE.getCommand(this));
+			// this.unRegisterBukkitCommand(Commands.FRIEND.getCommand(this));
+			// this.unRegisterBukkitCommand(Commands.UNFRIEND.getCommand(this));
 		}
-		this.getCommand(Commands.MAKE_POOR.toString()).setExecutor(
-				new CE_MakePoor(this));
-		this.getCommand(Commands.MAKE_POOR.toString()).setUsage(
-				Messages.getString("BlockOwn.3")); //$NON-NLS-1$
-		this.getCommand(Commands.MAKE_POOR.toString()).setDescription(
-				Messages.getString("BlockOwn.7")); //$NON-NLS-1$
 	}
 
 	private void registerEvents() {

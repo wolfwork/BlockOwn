@@ -1,5 +1,8 @@
 package me.pheasn.blockown;
 
+import me.pheasn.blockown.BlockOwn.Permission;
+import me.pheasn.blockown.BlockOwn.Setting;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -24,6 +27,12 @@ public class CE_Own implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			if (Setting.PERMISSION_NEEDED_FOR_OWN_COMMAND.getBoolean(plugin)
+					&& !player.hasPermission(Permission.OWN.toString())) {
+				plugin.say(player, ChatColor.RED,
+						Messages.getString("CE_Own.10")); //$NON-NLS-1$
+				return true;
+			}
 			if (args.length == 0) {
 				OfflinePlayer owner = plugin.owning.getOwner(player
 						.getTargetBlock(null, 200));
