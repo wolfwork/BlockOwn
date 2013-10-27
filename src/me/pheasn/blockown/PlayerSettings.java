@@ -19,16 +19,21 @@ public class PlayerSettings {
 	private BlockOwn plugin;
 	public static final String ALL_PLAYERS = "#all#"; //$NON-NLS-1$
 	public static final String ALL_BLOCKS = "#ALL#"; //$NON-NLS-1$
+	@Deprecated
 	private HashMap<String, HashMap<String, LinkedList<String>[]>> lists;
 	// Player > BlockType > 0=Black 1= White > Playername
 	private HashMap<String, LinkedList<Material>> privateLists;
 	private HashMap<String, LinkedList<String>> friendLists;
+	private HashMap<String, HashMap<String, LinkedList<String>>> blackLists;
+	@Deprecated
 	private boolean outdatedSettingsBLACKWHITE = false;
 
 	public PlayerSettings(BlockOwn plugin) {
 		this.plugin = plugin;
 		lists = new HashMap<String, HashMap<String, LinkedList<String>[]>>();
 		privateLists = new HashMap<String, LinkedList<Material>>();
+		blackLists = new HashMap<String, HashMap<String, LinkedList<String>>>();
+		friendLists = new HashMap<String, LinkedList<String>>();
 		if (Updater.compare(plugin.getConfig().getString("SettingsVersion"), //$NON-NLS-1$
 				"0.6.0") == -1) { //$NON-NLS-1$
 			if (Updater.compare(plugin.getDescription().getVersion(), "0.6.0") == -1) { //$NON-NLS-1$
@@ -41,16 +46,84 @@ public class PlayerSettings {
 		}
 	}
 
+	//Initialize for 0.6+
 	private void initialize() {
-		// TODO Auto-generated method stub
+		FileConfiguration config = plugin.getConfig();
+		
+		// ABSOLUTELY PRIVATE TYPES
+		if (config.get("PrivateBlocks") != null) { //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("PrivateBlocks") //$NON-NLS-1$
+					.getKeys(false);
+			for (String player : keys) {
+				privateLists.put(player, new LinkedList<Material>());
+				List<String> privateTypes = config
+						.getStringList("PrivateBlocks." + player); //$NON-NLS-1$
+				for (String privateTypeName : privateTypes) {
+					try {
+						Material privateType = Material
+								.getMaterial(privateTypeName);
+						if (privateType != null) {
+							privateLists.get(player).add(privateType);
+						}
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
+		// FRIENDLISTS
+		if (config.get("FriendLists") != null) {
+			Set<String> keys = config.getConfigurationSection("FriendLists") //$NON-NLS-1$
+					.getKeys(false);
+			for (String player : keys) {
+				friendLists.put(player, new LinkedList<String>());
+				List<String> friendList = config
+						.getStringList("FriendLists." + player); //$NON-NLS-1$
+				for (String friendName : friendList) {
+					try {
+						OfflinePlayer friend = plugin.getServer().getOfflinePlayer(friendName);
+						if (friend != null) {
+							friendLists.get(player).add(friendName);
+						}
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
 
+		// BLACKLISTS
+		if (config.get("Protections") != null) { //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("Protections") //$NON-NLS-1$
+					.getKeys(false);
+			for (String player : keys) {
+				blackLists.put(player, new HashMap<String, LinkedList<String>>());
+				for (String blockType : config.getConfigurationSection(
+						"Protections." + player).getKeys(false)) { //$NON-NLS-1$
+					blackLists.get(player).put(blockType, new LinkedList<String>());
+						for (String blacklistedPlayerName : config
+								.getStringList("Protections." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
+										+ blockType)) { //$NON-NLS-1$
+							OfflinePlayer blacklistedPlayer = plugin
+									.getServer().getOfflinePlayer(
+											blacklistedPlayerName);
+							if (blacklistedPlayer != null) {
+								blacklistedPlayerName = blacklistedPlayer
+										.getName();
+								blackLists.get(player).get(blockType)
+										.add(blacklistedPlayerName);
+							}
+						}					
+				}
+			}
+		}
 	}
 
+	//Initializer for first start of a 0.6+ version
 	private void importOld() {
 		// TODO Auto-generated method stub
 
 	}
 
+	//Initializer of a 0.5.x version
 	@Deprecated
 	private void initializeOld() {
 		FileConfiguration config = plugin.getConfig();
@@ -560,6 +633,7 @@ public class PlayerSettings {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	private LinkedList<String>[] newLinkedList() {
 		LinkedList<String>[] list = (LinkedList<String>[]) new LinkedList[2];
 		list[0] = new LinkedList<String>();
