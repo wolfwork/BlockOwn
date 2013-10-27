@@ -1,4 +1,4 @@
-Settings-Version: 0.5.5
+Settings-Version: 0.6.0
 ServerSettings:
   enable: true
   autoSaveInterval: 1200
@@ -23,4 +23,6 @@ ServerSettings:
     database: blockown
     user: foo
     password: bar
-PlayerSettings:
+Protection:
+FriendLists:
+PrivateBlocks:

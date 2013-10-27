@@ -22,29 +22,21 @@ public class CE_Protection implements CommandExecutor {
 			Player player = (Player) sender;
 			if (args.length == 0) {
 				if (player.getTargetBlock(null, 200) != null) {
-					sendLists(player, plugin.playerSettings.getBlacklist(
+					sendLists(player, plugin.playerSettings.getProtection(
 							player, player.getTargetBlock(null, 200).getType()
-									.name()),
-							plugin.playerSettings
-									.getWhitelist(player, player
-											.getTargetBlock(null, 200)
-											.getType().name()));
+									.name()));
 					return true;
 				} else {
 					return false;
 				}
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
-					sendLists(player, plugin.playerSettings.getBlacklist(
-							player, PlayerSettings.ALL_BLOCKS),
-							plugin.playerSettings.getWhitelist(player,
-									PlayerSettings.ALL_BLOCKS));
+					sendLists(player, plugin.playerSettings.getProtection(
+							player, PlayerSettings.ALL_BLOCKS));
 				} else {
 					sendLists(
 							player,
-							plugin.playerSettings.getBlacklist(player,
-									args[0].toUpperCase()),
-							plugin.playerSettings.getWhitelist(player,
+							plugin.playerSettings.getProtection(player,
 									args[0].toUpperCase()));
 				}
 				return true;
@@ -54,21 +46,15 @@ public class CE_Protection implements CommandExecutor {
 			}
 		} else {
 			plugin.con(ChatColor.RED, Messages.getString("CE_Protection.2")); //$NON-NLS-1$
-			return false;
+			return true;
 		}
 	}
 
-	private void sendLists(Player player, LinkedList<String> blacklist,
-			LinkedList<String> whitelist) {
+	private void sendLists(Player player, LinkedList<String> protectionList) {
 		plugin.say(player, ChatColor.GREEN,
 				Messages.getString("CE_Protection.3")); //$NON-NLS-1$
-		plugin.say(player, ChatColor.GREEN, "Blacklist:"); //$NON-NLS-1$
-		for (String blacklistedPlayer : blacklist) {
+		for (String blacklistedPlayer : protectionList) {
 			plugin.say(player, ChatColor.RED, blacklistedPlayer);
-		}
-		plugin.say(player, ChatColor.GREEN, "Whitelist:"); //$NON-NLS-1$
-		for (String whitelistedPlayer : whitelist) {
-			plugin.say(player, ChatColor.DARK_GREEN, whitelistedPlayer);
 		}
 	}
 }

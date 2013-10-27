@@ -1,6 +1,7 @@
 package me.pheasn.blockown;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,11 +20,30 @@ public class CE_Unprivatize implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (args.length == 1) {
-				plugin.playerSettings.privateListRemove(player.getName(),
-						args[0]);
-				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unprivatize.0") + args[0] //$NON-NLS-1$
-						+ Messages.getString("CE_Unprivatize.1")); //$NON-NLS-1$
-				return true;
+				Material blockType = Material.getMaterial(args[0]);
+				if (blockType != null) {
+					plugin.playerSettings.privateListRemove(player.getName(),
+							blockType.name());
+					plugin.say(player, ChatColor.GREEN,
+							Messages.getString("CE_Unprivatize.0") + args[0] //$NON-NLS-1$
+									+ Messages.getString("CE_Unprivatize.1")); //$NON-NLS-1$
+					return true;
+				} else {
+					plugin.say(player, ChatColor.RED,
+							Messages.getString("CE_Unprivatize.4")); //$NON-NLS-1$
+					return false;
+				}
+			} else if (args.length == 0) {
+				if (player.getTargetBlock(null, 200) != null) {
+					plugin.playerSettings.privateListRemove(player.getName(),
+							player.getTargetBlock(null, 200).getType().name());
+					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unprivatize.5") //$NON-NLS-1$
+							+ player.getTargetBlock(null, 200).getType().name()
+							+ Messages.getString("CE_Unprivatize.6")); //$NON-NLS-1$
+					return true;
+				} else {
+					return false;
+				}
 			} else {
 				plugin.say(player, ChatColor.RED,
 						Messages.getString("CE_Unprivatize.2")); //$NON-NLS-1$

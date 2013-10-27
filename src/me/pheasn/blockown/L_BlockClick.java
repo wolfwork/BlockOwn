@@ -22,7 +22,7 @@ public class L_BlockClick implements Listener {
 			if (event.getClickedBlock() != null) {
 				if (Setting.ADMINS_IGNORE_PROTECTION.getBoolean(plugin)
 						&& event.getPlayer().hasPermission(
-								Permission.ADMIN.toString())) { //$NON-NLS-1$
+								Permission.ADMIN.toString())) {
 					return;
 				}
 				OfflinePlayer owner = plugin.owning.getOwner(event
@@ -30,13 +30,9 @@ public class L_BlockClick implements Listener {
 				if (owner != null
 						&& !owner.getName().equalsIgnoreCase(
 								event.getPlayer().getName())) {
-					if ((plugin.playerSettings.isBlacklisted(event.getPlayer(),
-							owner, event.getClickedBlock().getType().name()) && !plugin.playerSettings
-							.isWhitelisted(event.getPlayer(), plugin.owning
-									.getOwner(event.getClickedBlock()), event
-									.getClickedBlock().getType().name()))
-							|| plugin.playerSettings.isAbsolutelyPrivate(owner,
-									event.getClickedBlock().getType())) {
+					if (plugin.playerSettings.getProtection(owner,
+							event.getClickedBlock().getType().name()).contains(
+							event.getPlayer().getName())) {
 						event.setCancelled(true);
 						plugin.say(event.getPlayer(), ChatColor.RED,
 								Messages.getString("L_BlockClick.1")); //$NON-NLS-1$

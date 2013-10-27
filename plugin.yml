@@ -1,5 +1,5 @@
 name: BlockOwn
-version: 0.5.5
+version: 0.6.0
 
 author: Pheasn
 
@@ -22,10 +22,16 @@ commands:
   
   unprotect:
   
-  whitelist:
-
-  unwhitelist:
+  friend:
   
+  unfriend:
+  
+  privatize:
+    aliases: privatise
+    
+  unprivatize:
+    aliases: unprivatise
+    
   protection:
   
   makepoor:

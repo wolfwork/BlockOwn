@@ -80,6 +80,10 @@ public class BlockOwn extends PheasnPlugin {
 			return plugin.getConfig().getBoolean(s);
 		}
 
+		public List<String> getStringList(PheasnPlugin plugin) {
+			return plugin.getConfig().getStringList(s);
+		}
+
 		public List<?> getList(PheasnPlugin plugin) {
 			return plugin.getConfig().getList(s);
 		}
@@ -104,10 +108,6 @@ public class BlockOwn extends PheasnPlugin {
 		BLOCKOWN("blockown"), //$NON-NLS-1$
 		PROTECT("protect"), //$NON-NLS-1$
 		UNPROTECT("unprotect"), //$NON-NLS-1$
-		@Deprecated
-		WHITELIST("whitelist"), //$NON-NLS-1$
-		@Deprecated
-		UNWHITELIST("unwhitelist"), //$NON-NLS-1$
 		PROTECTION("protection"), //$NON-NLS-1$
 		MAKE_POOR("makepoor"), //$NON-NLS-1$
 		PRIVATIZE("privatize"), //$NON-NLS-1$
@@ -226,12 +226,20 @@ public class BlockOwn extends PheasnPlugin {
 				for (int i = 1; i < args.length; i++) {
 					newargs[i - 1] = args[i];
 				}
-				if (args[0].equalsIgnoreCase(Commands.WHITELIST.toString())) {
-					return new CE_Whitelist(this).onCommand(sender, cmd,
+				if (args[0].equalsIgnoreCase(Commands.FRIEND.toString())) {
+					return new CE_Friend(this).onCommand(sender, cmd,
 							cmd_label, newargs);
 				}
-				if (args[0].equalsIgnoreCase(Commands.UNWHITELIST.toString())) {
-					return new CE_Unwhitelist(this).onCommand(sender, cmd,
+				if (args[0].equalsIgnoreCase(Commands.UNFRIEND.toString())) {
+					return new CE_Unfriend(this).onCommand(sender, cmd,
+							cmd_label, newargs);
+				}
+				if (args[0].equalsIgnoreCase(Commands.PRIVATIZE.toString())) {
+					return new CE_Privatize(this).onCommand(sender, cmd,
+							cmd_label, newargs);
+				}
+				if (args[0].equalsIgnoreCase(Commands.UNPRIVATIZE.toString())) {
+					return new CE_Unprivatize(this).onCommand(sender, cmd,
 							cmd_label, newargs);
 				}
 				if (args[0].equalsIgnoreCase(Commands.PROTECT.toString())) {
@@ -435,24 +443,6 @@ public class BlockOwn extends PheasnPlugin {
 			Commands.UNPROTECT.getCommand(this).setDescription(
 					Messages.getString("BlockOwn.33")); //$NON-NLS-1$
 
-			Commands.WHITELIST.getCommand(this).setExecutor(
-					new CE_Whitelist(this));
-			Commands.WHITELIST.getCommand(this).setUsage(
-					ChatColor.RED
-							+ Messages.getString(Messages
-									.getString("BlockOwn.2"))); //$NON-NLS-1$
-			Commands.WHITELIST.getCommand(this).setDescription(
-					Messages.getString(Messages.getString("BlockOwn.4"))); //$NON-NLS-1$
-
-			Commands.UNWHITELIST.getCommand(this).setExecutor(
-					new CE_Unwhitelist(this));
-			Commands.UNWHITELIST.getCommand(this).setUsage(
-					ChatColor.RED
-							+ Messages.getString(Messages
-									.getString("BlockOwn.9"))); //$NON-NLS-1$
-			Commands.UNWHITELIST.getCommand(this).setDescription(
-					Messages.getString(Messages.getString("BlockOwn.12"))); //$NON-NLS-1$
-
 			Commands.PROTECTION.getCommand(this).setExecutor(
 					new CE_Protection(this));
 			Commands.PROTECTION.getCommand(this).setUsage(
@@ -460,24 +450,47 @@ public class BlockOwn extends PheasnPlugin {
 			Commands.PROTECTION.getCommand(this).setDescription(
 					Messages.getString("BlockOwn.20")); //$NON-NLS-1$
 
-			// Commands.PRIVATIZE.getCommand(this).setExecutor(
-			// new CE_Privatize(this));
-			// Commands.UNPRIVATIZE.getCommand(this).setExecutor(
-			// new CE_Unprivatize(this));
-			// Commands.FRIEND.getCommand(this).setExceutor(new
-			// CE_Friend(this));
-			// Commands.UNFRIEND.getCommand(this).setExceutor(
-			// new CE_Unfriend(this));
+			Commands.PRIVATIZE.getCommand(this).setExecutor(
+					new CE_Privatize(this));
+			Commands.PRIVATIZE.getCommand(this).setUsage(
+					Messages.getString("BlockOwn.2")); //$NON-NLS-1$
+			Commands.PRIVATIZE
+					.getCommand(this)
+					.setDescription(
+							Messages.getString("BlockOwn.4")); //$NON-NLS-1$
+
+			Commands.UNPRIVATIZE.getCommand(this).setExecutor(
+					new CE_Unprivatize(this));
+			Commands.UNPRIVATIZE.getCommand(this).setUsage(
+					Messages.getString("BlockOwn.9")); //$NON-NLS-1$
+			Commands.UNPRIVATIZE.getCommand(this).setDescription(
+					Messages.getString("BlockOwn.10")); //$NON-NLS-1$
+
+			Commands.FRIEND.getCommand(this).setExecutor(new CE_Friend(this));
+			Commands.FRIEND.getCommand(this)
+					.setUsage(Messages.getString("BlockOwn.12")); //$NON-NLS-1$
+			Commands.FRIEND
+					.getCommand(this)
+					.setDescription(
+							Messages.getString("BlockOwn.15")); //$NON-NLS-1$
+
+			Commands.UNFRIEND.getCommand(this).setExecutor(
+					new CE_Unfriend(this));
+			Commands.UNFRIEND.getCommand(this).setUsage(
+					Messages.getString("BlockOwn.19")); //$NON-NLS-1$
+			Commands.UNFRIEND
+					.getCommand(this)
+					.setDescription(
+							Messages.getString("BlockOwn.22")); //$NON-NLS-1$
+
 		} else {
 			this.unRegisterBukkitCommand(Commands.PROTECTION.getCommand(this));
-			this.unRegisterBukkitCommand(Commands.WHITELIST.getCommand(this));
-			this.unRegisterBukkitCommand(Commands.UNWHITELIST.getCommand(this));
 			this.unRegisterBukkitCommand(Commands.PROTECT.getCommand(this));
 			this.unRegisterBukkitCommand(Commands.UNPROTECT.getCommand(this));
-			// this.unRegisterBukkitCommand(Commands.PRIVATIZE.getCommand(this));
-			// this.unRegisterBukkitCommand(Commands.UNPRIVATIZE.getCommand(this));
-			// this.unRegisterBukkitCommand(Commands.FRIEND.getCommand(this));
-			// this.unRegisterBukkitCommand(Commands.UNFRIEND.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.PRIVATIZE.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.UNPRIVATIZE.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.FRIEND.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.UNFRIEND.getCommand(this));
 		}
 	}
 

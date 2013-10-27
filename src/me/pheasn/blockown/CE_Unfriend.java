@@ -1,6 +1,7 @@
 package me.pheasn.blockown;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,11 +20,19 @@ public class CE_Unfriend implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (args.length == 1) {
-				plugin.playerSettings.friendListRemove(args[0],
-						player.getName());
-				plugin.say(player, ChatColor.GREEN, args[0]
-						+ Messages.getString("CE_Unfriend.0")); //$NON-NLS-1$
-				return true;
+				OfflinePlayer friend = plugin.getServer().getOfflinePlayer(
+						args[0]);
+				if (friend != null) {
+					plugin.playerSettings.friendListRemove(args[0],
+							player.getName());
+					plugin.say(player, ChatColor.GREEN,
+							args[0] + Messages.getString("CE_Unfriend.0")); //$NON-NLS-1$
+					return true;
+				} else {
+					plugin.say(player, ChatColor.RED,
+							Messages.getString("CE_Unfriend.3")); //$NON-NLS-1$
+					return false;
+				}
 			} else {
 				plugin.say(player, ChatColor.RED,
 						Messages.getString("CE_Unfriend.1")); //$NON-NLS-1$
