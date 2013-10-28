@@ -481,11 +481,7 @@ public class PlayerSettings {
 				&& friendLists.get(owner.getName()).contains(against.getName())) {
 			return false;
 		}
-		if (blackLists.containsKey(owner.getName())
-				&& blackLists.get(owner.getName()).containsKey(
-						blockType.toUpperCase())
-				&& blackLists.get(owner.getName()).get(blockType.toUpperCase())
-						.contains(against.getName())) {
+		if (this.isBlacklisted(against, owner, blockType)) {
 			return true;
 		}
 		return false;
