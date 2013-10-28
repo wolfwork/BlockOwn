@@ -30,9 +30,9 @@ public class L_BlockClick implements Listener {
 				if (owner != null
 						&& !owner.getName().equalsIgnoreCase(
 								event.getPlayer().getName())) {
-					if (plugin.playerSettings.getProtection(owner,
-							event.getClickedBlock().getType().name()).contains(
-							event.getPlayer().getName())) {
+					if (plugin.playerSettings.isProtected(event
+							.getClickedBlock().getType().name(),
+							event.getPlayer(), owner)) {
 						event.setCancelled(true);
 						plugin.say(event.getPlayer(), ChatColor.RED,
 								Messages.getString("L_BlockClick.1")); //$NON-NLS-1$

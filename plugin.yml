@@ -3,9 +3,9 @@ version: 0.6.0
 
 author: Pheasn
 
-softdepend: [WorldEdit]
-
 main: me.pheasn.blockown.BlockOwn
+
+softdepend: [WorldEdit, Vault]
 
 commands:
     

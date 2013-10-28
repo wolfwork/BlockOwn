@@ -23,10 +23,10 @@ public class CE_Friend implements CommandExecutor {
 				OfflinePlayer friend = plugin.getServer().getOfflinePlayer(
 						args[0]);
 				if (friend != null) {
-					plugin.playerSettings.friendListAdd(args[0],
+					plugin.playerSettings.friendListAdd(friend.getName(),
 							player.getName());
-					plugin.say(player, ChatColor.GREEN,
-							args[0] + Messages.getString("CE_Friend.0")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.GREEN, friend.getName()
+							+ Messages.getString("CE_Friend.0")); //$NON-NLS-1$
 					return true;
 				} else {
 					plugin.say(player, ChatColor.RED,

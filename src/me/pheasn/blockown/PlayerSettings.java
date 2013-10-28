@@ -29,7 +29,7 @@ public class PlayerSettings {
 		privateLists = new HashMap<String, LinkedList<Material>>();
 		blackLists = new HashMap<String, HashMap<String, LinkedList<String>>>();
 		friendLists = new HashMap<String, LinkedList<String>>();
-		if (Updater.compare(Setting.SETTINGS_VERSION.getString(plugin), //$NON-NLS-1$
+		if (Updater.compare(Setting.SETTINGS_VERSION.getString(plugin), 
 				"0.6.0") == -1) { //$NON-NLS-1$
 			importOld();
 		} else {
@@ -74,7 +74,7 @@ public class PlayerSettings {
 						OfflinePlayer friend = plugin.getServer()
 								.getOfflinePlayer(friendName);
 						if (friend != null) {
-							friendLists.get(player).add(friendName);
+							friendLists.get(player).add(friend.getName());
 						}
 					} catch (Exception e) {
 					}
@@ -102,7 +102,7 @@ public class PlayerSettings {
 							blacklistedPlayerName = blacklistedPlayer.getName();
 							blackLists.get(player).get(blockTypeName)
 									.add(blacklistedPlayerName);
-						}else{
+						} else {
 						}
 					}
 				}
@@ -185,7 +185,7 @@ public class PlayerSettings {
 		for (Entry<String, LinkedList<String>> friendList : friendLists
 				.entrySet()) {
 			if (friendList.getValue().size() > 0) {
-				config.set("FriendList." + friendList.getKey(), //$NON-NLS-1$
+				config.set("FriendLists." + friendList.getKey(), //$NON-NLS-1$
 						friendList.getValue());
 			}
 		}
@@ -202,6 +202,7 @@ public class PlayerSettings {
 				}
 			}
 		}
+
 	}
 
 	private LinkedList<String> getBlacklist(String ownerName,
@@ -221,9 +222,9 @@ public class PlayerSettings {
 
 	private LinkedList<String> getBlacklist(OfflinePlayer owner,
 			String blockType) {
-		if (blackLists.containsKey(owner)) {
+		if (blackLists.containsKey(owner.getName())) {
 			HashMap<String, LinkedList<String>> playerBlacklists = blackLists
-					.get(owner);
+					.get(owner.getName());
 			LinkedList<String> blacklist = new LinkedList<String>();
 			blockType = blockType.toUpperCase();
 			if (!(blockType == ALL_BLOCKS)) {
@@ -384,9 +385,10 @@ public class PlayerSettings {
 		}
 	}
 
-	public boolean isAbsolutelyPrivate(OfflinePlayer owner, Material blockType) {
+	public boolean isPrivate(OfflinePlayer owner, Material blockType) {
 		try {
-			if (privateLists.get(owner.getName()).contains(blockType)) {
+			if (privateLists.containsKey(owner.getName())
+					&& privateLists.get(owner.getName()).contains(blockType)) {
 				return true;
 			} else {
 				return false;
@@ -396,12 +398,12 @@ public class PlayerSettings {
 		}
 	}
 
-	public boolean isAbsolutelyPrivate(String ownerName, String blockTypeName) {
+	public boolean isPrivate(String ownerName, String blockTypeName) {
 		try {
 			OfflinePlayer owner = plugin.getServer()
 					.getOfflinePlayer(ownerName);
 			Material blockType = Material.getMaterial(blockTypeName);
-			return isAbsolutelyPrivate(owner, blockType);
+			return isPrivate(owner, blockType);
 		} catch (Exception e) {
 			return false;
 		}
@@ -465,14 +467,38 @@ public class PlayerSettings {
 		return this.isFriend(candidate, owner);
 	}
 
-	public LinkedList<String> getProtection(OfflinePlayer owner,
-			String blockType) {
+	public boolean isProtected(String blockType, OfflinePlayer against,
+			OfflinePlayer owner) {
+		if (!Setting.ENABLE_PLAYERSETTINGS.getBoolean(plugin)) {
+			return false;
+		}
+		if (!blockType.equalsIgnoreCase(ALL_BLOCKS)) {
+			if (this.isPrivate(owner, Material.getMaterial(blockType))) {
+				return true;
+			}
+		}
+		if (friendLists.containsKey(owner.getName())
+				&& friendLists.get(owner.getName()).contains(against.getName())) {
+			return false;
+		}
+		if (blackLists.containsKey(owner.getName())
+				&& blackLists.get(owner.getName()).containsKey(
+						blockType.toUpperCase())
+				&& blackLists.get(owner.getName()).get(blockType.toUpperCase())
+						.contains(against.getName())) {
+			return true;
+		}
+		return false;
+	}
+
+	public LinkedList<String> getProtection(String blockType,
+			OfflinePlayer owner) {
 		LinkedList<String> protection = new LinkedList<String>();
 		if (!Setting.ENABLE_PLAYERSETTINGS.getBoolean(plugin)) {
 			return protection;
 		}
 		if (!blockType.equalsIgnoreCase(ALL_BLOCKS)) {
-			if (this.isAbsolutelyPrivate(owner, Material.getMaterial(blockType))) {
+			if (this.isPrivate(owner, Material.getMaterial(blockType))) {
 				for (OfflinePlayer player : plugin.getServer()
 						.getOfflinePlayers()) {
 					protection.add(player.getName());
@@ -482,8 +508,9 @@ public class PlayerSettings {
 		}
 		protection = this.getBlacklist(owner, blockType);
 		for (String blackListedPlayerName : this.getBlacklist(owner, blockType)) {
-			if (this.friendLists.get(owner.getName()).contains(
-					blackListedPlayerName)) {
+			if (this.friendLists.containsKey(owner.getName())
+					&& this.friendLists.get(owner.getName()).contains(
+							blackListedPlayerName)) {
 				protection.remove(blackListedPlayerName);
 			}
 		}

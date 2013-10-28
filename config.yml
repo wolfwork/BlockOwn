@@ -23,6 +23,10 @@ ServerSettings:
     database: blockown
     user: foo
     password: bar
+  Economy:
+    enable: false
+    protectPrice: 2.0
+    privatizePrice: 3.0
 Protection:
 FriendLists:
 PrivateBlocks:

@@ -23,8 +23,8 @@ public class CE_Protection implements CommandExecutor {
 			if (args.length == 0) {
 				if (player.getTargetBlock(null, 200) != null) {
 					sendLists(player, plugin.playerSettings.getProtection(
-							player, player.getTargetBlock(null, 200).getType()
-									.name()));
+							player.getTargetBlock(null, 200).getType().name(),
+							player));
 					return true;
 				} else {
 					return false;
@@ -32,12 +32,12 @@ public class CE_Protection implements CommandExecutor {
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
 					sendLists(player, plugin.playerSettings.getProtection(
-							player, PlayerSettings.ALL_BLOCKS));
+							PlayerSettings.ALL_BLOCKS, player));
 				} else {
 					sendLists(
 							player,
-							plugin.playerSettings.getProtection(player,
-									args[0].toUpperCase()));
+							plugin.playerSettings.getProtection(
+									args[0].toUpperCase(), player));
 				}
 				return true;
 			} else {

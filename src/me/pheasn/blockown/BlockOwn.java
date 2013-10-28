@@ -15,6 +15,7 @@ import me.pheasn.owning.Owning.DatabaseType;
 import me.pheasn.owning.SQLOwningLocal;
 import me.pheasn.owning.SQLOwningNetwork;
 import me.pheasn.updater.Updater;
+import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +25,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 import org.mcstats.Metrics.Plotter;
@@ -40,6 +42,7 @@ public class BlockOwn extends PheasnPlugin {
 	private final int pluginId = 62749;
 	private String apiKey;
 	private WorldEditPlugin worldEdit = null;
+	private Economy economy = null;
 
 	public enum Setting {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
@@ -64,7 +67,10 @@ public class BlockOwn extends PheasnPlugin {
 		PERMISSION_NEEDED_FOR_PROTECT_COMMAND(
 				"ServerSettings.permissionNeededForProtectCommand"), //$NON-NLS-1$
 		PERMISSION_NEEDED_FOR_OWN_COMMAND(
-				"ServerSettings.permissionNeededForOwnCommand"); //$NON-NLS-1$
+				"ServerSettings.permissionNeededForOwnCommand"), //$NON-NLS-1$
+		PRICE_PROTECT("ServerSettings.Economy.protectPrice"), //$NON-NLS-1$
+		PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
+		ENABLE_ECONOMY("ServerSettings.Economy.enable"); //$NON-NLS-1$
 		private String s;
 
 		private Setting(String s) {
@@ -98,6 +104,10 @@ public class BlockOwn extends PheasnPlugin {
 
 		public long getLong(PheasnPlugin plugin) {
 			return plugin.getConfig().getLong(s);
+		}
+
+		public double getDouble(PheasnPlugin plugin) {
+			return plugin.getConfig().getDouble(s);
 		}
 	}
 
@@ -174,9 +184,7 @@ public class BlockOwn extends PheasnPlugin {
 			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.40")); //$NON-NLS-1$
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
-		} else {
-			this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
-		}
+		} 	
 		this.registerCommands();
 		this.registerEvents();
 		if (!this.establishOwning()) {
@@ -210,6 +218,25 @@ public class BlockOwn extends PheasnPlugin {
 		// Soft dependency to WorldEdit
 		worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager()
 				.getPlugin("WorldEdit"); //$NON-NLS-1$
+		if (worldEdit != null) {
+			this.con(Messages.getString("BlockOwn.24")); //$NON-NLS-1$
+		}
+
+		// Soft dependency to Vault
+		try {
+			if (this.getServer().getPluginManager().getPlugin("Vault") != null) { //$NON-NLS-1$
+				RegisteredServiceProvider<Economy> rsp = this.getServer()
+						.getServicesManager().getRegistration(Economy.class);
+				if (rsp != null) {
+					economy = rsp.getProvider();
+				}
+				if (economy != null) {
+					this.con(Messages.getString("BlockOwn.25")); //$NON-NLS-1$
+				}
+			}
+		} catch (Exception e) {
+		}
+		this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 	}
 
 	@Override
@@ -454,10 +481,8 @@ public class BlockOwn extends PheasnPlugin {
 					new CE_Privatize(this));
 			Commands.PRIVATIZE.getCommand(this).setUsage(
 					Messages.getString("BlockOwn.2")); //$NON-NLS-1$
-			Commands.PRIVATIZE
-					.getCommand(this)
-					.setDescription(
-							Messages.getString("BlockOwn.4")); //$NON-NLS-1$
+			Commands.PRIVATIZE.getCommand(this).setDescription(
+					Messages.getString("BlockOwn.4")); //$NON-NLS-1$
 
 			Commands.UNPRIVATIZE.getCommand(this).setExecutor(
 					new CE_Unprivatize(this));
@@ -467,21 +492,17 @@ public class BlockOwn extends PheasnPlugin {
 					Messages.getString("BlockOwn.10")); //$NON-NLS-1$
 
 			Commands.FRIEND.getCommand(this).setExecutor(new CE_Friend(this));
-			Commands.FRIEND.getCommand(this)
-					.setUsage(Messages.getString("BlockOwn.12")); //$NON-NLS-1$
-			Commands.FRIEND
-					.getCommand(this)
-					.setDescription(
-							Messages.getString("BlockOwn.15")); //$NON-NLS-1$
+			Commands.FRIEND.getCommand(this).setUsage(
+					Messages.getString("BlockOwn.12")); //$NON-NLS-1$
+			Commands.FRIEND.getCommand(this).setDescription(
+					Messages.getString("BlockOwn.15")); //$NON-NLS-1$
 
 			Commands.UNFRIEND.getCommand(this).setExecutor(
 					new CE_Unfriend(this));
 			Commands.UNFRIEND.getCommand(this).setUsage(
 					Messages.getString("BlockOwn.19")); //$NON-NLS-1$
-			Commands.UNFRIEND
-					.getCommand(this)
-					.setDescription(
-							Messages.getString("BlockOwn.22")); //$NON-NLS-1$
+			Commands.UNFRIEND.getCommand(this).setDescription(
+					Messages.getString("BlockOwn.22")); //$NON-NLS-1$
 
 		} else {
 			this.unRegisterBukkitCommand(Commands.PROTECTION.getCommand(this));
@@ -604,6 +625,10 @@ public class BlockOwn extends PheasnPlugin {
 		} catch (IOException e) {
 			// Failed to submit the stats :-(
 		}
+	}
+
+	public Economy getEconomy() {
+		return this.economy;
 	}
 
 	// CREDITS FOR THIS GO TO zeeveener !
