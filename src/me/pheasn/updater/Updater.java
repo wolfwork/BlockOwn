@@ -80,6 +80,7 @@ public class Updater extends Thread {
 					InputStream in = dwnurl.openStream();
 					File file = new File(
 							"./plugins/" + plugin.getServer().getUpdateFolder() + "/" + pluginFile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+					file.getParentFile().mkdirs(); //TODO
 					if (file.exists()) {
 						file.delete();
 					}
