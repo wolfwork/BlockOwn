@@ -19,7 +19,7 @@ public class CE_Unprotect implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			Block target = player.getTargetBlock(null, 200);
+			Block target = BOPlayer.getInstance(player).getTargetBlock();
 			String protectName;
 			if (target != null) {
 				String blockName = target.getType().name();

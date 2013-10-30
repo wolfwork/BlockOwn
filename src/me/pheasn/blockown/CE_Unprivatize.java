@@ -34,15 +34,14 @@ public class CE_Unprivatize implements CommandExecutor {
 					return false;
 				}
 			} else if (args.length == 0) {
-				if (player.getTargetBlock(null, 200) != null) {
+				if (BOPlayer.getInstance(player).getTargetBlock() != null) {
 					plugin.playerSettings.privateListRemove(player.getName(),
-							player.getTargetBlock(null, 200).getType().name());
-					plugin.say(
-							player,
-							ChatColor.GREEN,
+							BOPlayer.getInstance(player).getTargetBlock()
+									.getType().name());
+					plugin.say(player, ChatColor.GREEN,
 							Messages.getString("CE_Unprivatize.5") //$NON-NLS-1$
-									+ player.getTargetBlock(null, 200)
-											.getType().name()
+									+ BOPlayer.getInstance(player)
+											.getTargetBlock().getType().name()
 									+ Messages.getString("CE_Unprivatize.6")); //$NON-NLS-1$
 					return true;
 				} else {

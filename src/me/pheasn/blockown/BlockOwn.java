@@ -184,7 +184,7 @@ public class BlockOwn extends PheasnPlugin {
 			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.40")); //$NON-NLS-1$
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
-		} 	
+		}
 		this.registerCommands();
 		this.registerEvents();
 		if (!this.establishOwning()) {

@@ -12,7 +12,7 @@ import me.pheasn.PheasnPlugin;
 
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 
 public class ClassicOwning extends Owning {
@@ -32,11 +32,7 @@ public class ClassicOwning extends Owning {
 				FileReader reader = new FileReader(plugin.getBlockOwnerFile());
 				BufferedReader bufferedReader = new BufferedReader(reader);
 				String owning;
-				ArrayList<String> worlds = new ArrayList<String>();
 				ArrayList<String> players = new ArrayList<String>();
-				for (World world : plugin.getServer().getWorlds()) {
-					worlds.add(world.getName());
-				}
 				for (OfflinePlayer offlinePlayer : plugin.getServer()
 						.getOfflinePlayers()) {
 					players.add(offlinePlayer.getName());
@@ -46,7 +42,10 @@ public class ClassicOwning extends Owning {
 					String worldName = owningDiv[0];
 					String[] BlockCoordinates = owningDiv[1].split("#"); //$NON-NLS-1$
 					String playerName = owningDiv[2];
-					if (worlds.contains(worldName)
+					if(plugin.getServer().getWorld(worldName)==null){
+						plugin.getServer().createWorld(new WorldCreator(worldName));
+					}
+					if (plugin.getServer().getWorld(worldName)!=null
 							&& players.contains(playerName)) {
 						ownings.put(
 								plugin.getServer()

@@ -10,6 +10,7 @@ import me.pheasn.owning.mysql.MySqlLocal;
 import me.pheasn.owning.mysql.TableDefinition;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 
 public class SQLOwningLocal extends SQLOwning {
@@ -149,6 +150,9 @@ public class SQLOwningLocal extends SQLOwning {
 				int x = rs.getInt("x"); //$NON-NLS-1$
 				int y = rs.getInt("y"); //$NON-NLS-1$
 				int z = rs.getInt("z"); //$NON-NLS-1$
+				if(plugin.getServer().getWorld(world)==null){
+					plugin.getServer().createWorld(new WorldCreator(world));
+				}
 				result.put(
 						plugin.getServer().getWorld(world).getBlockAt(x, y, z),
 						rs.getString("playername")); //$NON-NLS-1$

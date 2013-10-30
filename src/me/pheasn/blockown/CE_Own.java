@@ -34,11 +34,10 @@ public class CE_Own implements CommandExecutor {
 				return true;
 			}
 			if (args.length == 0) {
-				OfflinePlayer owner = plugin.owning.getOwner(player
-						.getTargetBlock(null, 200));
+				Block target = BOPlayer.getInstance(player).getTargetBlock();
+				OfflinePlayer owner = plugin.owning.getOwner(target);
 				if (owner == null) {
-					plugin.owning.setOwner(player.getTargetBlock(null, 200),
-							player);
+					plugin.owning.setOwner(target, player);
 					plugin.say(player, ChatColor.GREEN,
 							Messages.getString("CE_Own.0")); //$NON-NLS-1$
 					return true;

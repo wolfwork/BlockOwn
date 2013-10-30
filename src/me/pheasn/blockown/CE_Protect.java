@@ -29,7 +29,7 @@ public class CE_Protect implements CommandExecutor {
 						Messages.getString("CE_Protect.3")); //$NON-NLS-1$
 				return true;
 			}
-			Block target = player.getTargetBlock(null, 200);
+			Block target = BOPlayer.getInstance(player).getTargetBlock();
 			if (args.length == 1 && target != null) {
 				if (plugin.playerSettings.isBlacklisted(args[0],
 						player.getName(), target.getType().name())) {
@@ -47,16 +47,19 @@ public class CE_Protect implements CommandExecutor {
 			} else if (Setting.ENABLE_ECONOMY.getBoolean(plugin)) {
 				return false;
 			}
-			if (Setting.ENABLE_ECONOMY.getBoolean(plugin)&&plugin.getEconomy()!=null) {
+			if (Setting.ENABLE_ECONOMY.getBoolean(plugin)
+					&& plugin.getEconomy() != null) {
 				if (plugin.getEconomy().getBalance(player.getName()) < Setting.PRICE_PROTECT
 						.getDouble(plugin)) {
 					plugin.say(player, ChatColor.RED,
 							Messages.getString("CE_Protect.5")); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Protect.11") //$NON-NLS-1$
-							+ Setting.PRICE_PROTECT.getDouble(plugin) + " " //$NON-NLS-1$
-							+ plugin.getEconomy().currencyNamePlural());
+					plugin.say(player, ChatColor.YELLOW,
+							Messages.getString("CE_Protect.11") //$NON-NLS-1$
+									+ Setting.PRICE_PROTECT.getDouble(plugin)
+									+ " " //$NON-NLS-1$
+									+ plugin.getEconomy().currencyNamePlural());
 					plugin.getEconomy().withdrawPlayer(player.getName(),
 							Setting.PRICE_PROTECT.getDouble(plugin));
 				}

@@ -30,7 +30,7 @@ public class CE_Privatize implements CommandExecutor {
 						Messages.getString("CE_Privatize.7")); //$NON-NLS-1$
 				return true;
 			}
-			Block target = player.getTargetBlock(null, 200);
+			Block target = BOPlayer.getInstance(player).getTargetBlock();
 			if (args.length == 0 && target != null) {
 				if (plugin.playerSettings.isPrivate(player.getName(), target
 						.getType().name())) {
@@ -47,16 +47,19 @@ public class CE_Privatize implements CommandExecutor {
 			} else if (Setting.ENABLE_ECONOMY.getBoolean(plugin)) {
 				return false;
 			}
-			if (Setting.ENABLE_ECONOMY.getBoolean(plugin)&&plugin.getEconomy()!=null) {
+			if (Setting.ENABLE_ECONOMY.getBoolean(plugin)
+					&& plugin.getEconomy() != null) {
 				if (plugin.getEconomy().getBalance(player.getName()) < Setting.PRICE_PRIVATIZE
 						.getDouble(plugin)) {
 					plugin.say(player, ChatColor.RED,
 							Messages.getString("CE_Privatize.10")); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Privatize.11") //$NON-NLS-1$
-							+ Setting.PRICE_PRIVATIZE.getDouble(plugin) + " " //$NON-NLS-1$
-							+ plugin.getEconomy().currencyNamePlural());
+					plugin.say(player, ChatColor.YELLOW,
+							Messages.getString("CE_Privatize.11") //$NON-NLS-1$
+									+ Setting.PRICE_PRIVATIZE.getDouble(plugin)
+									+ " " //$NON-NLS-1$
+									+ plugin.getEconomy().currencyNamePlural());
 					plugin.getEconomy().withdrawPlayer(player.getName(),
 							Setting.PRICE_PRIVATIZE.getDouble(plugin));
 				}
@@ -76,15 +79,14 @@ public class CE_Privatize implements CommandExecutor {
 					return false;
 				}
 			} else if (args.length == 0) {
-				if (player.getTargetBlock(null, 200) != null) {
+				if (BOPlayer.getInstance(player).getTargetBlock() != null) {
 					plugin.playerSettings.privateListAdd(player.getName(),
-							player.getTargetBlock(null, 200).getType().name());
-					plugin.say(
-							player,
-							ChatColor.GREEN,
+							BOPlayer.getInstance(player).getTargetBlock()
+									.getType().name());
+					plugin.say(player, ChatColor.GREEN,
 							Messages.getString("CE_Privatize.5") //$NON-NLS-1$
-									+ player.getTargetBlock(null, 200)
-											.getType().name()
+									+ BOPlayer.getInstance(player)
+											.getTargetBlock().getType().name()
 									+ Messages.getString("CE_Privatize.6")); //$NON-NLS-1$
 					return true;
 				} else {

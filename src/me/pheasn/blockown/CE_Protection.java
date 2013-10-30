@@ -21,10 +21,12 @@ public class CE_Protection implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (args.length == 0) {
-				if (player.getTargetBlock(null, 200) != null) {
-					sendLists(player, plugin.playerSettings.getProtection(
-							player.getTargetBlock(null, 200).getType().name(),
-							player));
+				if (BOPlayer.getInstance(player).getTargetBlock() != null) {
+					sendLists(
+							player,
+							plugin.playerSettings.getProtection(BOPlayer
+									.getInstance(player).getTargetBlock()
+									.getType().name(), player));
 					return true;
 				} else {
 					return false;

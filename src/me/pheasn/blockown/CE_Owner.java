@@ -19,7 +19,7 @@ public class CE_Owner implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			Block target = player.getTargetBlock(null, 200);
+			Block target = BOPlayer.getInstance(player).getTargetBlock();
 			if (target != null) {
 				if (plugin.owning.getOwner(target) != null) {
 					plugin.say(player, ChatColor.GREEN,

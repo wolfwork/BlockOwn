@@ -29,8 +29,8 @@ public class PlayerSettings {
 		privateLists = new HashMap<String, LinkedList<Material>>();
 		blackLists = new HashMap<String, HashMap<String, LinkedList<String>>>();
 		friendLists = new HashMap<String, LinkedList<String>>();
-		if (Updater.compare(Setting.SETTINGS_VERSION.getString(plugin), 
-				"0.6.0") == -1) { //$NON-NLS-1$
+		if (Updater
+				.compare(Setting.SETTINGS_VERSION.getString(plugin), "0.6.0") == -1) { //$NON-NLS-1$
 			importOld();
 		} else {
 			initialize();

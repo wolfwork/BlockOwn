@@ -26,7 +26,8 @@ public class CE_Unown implements CommandExecutor {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
 				if (args.length == 0) {
-					Block target = player.getTargetBlock(null, 200);
+					Block target = BOPlayer.getInstance(player)
+							.getTargetBlock();
 
 					if (target != null) {
 						OfflinePlayer owner = plugin.owning.getOwner(target);
