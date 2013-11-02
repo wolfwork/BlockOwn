@@ -217,7 +217,7 @@ public class PlayerSettings {
 		}
 	}
 
-	private LinkedList<String> getBlacklist(String ownerName,
+	public LinkedList<String> getBlacklist(String ownerName,
 			String blockTypeName) {
 		try {
 			OfflinePlayer owner = plugin.getServer()
@@ -232,8 +232,7 @@ public class PlayerSettings {
 		}
 	}
 
-	private LinkedList<String> getBlacklist(OfflinePlayer owner,
-			String blockType) {
+	public LinkedList<String> getBlacklist(OfflinePlayer owner, String blockType) {
 		if (blackLists.containsKey(owner.getName())) {
 			HashMap<String, LinkedList<String>> playerBlacklists = blackLists
 					.get(owner.getName());
@@ -358,6 +357,23 @@ public class PlayerSettings {
 		}
 	}
 
+	public LinkedList<Material> getPrivateList(String playerName) {
+		OfflinePlayer player = plugin.getServer().getOfflinePlayer(playerName);
+		if (player != null) {
+			return getPrivateList(player);
+		} else {
+			return new LinkedList<Material>();
+		}
+	}
+
+	public LinkedList<Material> getPrivateList(OfflinePlayer player) {
+		if (this.privateLists.containsKey(player.getName())) {
+			return this.privateLists.get(player.getName());
+		} else {
+			return new LinkedList<Material>();
+		}
+	}
+
 	public void privateListAdd(String playerName, String blockTypeName) {
 		try {
 			OfflinePlayer player = plugin.getServer().getOfflinePlayer(
@@ -418,6 +434,23 @@ public class PlayerSettings {
 			return isPrivate(owner, blockType);
 		} catch (Exception e) {
 			return false;
+		}
+	}
+
+	public LinkedList<String> getFriendList(String playerName) {
+		OfflinePlayer player = plugin.getServer().getOfflinePlayer(playerName);
+		if (player != null) {
+			return getFriendList(player);
+		} else {
+			return new LinkedList<String>();
+		}
+	}
+
+	public LinkedList<String> getFriendList(OfflinePlayer player) {
+		if (this.friendLists.containsKey(player.getName())) {
+			return this.friendLists.get(player.getName());
+		} else {
+			return new LinkedList<String>();
 		}
 	}
 

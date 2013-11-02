@@ -440,7 +440,7 @@ public class BlockOwn extends PheasnPlugin {
 			owning.save();
 			owning = new ClassicOwning(this);
 		}
-		if (config.getLong(Setting.AUTOSAVE_INTERVAL.toString()) != 0
+		if (Setting.AUTOSAVE_INTERVAL.getLong(this) != 0
 				&& owning.getType().equals(DatabaseType.CLASSIC)) {
 			autoSaveThread = new AutoSaveThread(this);
 			autoSaveThread.start();
