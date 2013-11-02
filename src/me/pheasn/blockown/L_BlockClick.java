@@ -25,17 +25,20 @@ public class L_BlockClick implements Listener {
 								Permission.ADMIN.toString())) {
 					return;
 				}
-				OfflinePlayer owner = plugin.owning.getOwner(event
-						.getClickedBlock());
+				OfflinePlayer owner = plugin.getOwning().getOwner(
+						event.getClickedBlock());
 				if (owner != null
 						&& !owner.getName().equalsIgnoreCase(
 								event.getPlayer().getName())) {
-					if (plugin.playerSettings.isProtected(event
-							.getClickedBlock().getType().name(),
+					if (plugin.getPlayerSettings().isProtected(
+							event.getClickedBlock().getType().name(),
 							event.getPlayer(), owner)) {
 						event.setCancelled(true);
-						plugin.say(event.getPlayer(), ChatColor.RED,
-								Messages.getString("L_BlockClick.1")); //$NON-NLS-1$
+						if (Setting.ENABLE_PROTECTED_MESSAGES
+								.getBoolean(plugin)) {
+							plugin.say(event.getPlayer(), ChatColor.RED,
+									Messages.getString("L_BlockClick.1")); //$NON-NLS-1$
+						}
 					}
 				}
 			}

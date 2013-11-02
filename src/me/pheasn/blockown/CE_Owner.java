@@ -21,10 +21,11 @@ public class CE_Owner implements CommandExecutor {
 			Player player = (Player) sender;
 			Block target = BOPlayer.getInstance(player).getTargetBlock();
 			if (target != null) {
-				if (plugin.owning.getOwner(target) != null) {
+				if (plugin.getOwning().getOwner(target) != null) {
 					plugin.say(player, ChatColor.GREEN,
 							Messages.getString("CE_Owner.0") //$NON-NLS-1$
-									+ plugin.owning.getOwner(target).getName());
+									+ plugin.getOwning().getOwner(target)
+											.getName());
 					return true;
 				} else {
 					plugin.say(player, ChatColor.GREEN,

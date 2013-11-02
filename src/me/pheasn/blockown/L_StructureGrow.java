@@ -17,13 +17,15 @@ public class L_StructureGrow implements Listener {
 	public void onStructureGrow(StructureGrowEvent event) {
 		OfflinePlayer offlinePlayer = null;
 		for (BlockState blockState : event.getBlocks()) {
-			if (plugin.owning.getOwner(blockState.getBlock()) != null) {
-				offlinePlayer = plugin.owning.getOwner(blockState.getBlock());
+			if (plugin.getOwning().getOwner(blockState.getBlock()) != null) {
+				offlinePlayer = plugin.getOwning().getOwner(
+						blockState.getBlock());
 			}
 		}
 		if (offlinePlayer != null) {
 			for (BlockState blockState : event.getBlocks()) {
-				plugin.owning.setOwner(blockState.getBlock(), offlinePlayer);
+				plugin.getOwning().setOwner(blockState.getBlock(),
+						offlinePlayer);
 			}
 		}
 	}

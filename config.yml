@@ -1,8 +1,9 @@
-Settings-Version: 0.6.1
+Settings-Version: 0.6.3
 ServerSettings:
   enable: true
   autoSaveInterval: 1200
   enablePlayerSettings: true
+  enableProtectedMessages: true
   enableAutomaticChestProtection: true
   enableAutomaticUniversalProtection: false
   adminsIgnoreProtection: false
@@ -11,7 +12,7 @@ ServerSettings:
   permissionNeededForProtectCommand: false
   permissionNeededForOwnCommand: false
   AutoUpdater:
-    enableAutoUpdate: true
+    enable: true
     apiKey:
     autoUpdateInterval: 1800
     broadcastToOperators: true
@@ -27,6 +28,4 @@ ServerSettings:
     enable: false
     protectPrice: 2.0
     privatizePrice: 3.0
-Protection:
-FriendLists:
-PrivateBlocks:
+    ownSelectionPricePerBlock: 1.0

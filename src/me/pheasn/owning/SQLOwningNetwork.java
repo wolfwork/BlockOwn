@@ -150,7 +150,7 @@ public class SQLOwningNetwork extends SQLOwning {
 				int x = rs.getInt("x"); //$NON-NLS-1$
 				int y = rs.getInt("y"); //$NON-NLS-1$
 				int z = rs.getInt("z"); //$NON-NLS-1$
-				if(plugin.getServer().getWorld(world)==null){
+				if (plugin.getServer().getWorld(world) == null) {
 					plugin.getServer().createWorld(new WorldCreator(world));
 				}
 				result.put(

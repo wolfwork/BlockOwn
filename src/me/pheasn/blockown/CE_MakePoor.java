@@ -24,7 +24,7 @@ public class CE_MakePoor implements CommandExecutor {
 			Player player = (Player) sender;
 			if (args.length == 1) {
 				if (player.hasPermission(Permission.ADMIN.toString())) {
-					plugin.owning.deleteOwningsOf(playerName);
+					plugin.getOwning().deleteOwningsOf(playerName);
 					plugin.say(player, ChatColor.GREEN,
 							playerName + Messages.getString("CE_MakePoor.1")); //$NON-NLS-1$
 					return true;
@@ -37,7 +37,7 @@ public class CE_MakePoor implements CommandExecutor {
 				return false;
 			}
 		} else {
-			plugin.owning.deleteOwningsOf(playerName);
+			plugin.getOwning().deleteOwningsOf(playerName);
 			plugin.con(ChatColor.GREEN,
 					playerName + Messages.getString("CE_MakePoor.3")); //$NON-NLS-1$
 			return true;

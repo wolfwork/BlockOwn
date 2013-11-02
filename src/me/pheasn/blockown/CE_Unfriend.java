@@ -23,7 +23,7 @@ public class CE_Unfriend implements CommandExecutor {
 				OfflinePlayer friend = plugin.getServer().getOfflinePlayer(
 						args[0]);
 				if (friend != null) {
-					plugin.playerSettings.friendListRemove(args[0],
+					plugin.getPlayerSettings().friendListRemove(args[0],
 							player.getName());
 					plugin.say(player, ChatColor.GREEN,
 							args[0] + Messages.getString("CE_Unfriend.0")); //$NON-NLS-1$

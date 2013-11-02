@@ -22,8 +22,8 @@ public class CE_Unprivatize implements CommandExecutor {
 			if (args.length == 1) {
 				Material blockType = Material.getMaterial(args[0]);
 				if (blockType != null) {
-					plugin.playerSettings.privateListRemove(player.getName(),
-							blockType.name());
+					plugin.getPlayerSettings().privateListRemove(
+							player.getName(), blockType.name());
 					plugin.say(player, ChatColor.GREEN,
 							Messages.getString("CE_Unprivatize.0") + args[0] //$NON-NLS-1$
 									+ Messages.getString("CE_Unprivatize.1")); //$NON-NLS-1$
@@ -35,7 +35,8 @@ public class CE_Unprivatize implements CommandExecutor {
 				}
 			} else if (args.length == 0) {
 				if (BOPlayer.getInstance(player).getTargetBlock() != null) {
-					plugin.playerSettings.privateListRemove(player.getName(),
+					plugin.getPlayerSettings().privateListRemove(
+							player.getName(),
 							BOPlayer.getInstance(player).getTargetBlock()
 									.getType().name());
 					plugin.say(player, ChatColor.GREEN,

@@ -1,5 +1,7 @@
 package me.pheasn.blockown;
 
+import java.util.ArrayList;
+
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
@@ -35,9 +37,9 @@ public class CE_Own implements CommandExecutor {
 			}
 			if (args.length == 0) {
 				Block target = BOPlayer.getInstance(player).getTargetBlock();
-				OfflinePlayer owner = plugin.owning.getOwner(target);
+				OfflinePlayer owner = plugin.getOwning().getOwner(target);
 				if (owner == null) {
-					plugin.owning.setOwner(target, player);
+					plugin.getOwning().setOwner(target, player);
 					plugin.say(player, ChatColor.GREEN,
 							Messages.getString("CE_Own.0")); //$NON-NLS-1$
 					return true;
@@ -71,21 +73,58 @@ public class CE_Own implements CommandExecutor {
 					int zMax = max.getBlockZ();
 					World w = min.getWorld();
 					int failed = 0;
+					ArrayList<Block> selectedBlocks = new ArrayList<Block>();
 					for (int x = xMin; x <= xMax; x++) {
 						for (int y = yMin; y <= yMax; y++) {
 							for (int z = zMin; z <= zMax; z++) {
 								Block block = w.getBlockAt(x, y, z);
-								OfflinePlayer owner = plugin.owning
+								OfflinePlayer owner = plugin.getOwning()
 										.getOwner(block);
 								if (owner == null) {
-									plugin.owning.setOwner(
-											w.getBlockAt(x, y, z), player);
+									selectedBlocks.add(w.getBlockAt(x, y, z));
 								} else if (!owner.getName().equalsIgnoreCase(
 										player.getName())) {
 									failed += 1;
 								}
 							}
 						}
+					}
+					if (Setting.ENABLE_ECONOMY.getBoolean(plugin)
+							&& plugin.getEconomy() != null
+							&& Setting.PRICE_OWN_SELECTION.getDouble(plugin) > 0.0) {
+						if (plugin.getEconomy().getBalance(player.getName()) < (selectedBlocks
+								.size() * Setting.PRICE_OWN_SELECTION
+								.getDouble(plugin))) {
+							plugin.say(
+									player,
+									ChatColor.RED,
+									Messages.getString("CE_Own.11") //$NON-NLS-1$
+											+ (selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
+													.getDouble(plugin))
+											+ " " //$NON-NLS-1$
+											+ plugin.getEconomy()
+													.currencyNamePlural()
+											+ Messages.getString("CE_Own.12")); //$NON-NLS-1$
+							return true;
+						} else {
+							plugin.say(
+									player,
+									ChatColor.YELLOW,
+									Messages.getString("CE_Own.13") //$NON-NLS-1$
+											+ (selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
+													.getDouble(plugin))
+											+ " " //$NON-NLS-1$
+											+ plugin.getEconomy()
+													.currencyNamePlural());
+							plugin.getEconomy()
+									.withdrawPlayer(
+											player.getName(),
+											(selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
+													.getDouble(plugin)));
+						}
+					}
+					for (Block selectedBlock : selectedBlocks) {
+						plugin.getOwning().setOwner(selectedBlock, player);
 					}
 					plugin.tell(sender, ChatColor.GREEN,
 							Messages.getString("CE_Own.5")); //$NON-NLS-1$

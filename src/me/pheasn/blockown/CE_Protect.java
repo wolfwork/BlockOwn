@@ -31,14 +31,14 @@ public class CE_Protect implements CommandExecutor {
 			}
 			Block target = BOPlayer.getInstance(player).getTargetBlock();
 			if (args.length == 1 && target != null) {
-				if (plugin.playerSettings.isBlacklisted(args[0],
+				if (plugin.getPlayerSettings().isBlacklisted(args[0],
 						player.getName(), target.getType().name())) {
 					plugin.say(player, ChatColor.YELLOW,
 							Messages.getString("CE_Protect.2")); //$NON-NLS-1$
 					return true;
 				}
 			} else if (args.length == 2) {
-				if (plugin.playerSettings.isBlacklisted(args[1],
+				if (plugin.getPlayerSettings().isBlacklisted(args[1],
 						player.getName(), args[0])) {
 					plugin.say(player, ChatColor.YELLOW,
 							Messages.getString("CE_Protect.4")); //$NON-NLS-1$
@@ -48,11 +48,16 @@ public class CE_Protect implements CommandExecutor {
 				return false;
 			}
 			if (Setting.ENABLE_ECONOMY.getBoolean(plugin)
-					&& plugin.getEconomy() != null) {
+					&& plugin.getEconomy() != null
+					&& Setting.PRICE_PROTECT.getDouble(plugin) > 0.0) {
 				if (plugin.getEconomy().getBalance(player.getName()) < Setting.PRICE_PROTECT
 						.getDouble(plugin)) {
 					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Protect.5")); //$NON-NLS-1$
+							Messages.getString("CE_Protect.5") //$NON-NLS-1$
+									+ Setting.PRICE_PROTECT.getDouble(plugin)
+									+ " " //$NON-NLS-1$
+									+ plugin.getEconomy().currencyNamePlural()
+									+ Messages.getString("CE_Protect.12")); //$NON-NLS-1$
 					return true;
 				} else {
 					plugin.say(player, ChatColor.YELLOW,
@@ -73,8 +78,8 @@ public class CE_Protect implements CommandExecutor {
 						args[0] = PlayerSettings.ALL_PLAYERS;
 						protectName = Messages.getString("CE_Protect.0"); //$NON-NLS-1$
 					}
-					plugin.playerSettings.blacklistAdd(player, target.getType()
-							.name(), args[0]);
+					plugin.getPlayerSettings().blacklistAdd(player,
+							target.getType().name(), args[0]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else if (args.length == 2) {
@@ -88,7 +93,7 @@ public class CE_Protect implements CommandExecutor {
 						args[1] = PlayerSettings.ALL_PLAYERS;
 						protectName = Messages.getString("CE_Protect.1"); //$NON-NLS-1$
 					}
-					plugin.playerSettings.blacklistAdd(player,
+					plugin.getPlayerSettings().blacklistAdd(player,
 							args[0].toUpperCase(), args[1]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;

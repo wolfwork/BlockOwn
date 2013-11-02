@@ -1,5 +1,6 @@
 package me.pheasn.blockown;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import me.pheasn.updater.Updater;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class PlayerSettings {
@@ -32,14 +34,18 @@ public class PlayerSettings {
 		if (Updater
 				.compare(Setting.SETTINGS_VERSION.getString(plugin), "0.6.0") == -1) { //$NON-NLS-1$
 			importOld();
+		} else if (Updater.compare(Setting.SETTINGS_VERSION.getString(plugin),
+				"0.6.2") == -1) { //$NON-NLS-1$
+			initialize(plugin.getConfig());
 		} else {
-			initialize();
+			FileConfiguration config = YamlConfiguration
+					.loadConfiguration(plugin.getProtectionsFile());
+			initialize(config);
 		}
 	}
 
-	// Initialize for 0.6+
-	private void initialize() {
-		FileConfiguration config = plugin.getConfig();
+	// Initialize for 0.6.0 and 0.6.1
+	private void initialize(FileConfiguration config) {
 
 		// ABSOLUTELY PRIVATE TYPES
 		if (config.get("PrivateBlocks") != null) { //$NON-NLS-1$
@@ -160,13 +166,13 @@ public class PlayerSettings {
 				}
 			}
 			config.set("PlayerSettings", null); //$NON-NLS-1$
-			this.save();
+			this.save(YamlConfiguration.loadConfiguration(plugin
+					.getProtectionsFile()));
 		}
 	}
 
 	// Save method for 0.6+
-	public void save() {
-		FileConfiguration config = plugin.getConfig();
+	public void save(FileConfiguration config) {
 
 		// ABSOLUTELY PRIVATE TYPES
 		config.set("PrivateBlocks", null); //$NON-NLS-1$
@@ -202,7 +208,13 @@ public class PlayerSettings {
 				}
 			}
 		}
-
+		try {
+			config.save(plugin.getProtectionsFile());
+			plugin.getConfig().set("PrivateBlocks", null); //$NON-NLS-1$
+			plugin.getConfig().set("FriendLists", null); //$NON-NLS-1$
+			plugin.getConfig().set("Protections", null); //$NON-NLS-1$
+		} catch (IOException e) {
+		}
 	}
 
 	private LinkedList<String> getBlacklist(String ownerName,
@@ -515,6 +527,7 @@ public class PlayerSettings {
 
 	@Override
 	public void finalize() {
-		this.save();
+		this.save(YamlConfiguration.loadConfiguration(plugin
+				.getProtectionsFile()));
 	}
 }

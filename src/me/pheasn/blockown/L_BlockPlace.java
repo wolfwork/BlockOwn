@@ -13,6 +13,6 @@ public class L_BlockPlace implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		plugin.owning.setOwner(event.getBlockPlaced(), event.getPlayer());
+		plugin.getOwning().setOwner(event.getBlockPlaced(), event.getPlayer());
 	}
 }

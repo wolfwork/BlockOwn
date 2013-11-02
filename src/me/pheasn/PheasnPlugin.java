@@ -65,5 +65,9 @@ public abstract class PheasnPlugin extends JavaPlugin {
 		return this.inBrackets(this.getServer().getServerName());
 	}
 
+	public Owning getOwning() {
+		return this.owning;
+	}
+
 	public abstract File getBlockOwnerFile();
 }

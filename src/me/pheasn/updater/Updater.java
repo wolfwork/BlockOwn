@@ -80,7 +80,7 @@ public class Updater extends Thread {
 					InputStream in = dwnurl.openStream();
 					File file = new File(
 							"./plugins/" + plugin.getServer().getUpdateFolder() + "/" + pluginFile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
-					file.getParentFile().mkdirs(); 
+					file.getParentFile().mkdirs();
 					if (file.exists()) {
 						file.delete();
 					}
@@ -153,8 +153,7 @@ public class Updater extends Thread {
 			try {
 				if (Integer.valueOf(v1.toCharArray()[1]) > Integer.valueOf(v2
 						.toCharArray()[1])) {
-					plugin.con(
-							ChatColor.YELLOW,
+					plugin.con(ChatColor.YELLOW,
 							Messages.getString("Updater.0")); //$NON-NLS-1$
 					if (Setting.BROADCAST_TO_OPERATORS.getBoolean(plugin)) {
 						this.broadcastToOps(Messages.getString("Updater.1")); //$NON-NLS-1$

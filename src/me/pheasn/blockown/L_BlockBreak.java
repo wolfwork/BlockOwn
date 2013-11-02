@@ -13,8 +13,8 @@ public class L_BlockBreak implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (plugin.owning.getOwner(event.getBlock()) != null) {
-			plugin.owning.removeOwner(event.getBlock());
+		if (plugin.getOwning().getOwner(event.getBlock()) != null) {
+			plugin.getOwning().removeOwner(event.getBlock());
 		}
 	}
 }

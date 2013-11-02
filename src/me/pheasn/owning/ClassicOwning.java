@@ -42,10 +42,11 @@ public class ClassicOwning extends Owning {
 					String worldName = owningDiv[0];
 					String[] BlockCoordinates = owningDiv[1].split("#"); //$NON-NLS-1$
 					String playerName = owningDiv[2];
-					if(plugin.getServer().getWorld(worldName)==null){
-						plugin.getServer().createWorld(new WorldCreator(worldName));
+					if (plugin.getServer().getWorld(worldName) == null) {
+						plugin.getServer().createWorld(
+								new WorldCreator(worldName));
 					}
-					if (plugin.getServer().getWorld(worldName)!=null
+					if (plugin.getServer().getWorld(worldName) != null
 							&& players.contains(playerName)) {
 						ownings.put(
 								plugin.getServer()

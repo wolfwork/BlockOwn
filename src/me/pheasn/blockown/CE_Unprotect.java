@@ -29,8 +29,8 @@ public class CE_Unprotect implements CommandExecutor {
 						args[0] = PlayerSettings.ALL_PLAYERS;
 						protectName = Messages.getString("CE_Unprotect.0"); //$NON-NLS-1$
 					}
-					plugin.playerSettings.blacklistRemove(player, target
-							.getType().name(), args[0]);
+					plugin.getPlayerSettings().blacklistRemove(player,
+							target.getType().name(), args[0]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else if (args.length == 2) {
@@ -44,7 +44,7 @@ public class CE_Unprotect implements CommandExecutor {
 						args[1] = PlayerSettings.ALL_PLAYERS;
 						protectName = Messages.getString("CE_Unprotect.5"); //$NON-NLS-1$
 					}
-					plugin.playerSettings.blacklistRemove(player,
+					plugin.getPlayerSettings().blacklistRemove(player,
 							args[0].toUpperCase(), args[1]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;

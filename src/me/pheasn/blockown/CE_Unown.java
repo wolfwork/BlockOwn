@@ -30,11 +30,12 @@ public class CE_Unown implements CommandExecutor {
 							.getTargetBlock();
 
 					if (target != null) {
-						OfflinePlayer owner = plugin.owning.getOwner(target);
+						OfflinePlayer owner = plugin.getOwning().getOwner(
+								target);
 						if (owner != null
 								&& owner.getName().equalsIgnoreCase(
 										player.getName())) {
-							plugin.owning.removeOwner(target);
+							plugin.getOwning().removeOwner(target);
 							plugin.say(player, ChatColor.GREEN,
 									Messages.getString("CE_Unown.0")); //$NON-NLS-1$
 							return true;
@@ -65,12 +66,12 @@ public class CE_Unown implements CommandExecutor {
 							for (int y = yMin; y <= yMax; y++) {
 								for (int z = zMin; z <= zMax; z++) {
 									Block block = w.getBlockAt(x, y, z);
-									OfflinePlayer owner = plugin.owning
+									OfflinePlayer owner = plugin.getOwning()
 											.getOwner(block);
 									if (owner.getName().equalsIgnoreCase(
 											player.getName())) {
-										plugin.owning.removeOwner(w.getBlockAt(
-												x, y, z));
+										plugin.getOwning().removeOwner(
+												w.getBlockAt(x, y, z));
 									}
 								}
 							}

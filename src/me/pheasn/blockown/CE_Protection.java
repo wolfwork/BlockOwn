@@ -24,21 +24,24 @@ public class CE_Protection implements CommandExecutor {
 				if (BOPlayer.getInstance(player).getTargetBlock() != null) {
 					sendLists(
 							player,
-							plugin.playerSettings.getProtection(BOPlayer
-									.getInstance(player).getTargetBlock()
-									.getType().name(), player));
+							plugin.getPlayerSettings().getProtection(
+									BOPlayer.getInstance(player)
+											.getTargetBlock().getType().name(),
+									player));
 					return true;
 				} else {
 					return false;
 				}
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
-					sendLists(player, plugin.playerSettings.getProtection(
-							PlayerSettings.ALL_BLOCKS, player));
+					sendLists(
+							player,
+							plugin.getPlayerSettings().getProtection(
+									PlayerSettings.ALL_BLOCKS, player));
 				} else {
 					sendLists(
 							player,
-							plugin.playerSettings.getProtection(
+							plugin.getPlayerSettings().getProtection(
 									args[0].toUpperCase(), player));
 				}
 				return true;

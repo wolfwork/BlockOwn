@@ -24,6 +24,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.mcstats.Metrics;
@@ -33,10 +34,11 @@ import org.mcstats.Metrics.Plotter;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class BlockOwn extends PheasnPlugin {
-	public PlayerSettings playerSettings;
+	private PlayerSettings playerSettings;
 	private File pluginDir;
 	private File blockOwnerFile;
 	private File settingsFile;
+	private File protectionsFile;
 	private Updater updater;
 	private Thread autoSaveThread;
 	private final int pluginId = 62749;
@@ -48,11 +50,13 @@ public class BlockOwn extends PheasnPlugin {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
 		ENABLE_AUTOUPDATE_old("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
+		ENABLE_AUTOUPDATE_old2("ServerSettings.AutoUpdater.enableAutoUpdate"), //$NON-NLS-1$
 		API_KEY_old("ServerSettings.apiKey"), //$NON-NLS-1$
 		AUTOUPDATE_INTERVAL_old("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
 		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
 		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
-		ENABLE_AUTOUPDATE("ServerSettings.AutoUpdater.enableAutoUpdate"), //$NON-NLS-1$
+		ENABLE_PROTECTED_MESSAGES("ServerSettings.enableProtectedMessages"), //$NON-NLS-1$
+		ENABLE_AUTOUPDATE("ServerSettings.AutoUpdater.enable"), //$NON-NLS-1$
 		BROADCAST_TO_OPERATORS(
 				"ServerSettings.AutoUpdater.broadcastToOperators"), //$NON-NLS-1$
 		API_KEY("ServerSettings.AutoUpdater.apiKey"), //$NON-NLS-1$
@@ -70,6 +74,7 @@ public class BlockOwn extends PheasnPlugin {
 				"ServerSettings.permissionNeededForOwnCommand"), //$NON-NLS-1$
 		PRICE_PROTECT("ServerSettings.Economy.protectPrice"), //$NON-NLS-1$
 		PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
+		PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
 		ENABLE_ECONOMY("ServerSettings.Economy.enable"); //$NON-NLS-1$
 		private String s;
 
@@ -162,7 +167,8 @@ public class BlockOwn extends PheasnPlugin {
 			this.owning.save();
 		}
 		if (playerSettings != null) {
-			this.playerSettings.save();
+			this.playerSettings.save(YamlConfiguration
+					.loadConfiguration(protectionsFile));
 		}
 		this.saveConfig();
 		updater.cancel();
@@ -179,6 +185,7 @@ public class BlockOwn extends PheasnPlugin {
 		pluginDir = new File("./plugins/" + this.getName() + "/"); //$NON-NLS-1$ //$NON-NLS-2$
 		blockOwnerFile = new File(pluginDir.getPath() + "/blocks.dat"); //$NON-NLS-1$
 		settingsFile = new File(pluginDir.getPath() + "/config.yml"); //$NON-NLS-1$
+		protectionsFile = new File(pluginDir.getPath() + "/playerSettings.yml"); //$NON-NLS-1$
 		this.createEnv();
 		if (!Setting.ENABLE.getBoolean(this)) {
 			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.40")); //$NON-NLS-1$
@@ -315,8 +322,20 @@ public class BlockOwn extends PheasnPlugin {
 		return blockOwnerFile;
 	}
 
+	public File getProtectionsFile() {
+		return this.protectionsFile;
+	}
+
 	public WorldEditPlugin getWorldEdit() {
-		return worldEdit;
+		return this.worldEdit;
+	}
+
+	public PlayerSettings getPlayerSettings() {
+		return this.playerSettings;
+	}
+
+	public Economy getEconomy() {
+		return this.economy;
 	}
 
 	private boolean save(CommandSender sender) {
@@ -375,9 +394,11 @@ public class BlockOwn extends PheasnPlugin {
 
 	private boolean reload(CommandSender sender) {
 		this.reloadConfig();
-		playerSettings.save();
+		playerSettings.save(YamlConfiguration
+				.loadConfiguration(protectionsFile));
 		this.saveConfig();
 		FileConfiguration config = this.getConfig();
+
 		updater.cancel();
 		this.apiKey = Setting.API_KEY.getString(this);
 		updater = new Updater(this, this.pluginId, this.getFile(), this.apiKey);
@@ -386,9 +407,11 @@ public class BlockOwn extends PheasnPlugin {
 					Setting.AUTOSAVE_INTERVAL.getLong(this) * 1000);
 			this.con(Messages.getString("BlockOwn.14")); //$NON-NLS-1$
 		}
+
 		if (autoSaveThread.isAlive()) {
 			autoSaveThread.interrupt();
 		}
+
 		if (config.getBoolean(me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE
 				.toString())) {
 			if (config.getString(
@@ -530,8 +553,9 @@ public class BlockOwn extends PheasnPlugin {
 		if (!pluginDir.exists()) {
 			try {
 				this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.34")); //$NON-NLS-1$
-				pluginDir.mkdir();
-				blockOwnerFile.createNewFile();
+				this.pluginDir.mkdir();
+				this.blockOwnerFile.createNewFile();
+				this.protectionsFile.createNewFile();
 				this.saveDefaultConfig();
 			} catch (IOException ex) {
 				this.con(ChatColor.RED, Messages.getString("BlockOwn.35")); //$NON-NLS-1$
@@ -548,6 +572,12 @@ public class BlockOwn extends PheasnPlugin {
 		if (!settingsFile.exists()) {
 			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.38")); //$NON-NLS-1$
 			this.saveDefaultConfig();
+		}
+		if (!protectionsFile.exists()) {
+			try {
+				this.protectionsFile.createNewFile();
+			} catch (IOException e) {
+			}
 		}
 	}
 
@@ -582,6 +612,7 @@ public class BlockOwn extends PheasnPlugin {
 		config.set(Setting.API_KEY_old.toString(), null);
 		config.set(Setting.AUTOUPDATE_INTERVAL_old.toString(), null);
 		config.set(Setting.ENABLE_AUTOUPDATE_old.toString(), null);
+		config.set(Setting.ENABLE_AUTOUPDATE_old2.toString(), null);
 		this.saveConfig();
 	}
 
@@ -625,10 +656,6 @@ public class BlockOwn extends PheasnPlugin {
 		} catch (IOException e) {
 			// Failed to submit the stats :-(
 		}
-	}
-
-	public Economy getEconomy() {
-		return this.economy;
 	}
 
 	// CREDITS FOR THIS GO TO zeeveener !

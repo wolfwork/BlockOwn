@@ -25,8 +25,8 @@ public class ImportThread extends Thread {
 	public void run() {
 		HashMap<Block, String> oldOwnings = oldOwning.getOwnings();
 		for (Entry<Block, String> entry : oldOwnings.entrySet()) {
-			if (plugin.owning.getOwner(entry.getKey()) == null) {
-				plugin.owning.setOwner(entry.getKey(), entry.getValue());
+			if (plugin.getOwning().getOwner(entry.getKey()) == null) {
+				plugin.getOwning().setOwner(entry.getKey(), entry.getValue());
 			}
 		}
 		oldOwning.save();
