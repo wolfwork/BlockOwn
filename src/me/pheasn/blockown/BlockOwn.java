@@ -41,6 +41,8 @@ public class BlockOwn extends PheasnPlugin {
 	private Updater updater;
 	private Thread autoSaveThread;
 	private final int pluginId = 62749;
+
+	// DEPENDENCIES
 	private WorldEditPlugin worldEdit = null;
 	private Economy economy = null;
 
@@ -168,8 +170,10 @@ public class BlockOwn extends PheasnPlugin {
 			this.playerSettings.save(YamlConfiguration
 					.loadConfiguration(protectionsFile));
 		}
-		updater.cancel();
-		if (this.autoSaveThread.isAlive()) {
+		if (updater != null) {
+			updater.cancel();
+		}
+		if (this.autoSaveThread != null && this.autoSaveThread.isAlive()) {
 			autoSaveThread.interrupt();
 		}
 		super.onDisable();
@@ -203,9 +207,10 @@ public class BlockOwn extends PheasnPlugin {
 				null);
 		this.saveConfig();
 		this.initializeMetrics();
-		
+
 		// enable AutoUpdater
-		updater = new Updater(this, this.pluginId, this.getFile(),Setting.API_KEY.getString(this));
+		updater = new Updater(this, this.pluginId, this.getFile(),
+				Setting.API_KEY.getString(this));
 		if (Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
 			updater.schedule(100l,
 					Setting.AUTOUPDATE_INTERVAL.getLong(this) * 1000);
@@ -219,10 +224,13 @@ public class BlockOwn extends PheasnPlugin {
 		}
 
 		// Soft dependency to WorldEdit
-		worldEdit = (WorldEditPlugin) this.getServer().getPluginManager()
-				.getPlugin("WorldEdit"); //$NON-NLS-1$
-		if (worldEdit != null) {
-			this.con(Messages.getString("BlockOwn.24")); //$NON-NLS-1$
+		try {
+			worldEdit = (WorldEditPlugin) this.getServer().getPluginManager()
+					.getPlugin("WorldEdit"); //$NON-NLS-1$
+			if (worldEdit != null) {
+				this.con(Messages.getString("BlockOwn.24")); //$NON-NLS-1$
+			}
+		} catch (Exception e) {
 		}
 
 		// Soft dependency to Vault
@@ -239,6 +247,8 @@ public class BlockOwn extends PheasnPlugin {
 			}
 		} catch (Exception e) {
 		}
+
+		
 		this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 	}
 
@@ -285,12 +295,12 @@ public class BlockOwn extends PheasnPlugin {
 							cmd_label, newargs);
 				}
 			}
-			if(args.length==2){
-				if(args[0].equalsIgnoreCase("list")){ //$NON-NLS-1$
-					switch(args[1].toLowerCase()){
-					case("private"): return new CE_List_Private(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
-					case("protected"): return new CE_List_Protected(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
-					case("friends"): return new CE_List_Friends(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
+			if (args.length == 2) {
+				if (args[0].equalsIgnoreCase("list")) { //$NON-NLS-1$
+					switch (args[1].toLowerCase()) {
+					case ("private"):return new CE_List_Private(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
+					case ("protected"):return new CE_List_Protected(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
+					case ("friends"):return new CE_List_Friends(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
 					}
 				}
 			}
@@ -303,7 +313,7 @@ public class BlockOwn extends PheasnPlugin {
 						sender,
 						ChatColor.RED,
 						Messages.getString("BlockOwn.44") + String.valueOf(((Player) sender).hasPermission(Permission.ADMIN.toString()))); //$NON-NLS-1$ 
-				return false;
+				return true;
 			}
 			if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("save")) { //$NON-NLS-1$
@@ -403,7 +413,8 @@ public class BlockOwn extends PheasnPlugin {
 				.loadConfiguration(protectionsFile));
 		FileConfiguration config = this.getConfig();
 		updater.cancel();
-		updater = new Updater(this, this.pluginId, this.getFile(), Setting.API_KEY.getString(this));
+		updater = new Updater(this, this.pluginId, this.getFile(),
+				Setting.API_KEY.getString(this));
 		if (Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
 			updater.schedule(100l,
 					Setting.AUTOSAVE_INTERVAL.getLong(this) * 1000);
@@ -547,6 +558,10 @@ public class BlockOwn extends PheasnPlugin {
 				.registerEvents(new L_BlockPlace(this), this);
 		this.getServer().getPluginManager()
 				.registerEvents(new L_BlockBreak(this), this);
+		this.getServer().getPluginManager()
+				.registerEvents(new L_BlockBurn(this), this);
+		this.getServer().getPluginManager()
+				.registerEvents(new L_BlockFade(this), this);
 		this.getServer().getPluginManager()
 				.registerEvents(new L_StructureGrow(this), this);
 	}

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import me.pheasn.PheasnPlugin;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
@@ -48,14 +49,16 @@ public class ClassicOwning extends Owning {
 					}
 					if (plugin.getServer().getWorld(worldName) != null
 							&& players.contains(playerName)) {
-						ownings.put(
-								plugin.getServer()
-										.getWorld(worldName)
-										.getBlockAt(
-												Integer.valueOf(BlockCoordinates[0]),
-												Integer.valueOf(BlockCoordinates[1]),
-												Integer.valueOf(BlockCoordinates[2])),
-								playerName);
+						Block block = plugin
+								.getServer()
+								.getWorld(worldName)
+								.getBlockAt(
+										Integer.valueOf(BlockCoordinates[0]),
+										Integer.valueOf(BlockCoordinates[1]),
+										Integer.valueOf(BlockCoordinates[2]));
+						if (!block.getType().equals(Material.AIR)) {
+							ownings.put(block, playerName);
+						}
 					}
 				}
 				bufferedReader.close();
