@@ -63,8 +63,8 @@ public abstract class PheasnPlugin extends JavaPlugin {
 
 	public String serverNameInBrackets() {
 		String serverName = this.getServer().getName();
-		if(this.getConfig().getString("ServerSettings.serverName")!=null){
-			serverName=this.getConfig().getString("ServerSettings.serverName");
+		if(this.getConfig().getString("ServerSettings.serverName")!=null){ //$NON-NLS-1$
+			serverName=this.getConfig().getString("ServerSettings.serverName"); //$NON-NLS-1$
 		}
 		return inBrackets(serverName);
 	}

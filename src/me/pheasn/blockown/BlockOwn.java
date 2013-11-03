@@ -17,7 +17,6 @@ import me.pheasn.owning.SQLOwningNetwork;
 import me.pheasn.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -42,7 +41,6 @@ public class BlockOwn extends PheasnPlugin {
 	private Updater updater;
 	private Thread autoSaveThread;
 	private final int pluginId = 62749;
-	private String apiKey;
 	private WorldEditPlugin worldEdit = null;
 	private Economy economy = null;
 
@@ -170,7 +168,6 @@ public class BlockOwn extends PheasnPlugin {
 			this.playerSettings.save(YamlConfiguration
 					.loadConfiguration(protectionsFile));
 		}
-		this.saveConfig();
 		updater.cancel();
 		if (this.autoSaveThread.isAlive()) {
 			autoSaveThread.interrupt();
@@ -199,7 +196,6 @@ public class BlockOwn extends PheasnPlugin {
 		}
 		this.playerSettings = new PlayerSettings(this);
 		this.getConfig().options().copyDefaults(true);
-		this.saveConfig();
 		this.cleanUpOldSettings();
 		this.getConfig().set(Setting.SETTINGS_VERSION.toString(),
 				this.getDescription().getVersion());
@@ -207,9 +203,9 @@ public class BlockOwn extends PheasnPlugin {
 				null);
 		this.saveConfig();
 		this.initializeMetrics();
-		this.apiKey = Setting.API_KEY.getString(this);
+		
 		// enable AutoUpdater
-		updater = new Updater(this, this.pluginId, this.getFile(), apiKey);
+		updater = new Updater(this, this.pluginId, this.getFile(),Setting.API_KEY.getString(this));
 		if (Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
 			updater.schedule(100l,
 					Setting.AUTOUPDATE_INTERVAL.getLong(this) * 1000);
@@ -223,7 +219,7 @@ public class BlockOwn extends PheasnPlugin {
 		}
 
 		// Soft dependency to WorldEdit
-		worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager()
+		worldEdit = (WorldEditPlugin) this.getServer().getPluginManager()
 				.getPlugin("WorldEdit"); //$NON-NLS-1$
 		if (worldEdit != null) {
 			this.con(Messages.getString("BlockOwn.24")); //$NON-NLS-1$
@@ -287,6 +283,15 @@ public class BlockOwn extends PheasnPlugin {
 				if (args[0].equalsIgnoreCase(Commands.PROTECTION.toString())) {
 					return new CE_Protection(this).onCommand(sender, cmd,
 							cmd_label, newargs);
+				}
+			}
+			if(args.length==2){
+				if(args[0].equalsIgnoreCase("list")){ //$NON-NLS-1$
+					switch(args[1].toLowerCase()){
+					case("private"): return new CE_List_Private(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
+					case("protected"): return new CE_List_Protected(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
+					case("friends"): return new CE_List_Friends(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
+					}
 				}
 			}
 			// If sender is a player, check for his permission
@@ -396,12 +401,9 @@ public class BlockOwn extends PheasnPlugin {
 		this.reloadConfig();
 		playerSettings.save(YamlConfiguration
 				.loadConfiguration(protectionsFile));
-		this.saveConfig();
 		FileConfiguration config = this.getConfig();
-
 		updater.cancel();
-		this.apiKey = Setting.API_KEY.getString(this);
-		updater = new Updater(this, this.pluginId, this.getFile(), this.apiKey);
+		updater = new Updater(this, this.pluginId, this.getFile(), Setting.API_KEY.getString(this));
 		if (Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
 			updater.schedule(100l,
 					Setting.AUTOSAVE_INTERVAL.getLong(this) * 1000);
@@ -602,7 +604,7 @@ public class BlockOwn extends PheasnPlugin {
 			return false;
 		} catch (MySQLNotConnectingException e2) {
 			this.con(ChatColor.RED, Messages.getString("BlockOwn.86")); //$NON-NLS-1$
-			Bukkit.getPluginManager().disablePlugin(this);
+			this.getServer().getPluginManager().disablePlugin(this);
 			return false;
 		}
 	}

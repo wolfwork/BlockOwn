@@ -244,7 +244,7 @@ public class Metrics {
 								firstPost = false;
 							} catch (IOException e) {
 								if (debug) {
-									Bukkit.getLogger().log(Level.INFO,
+									plugin.getLogger().log(Level.INFO,
 											"[Metrics] " + e.getMessage());
 								}
 							}
@@ -267,13 +267,13 @@ public class Metrics {
 				configuration.load(getConfigFile());
 			} catch (IOException ex) {
 				if (debug) {
-					Bukkit.getLogger().log(Level.INFO,
+					plugin.getLogger().log(Level.INFO,
 							"[Metrics] " + ex.getMessage());
 				}
 				return true;
 			} catch (InvalidConfigurationException ex) {
 				if (debug) {
-					Bukkit.getLogger().log(Level.INFO,
+					plugin.getLogger().log(Level.INFO,
 							"[Metrics] " + ex.getMessage());
 				}
 				return true;
@@ -357,13 +357,13 @@ public class Metrics {
 		// Server software specific section
 		PluginDescriptionFile description = plugin.getDescription();
 		String pluginName = description.getName();
-		boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if
+		boolean onlineMode = plugin.getServer().getOnlineMode(); // TRUE if
 																	// online
 																	// mode is
 																	// enabled
 		String pluginVersion = description.getVersion();
-		String serverVersion = Bukkit.getVersion();
-		int playersOnline = Bukkit.getServer().getOnlinePlayers().length;
+		String serverVersion = plugin.getServer().getBukkitVersion();
+		int playersOnline = plugin.getServer().getOnlinePlayers().length;
 
 		// END server software specific section -- all code below does not use
 		// any code outside of this class / Java
