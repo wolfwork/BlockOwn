@@ -1,6 +1,7 @@
-Settings-Version: 0.6.3
+Settings-Version: 0.6.4
 ServerSettings:
   enable: true
+  serverName:
   autoSaveInterval: 1200
   enablePlayerSettings: true
   enableProtectedMessages: true
