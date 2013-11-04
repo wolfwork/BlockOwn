@@ -57,6 +57,7 @@ public class BlockOwn extends PheasnPlugin {
 		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
 		ENABLE_PROTECTED_MESSAGES("ServerSettings.enableProtectedMessages"), //$NON-NLS-1$
 		ENABLE_AUTOUPDATE("ServerSettings.AutoUpdater.enable"), //$NON-NLS-1$
+		RELEASE_TYPE("ServerSettings.AutoUpdater.releaseType"), //$NON-NLS-1$
 		BROADCAST_TO_OPERATORS(
 				"ServerSettings.AutoUpdater.broadcastToOperators"), //$NON-NLS-1$
 		API_KEY("ServerSettings.AutoUpdater.apiKey"), //$NON-NLS-1$

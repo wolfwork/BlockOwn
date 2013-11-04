@@ -1,4 +1,4 @@
-Settings-Version: 0.6.5
+Settings-Version: 0.6.6
 ServerSettings:
   enable: true
   serverName:
@@ -14,6 +14,7 @@ ServerSettings:
   permissionNeededForOwnCommand: false
   AutoUpdater:
     enable: true
+    releaseType: release
     apiKey:
     autoUpdateInterval: 1800
     broadcastToOperators: true

@@ -31,9 +31,41 @@ public class Updater extends Thread {
 
 	private final String API_NAME_VALUE = "name"; //$NON-NLS-1$
 	private final String API_LINK_VALUE = "downloadUrl"; //$NON-NLS-1$
+	private final String API_RELEASE_TYPE_VALUE = "releaseType"; //$NON-NLS-1$
 
 	private final String API_QUERY = "/servermods/files?projectIds="; //$NON-NLS-1$
 	private final String API_HOST = "https://api.curseforge.com"; //$NON-NLS-1$
+
+	public enum ReleaseType {
+		RELEASE(3), //$NON-NLS-1$
+		BETA(2), //$NON-NLS-1$
+		ALPHA(1); //$NON-NLS-1$
+
+		private int i;
+
+		private ReleaseType(int i) {
+			this.i = i;
+		}
+
+		public static ReleaseType get(String s) {
+			if (s == null) {
+				return null;
+			}
+			switch (s.toLowerCase()) {
+			case ("release"):
+				return RELEASE;
+			case ("beta"):
+				return BETA;
+			case ("alpha"):
+				return ALPHA;
+			}
+			return null;
+		}
+
+		public int getInt() {
+			return i;
+		}
+	}
 
 	public Updater(PheasnPlugin plugin, int pluginId, File file, String apiKey) {
 		this.plugin = plugin;
@@ -68,37 +100,49 @@ public class Updater extends Thread {
 			String response = reader.readLine();
 			JSONArray array = (JSONArray) JSONValue.parse(response);
 			if (array.size() > 0) {
-				JSONObject latest = (JSONObject) array.get(array.size() - 1);
-				String versionLink = (String) latest.get(API_LINK_VALUE);
-				String versionName = (String) latest.get(API_NAME_VALUE);
-				int later = compare(versionName, plugin.getDescription()
-						.getVersion());
-				if (later == 1) {
-					this.notifyIfNewMainVersion(versionName, plugin
-							.getDescription().getVersion());
-					URL dwnurl = new URL(versionLink);
-					InputStream in = dwnurl.openStream();
-					File file = new File(
-							"./plugins/" + plugin.getServer().getUpdateFolder() + "/" + pluginFile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
-					file.getParentFile().mkdirs();
-					if (file.exists()) {
-						file.delete();
+				for (int i = array.size() - 1; i >= 0; i--) {
+					JSONObject version = (JSONObject) array.get(i);
+					String versionLink = (String) version.get(API_LINK_VALUE);
+					String versionName = (String) version.get(API_NAME_VALUE);
+					ReleaseType releaseType = ReleaseType.get((String) version
+							.get(API_RELEASE_TYPE_VALUE));
+					ReleaseType prefType = ReleaseType.get(Setting.RELEASE_TYPE
+							.getString(plugin));
+					if (prefType == null) {
+						prefType = ReleaseType.RELEASE;
 					}
-					file.createNewFile();
-					FileOutputStream out = new FileOutputStream(file);
-					int fetched;
-					byte[] buffer = new byte[4096];
-					while ((fetched = in.read(buffer)) != -1) {
-						out.write(buffer, 0, fetched);
+					if (releaseType != null
+							&& releaseType.getInt() >= prefType.getInt()) {
+						int later = compare(versionName, plugin
+								.getDescription().getVersion());
+						if (later == 1) {
+							this.notifyIfNewMainVersion(versionName, plugin
+									.getDescription().getVersion());
+							URL dwnurl = new URL(versionLink);
+							InputStream in = dwnurl.openStream();
+							File file = new File(
+									"./plugins/" + plugin.getServer().getUpdateFolder() + "/" + pluginFile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+							file.getParentFile().mkdirs();
+							if (file.exists()) {
+								file.delete();
+							}
+							file.createNewFile();
+							FileOutputStream out = new FileOutputStream(file);
+							int fetched;
+							byte[] buffer = new byte[4096];
+							while ((fetched = in.read(buffer)) != -1) {
+								out.write(buffer, 0, fetched);
+							}
+							out.close();
+							in.close();
+							return true;
+						} else {
+							return false;
+						}
 					}
-					out.close();
-					in.close();
-					return true;
 				}
 			}
-
 		} catch (Exception e) {
-
 		}
 		return false;
 	}
