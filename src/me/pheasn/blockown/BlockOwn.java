@@ -73,6 +73,7 @@ public class BlockOwn extends PheasnPlugin {
 				"ServerSettings.permissionNeededForProtectCommand"), //$NON-NLS-1$
 		PERMISSION_NEEDED_FOR_OWN_COMMAND(
 				"ServerSettings.permissionNeededForOwnCommand"), //$NON-NLS-1$
+				PERMISSION_NEEDED_FOR_OWNING("ServerSettings.permissionNeededForOwning"), //$NON-NLS-1$
 		PRICE_PROTECT("ServerSettings.Economy.protectPrice"), //$NON-NLS-1$
 		PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
 		PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
@@ -219,8 +220,7 @@ public class BlockOwn extends PheasnPlugin {
 		}
 		// enable autoSaver
 		autoSaveThread = new AutoSaveThread(this);
-		if (Setting.AUTOSAVE_INTERVAL.getLong(this) != 0
-				&& this.owning.getType().equals(DatabaseType.CLASSIC)) {
+		if (Setting.AUTOSAVE_INTERVAL.getLong(this) != 0) {
 			autoSaveThread.start();
 		}
 
@@ -454,8 +454,7 @@ public class BlockOwn extends PheasnPlugin {
 			owning.save();
 			owning = new ClassicOwning(this);
 		}
-		if (Setting.AUTOSAVE_INTERVAL.getLong(this) != 0
-				&& owning.getType().equals(DatabaseType.CLASSIC)) {
+		if (Setting.AUTOSAVE_INTERVAL.getLong(this) != 0) {
 			autoSaveThread = new AutoSaveThread(this);
 			autoSaveThread.start();
 		}

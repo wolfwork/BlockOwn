@@ -12,6 +12,7 @@ ServerSettings:
   disableInWorlds: []
   permissionNeededForProtectCommand: false
   permissionNeededForOwnCommand: false
+  permissionNeededForOwning:false
   AutoUpdater:
     enable: true
     releaseType: release
