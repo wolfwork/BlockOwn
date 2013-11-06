@@ -12,7 +12,8 @@ ServerSettings:
   disableInWorlds: []
   permissionNeededForProtectCommand: false
   permissionNeededForOwnCommand: false
-  permissionNeededForOwning:false
+  permissionNeededForOwning: false
+  radiusBlockPlaceDenied: 0
   AutoUpdater:
     enable: true
     releaseType: release

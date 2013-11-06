@@ -6,15 +6,35 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 
-import me.pheasn.PheasnPlugin;
-import me.pheasn.owning.ClassicOwning;
-import me.pheasn.owning.ImportThread;
-import me.pheasn.owning.MySQLNotConnectingException;
-import me.pheasn.owning.Owning;
-import me.pheasn.owning.Owning.DatabaseType;
-import me.pheasn.owning.SQLOwningLocal;
-import me.pheasn.owning.SQLOwningNetwork;
-import me.pheasn.updater.Updater;
+import me.pheasn.blockown.commands.CE_Friend;
+import me.pheasn.blockown.commands.CE_List_Friends;
+import me.pheasn.blockown.commands.CE_List_Private;
+import me.pheasn.blockown.commands.CE_List_Protected;
+import me.pheasn.blockown.commands.CE_MakePoor;
+import me.pheasn.blockown.commands.CE_Own;
+import me.pheasn.blockown.commands.CE_Owner;
+import me.pheasn.blockown.commands.CE_Privatize;
+import me.pheasn.blockown.commands.CE_Protect;
+import me.pheasn.blockown.commands.CE_Protection;
+import me.pheasn.blockown.commands.CE_Unfriend;
+import me.pheasn.blockown.commands.CE_Unown;
+import me.pheasn.blockown.commands.CE_Unprivatize;
+import me.pheasn.blockown.commands.CE_Unprotect;
+import me.pheasn.blockown.listeners.L_BlockBreak;
+import me.pheasn.blockown.listeners.L_BlockBurn;
+import me.pheasn.blockown.listeners.L_BlockClick;
+import me.pheasn.blockown.listeners.L_BlockFade;
+import me.pheasn.blockown.listeners.L_BlockPlace_Check;
+import me.pheasn.blockown.listeners.L_BlockPlace_NoCheck;
+import me.pheasn.blockown.listeners.L_StructureGrow;
+import me.pheasn.blockown.owning.ClassicOwning;
+import me.pheasn.blockown.owning.ImportThread;
+import me.pheasn.blockown.owning.MySQLNotConnectingException;
+import me.pheasn.blockown.owning.Owning;
+import me.pheasn.blockown.owning.SQLOwningLocal;
+import me.pheasn.blockown.owning.SQLOwningNetwork;
+import me.pheasn.blockown.owning.Owning.DatabaseType;
+import me.pheasn.blockown.updater.Updater;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.ChatColor;
@@ -73,11 +93,12 @@ public class BlockOwn extends PheasnPlugin {
 				"ServerSettings.permissionNeededForProtectCommand"), //$NON-NLS-1$
 		PERMISSION_NEEDED_FOR_OWN_COMMAND(
 				"ServerSettings.permissionNeededForOwnCommand"), //$NON-NLS-1$
-				PERMISSION_NEEDED_FOR_OWNING("ServerSettings.permissionNeededForOwning"), //$NON-NLS-1$
+		PERMISSION_NEEDED_FOR_OWNING("ServerSettings.permissionNeededForOwning"), //$NON-NLS-1$
 		PRICE_PROTECT("ServerSettings.Economy.protectPrice"), //$NON-NLS-1$
 		PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
 		PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
-		ENABLE_ECONOMY("ServerSettings.Economy.enable"); //$NON-NLS-1$
+		ENABLE_ECONOMY("ServerSettings.Economy.enable"), //$NON-NLS-1$
+		RADIUS_BLOCK_PLACE_DENIED("ServerSettings.radiusBlockPlaceDenied"); //$NON-NLS-1$
 		private String s;
 
 		private Setting(String s) {
@@ -249,7 +270,6 @@ public class BlockOwn extends PheasnPlugin {
 		} catch (Exception e) {
 		}
 
-		
 		this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 	}
 
@@ -426,11 +446,13 @@ public class BlockOwn extends PheasnPlugin {
 			autoSaveThread.interrupt();
 		}
 
-		if (config.getBoolean(me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE
-				.toString())) {
+		if (config
+				.getBoolean(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_ENABLE
+						.toString())) {
 			if (config.getString(
-					me.pheasn.owning.SQLOwning.Setting.MYSQL_TYPE.toString())
-					.equalsIgnoreCase(DatabaseType.SQL_LOCAL.toString())
+					me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_TYPE
+							.toString()).equalsIgnoreCase(
+					DatabaseType.SQL_LOCAL.toString())
 					&& owning.getType() != DatabaseType.SQL_LOCAL) {
 				owning.save();
 				try {
@@ -555,8 +577,6 @@ public class BlockOwn extends PheasnPlugin {
 		this.getServer().getPluginManager()
 				.registerEvents(new L_BlockClick(this), this);
 		this.getServer().getPluginManager()
-				.registerEvents(new L_BlockPlace(this), this);
-		this.getServer().getPluginManager()
 				.registerEvents(new L_BlockBreak(this), this);
 		this.getServer().getPluginManager()
 				.registerEvents(new L_BlockBurn(this), this);
@@ -564,6 +584,13 @@ public class BlockOwn extends PheasnPlugin {
 				.registerEvents(new L_BlockFade(this), this);
 		this.getServer().getPluginManager()
 				.registerEvents(new L_StructureGrow(this), this);
+		if (Setting.RADIUS_BLOCK_PLACE_DENIED.getInt(this) == 0) {
+			this.getServer().getPluginManager()
+					.registerEvents(new L_BlockPlace_NoCheck(this), this);
+		} else {
+			this.getServer().getPluginManager()
+					.registerEvents(new L_BlockPlace_Check(this), this);
+		}
 	}
 
 	private void createEnv() {
@@ -601,10 +628,11 @@ public class BlockOwn extends PheasnPlugin {
 	private boolean establishOwning() {
 		try {
 			if (this.getConfig().getBoolean(
-					me.pheasn.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
+					me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_ENABLE
+							.toString())) {
 				if (this.getConfig()
 						.getString(
-								me.pheasn.owning.SQLOwning.Setting.MYSQL_TYPE
+								me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_TYPE
 										.toString()).equalsIgnoreCase("local")) { //$NON-NLS-1$
 					owning = new SQLOwningLocal(this);
 				} else {
