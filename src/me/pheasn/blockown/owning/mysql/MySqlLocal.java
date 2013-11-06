@@ -23,7 +23,6 @@ public class MySqlLocal extends MySql {
 			con = new JDBC().connect("jdbc:sqlite:" + path, props);
 			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -36,7 +35,6 @@ public class MySqlLocal extends MySql {
 			}
 			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -56,7 +54,6 @@ public class MySqlLocal extends MySql {
 			con.createStatement().executeUpdate(updateString.toString());
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -78,7 +75,6 @@ public class MySqlLocal extends MySql {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -88,7 +84,6 @@ public class MySqlLocal extends MySql {
 		try {
 			con.createStatement().executeUpdate(sql);
 		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -97,7 +92,6 @@ public class MySqlLocal extends MySql {
 		try {
 			return con.createStatement().executeQuery(sql);
 		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 		return null;
 	}

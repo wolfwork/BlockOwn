@@ -85,7 +85,6 @@ public class ClassicOwning extends Owning {
 		try {
 			FileWriter fileWriter = new FileWriter(plugin.getBlockOwnerFile(),
 					false);
-			// TODO check this!!!
 			@SuppressWarnings("unchecked")
 			final HashMap<Block, String> curOwnings = (HashMap<Block, String>) ownings
 					.clone();
@@ -129,7 +128,9 @@ public class ClassicOwning extends Owning {
 
 	@Override
 	public void removeOwner(Block block) {
-		ownings.remove(block);
+		if (ownings.containsKey(block)) {
+			ownings.remove(block);
+		}
 	}
 
 	@Override

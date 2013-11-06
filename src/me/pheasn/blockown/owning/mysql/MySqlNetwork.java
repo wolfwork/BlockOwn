@@ -30,7 +30,6 @@ public class MySqlNetwork extends MySql {
 			}
 			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -50,7 +49,6 @@ public class MySqlNetwork extends MySql {
 				updateString.append(")");
 				con.createStatement().executeUpdate(updateString.toString());
 			} catch (SQLException e) {
-				e.printStackTrace();
 				return false;
 			}
 		}
@@ -72,7 +70,6 @@ public class MySqlNetwork extends MySql {
 			con.createStatement().executeUpdate(updateString.toString());
 			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -82,7 +79,6 @@ public class MySqlNetwork extends MySql {
 		try {
 			con.createStatement().execute(sql);
 		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -91,7 +87,6 @@ public class MySqlNetwork extends MySql {
 		try {
 			return con.createStatement().executeQuery(sql);
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return null;
 		}
 	}
