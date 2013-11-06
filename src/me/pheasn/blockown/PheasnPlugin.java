@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class PheasnPlugin extends JavaPlugin {
 	public boolean updatePending = false;
-	public Owning owning = null;
+	protected Owning owning = null;
 	protected ConsoleCommandSender console;
 
 	public void con(ChatColor cc, String s) {
