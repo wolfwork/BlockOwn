@@ -60,8 +60,10 @@ class CheckThread extends Thread {
 					if ((owner = plugin.getOwning().getOwner(
 							world.getBlockAt(x, y, z))) != null) {
 						if (!owner.getName().equalsIgnoreCase(player.getName())) {
-							ItemStack items = new ItemStack(block.getType());
-							player.getInventory().addItem(items);
+							if (!block.getType().equals(Material.FIRE)) {
+								ItemStack items = new ItemStack(block.getType());
+								player.getInventory().addItem(items);
+							}
 							block.setType(Material.AIR);
 							plugin.getOwning().removeOwner(block);
 							return;
