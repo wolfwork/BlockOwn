@@ -79,6 +79,9 @@ public class MySqlNetwork extends MySql {
 		try {
 			con.createStatement().execute(sql);
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			return;
 		}
 	}
 
@@ -87,6 +90,9 @@ public class MySqlNetwork extends MySql {
 		try {
 			return con.createStatement().executeQuery(sql);
 		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
 			return null;
 		}
 	}

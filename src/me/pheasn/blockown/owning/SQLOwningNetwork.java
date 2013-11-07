@@ -59,6 +59,8 @@ public class SQLOwningNetwork extends SQLOwning {
 			}
 		} catch (SQLException e) {
 			return null;
+		} catch (NullPointerException e) {
+			return null;
 		}
 
 	}
