@@ -33,6 +33,7 @@ public class L_BlockPlace_Check implements Listener {
 					.start();
 		}
 	}
+
 }
 
 class CheckThread extends Thread {
@@ -40,7 +41,7 @@ class CheckThread extends Thread {
 	private Block block;
 	private Player player;
 
-	public CheckThread(BlockOwn plugin, Block block, Player player) {
+	protected CheckThread(BlockOwn plugin, Block block, Player player) {
 		this.plugin = plugin;
 		this.block = block;
 		this.player = player;
@@ -60,12 +61,12 @@ class CheckThread extends Thread {
 					if ((owner = plugin.getOwning().getOwner(
 							world.getBlockAt(x, y, z))) != null) {
 						if (!owner.getName().equalsIgnoreCase(player.getName())) {
-							if (!block.getType().equals(Material.FIRE)) {
-								ItemStack items = new ItemStack(block.getType());
-								player.getInventory().addItem(items);
-							}
-							block.setType(Material.AIR);
-							plugin.getOwning().removeOwner(block);
+							plugin.getServer()
+									.getScheduler()
+									.runTaskLater(
+											plugin,
+											new reverseBlock(plugin, block,
+													player), 20l);
 							return;
 						}
 					}
@@ -73,4 +74,35 @@ class CheckThread extends Thread {
 			}
 		}
 	}
+}
+
+class reverseBlock implements Runnable {
+	private Block block;
+	private BlockOwn plugin;
+	private Player player;
+
+	public reverseBlock(BlockOwn plugin, Block block, Player player) {
+		this.plugin = plugin;
+		this.block = block;
+		this.player = player;
+	}
+
+	@Override
+	public void run() {
+		if (!block.getType().equals(Material.FIRE)) {
+			ItemStack items=null;
+			if (block.getType().equals(Material.WOOL)) {
+				for (ItemStack itemStack : block.getDrops()) {
+					items = itemStack;
+					break;
+				}
+			} else {
+				items = new ItemStack(block.getType());
+			}
+			player.getInventory().addItem(items);
+		}
+		block.setType(Material.AIR);
+		plugin.getOwning().removeOwner(block);
+	}
+
 }

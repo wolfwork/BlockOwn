@@ -64,14 +64,14 @@ public class SQLOwningLocal extends SQLOwning {
 	}
 
 	@Override
-	public void setOwner(Block block, OfflinePlayer offlinePlayer) {
+	public  synchronized void setOwner(Block block, OfflinePlayer offlinePlayer) {
 		if (offlinePlayer != null) {
 			setOwner(block, offlinePlayer.getName());
 		}
 	}
 
 	@Override
-	public void setOwner(Block block, String player) {
+	public synchronized  void setOwner(Block block, String player) {
 		if (!playerExists(player)) {
 			msql.doUpdate("INSERT INTO player(playername) VALUES('" + player + "');"); //$NON-NLS-1$ //$NON-NLS-2$
 		}

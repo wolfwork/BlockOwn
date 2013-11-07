@@ -117,12 +117,12 @@ public class ClassicOwning extends Owning {
 	}
 
 	@Override
-	public void setOwner(Block block, OfflinePlayer offlinePlayer) {
+	public  synchronized void setOwner(Block block, OfflinePlayer offlinePlayer) {
 		ownings.put(block, offlinePlayer.getName());
 	}
 
 	@Override
-	public void setOwner(Block block, String player) {
+	public synchronized void setOwner(Block block, String player) {
 		ownings.put(block, player);
 	}
 
