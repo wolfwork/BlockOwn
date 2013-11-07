@@ -58,14 +58,16 @@ public class SQLOwningLocal extends SQLOwning {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
-		} catch(NullPointerException e){
+		} catch (NullPointerException e) {
 			return null;
 		}
 	}
 
 	@Override
 	public void setOwner(Block block, OfflinePlayer offlinePlayer) {
-		setOwner(block, offlinePlayer.getName());
+		if (offlinePlayer != null) {
+			setOwner(block, offlinePlayer.getName());
+		}
 	}
 
 	@Override
@@ -85,6 +87,8 @@ public class SQLOwningLocal extends SQLOwning {
 			playerid = rs.getInt("playerid"); //$NON-NLS-1$
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}catch(NullPointerException e){
+			
 		}
 		msql.doUpdate("INSERT OR IGNORE INTO block(world, x, y, z, ownerid) VALUES('" + world + "', '" + x + "', '" + y + "', '" + z + "', '" + playerid + "');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
@@ -119,6 +123,8 @@ public class SQLOwningLocal extends SQLOwning {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
+		} catch (NullPointerException e) {
 			return false;
 		}
 	}

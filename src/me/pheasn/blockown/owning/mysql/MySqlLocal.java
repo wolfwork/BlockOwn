@@ -84,6 +84,9 @@ public class MySqlLocal extends MySql {
 		try {
 			con.createStatement().executeUpdate(sql);
 		} catch (SQLException e) {
+
+		} catch (Exception e) {
+			return;
 		}
 	}
 
@@ -92,8 +95,10 @@ public class MySqlLocal extends MySql {
 		try {
 			return con.createStatement().executeQuery(sql);
 		} catch (SQLException e) {
+			return null;
+		} catch (Exception e) {
+			return null;
 		}
-		return null;
 	}
 
 }

@@ -67,7 +67,9 @@ public class SQLOwningNetwork extends SQLOwning {
 
 	@Override
 	public void setOwner(Block block, OfflinePlayer offlinePlayer) {
-		setOwner(block, offlinePlayer.getName());
+		if (offlinePlayer != null) {
+			setOwner(block, offlinePlayer.getName());
+		}
 	}
 
 	@Override
@@ -87,6 +89,8 @@ public class SQLOwningNetwork extends SQLOwning {
 				playerid = rs.getInt("playerid"); //$NON-NLS-1$
 			}
 		} catch (SQLException e) {
+
+		} catch (NullPointerException e) {
 		}
 		msql.doUpdate("INSERT IGNORE INTO block(world, x, y, z, ownerid) VALUES('" + world + "', '" + x + "', '" + y + "', '" + z + "', '" + playerid + "');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
@@ -120,6 +124,8 @@ public class SQLOwningNetwork extends SQLOwning {
 				return false;
 			}
 		} catch (SQLException e) {
+			return false;
+		} catch (NullPointerException e) {
 			return false;
 		}
 	}
