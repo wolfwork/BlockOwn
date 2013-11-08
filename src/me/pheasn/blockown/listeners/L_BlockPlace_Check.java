@@ -1,5 +1,8 @@
 package me.pheasn.blockown.listeners;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
@@ -17,9 +20,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class L_BlockPlace_Check implements Listener {
 	private BlockOwn plugin;
+	private Timer timer;
 
 	public L_BlockPlace_Check(BlockOwn plugin) {
 		this.plugin = plugin;
+		this.timer = new Timer();
 	}
 
 	@EventHandler
@@ -29,9 +34,13 @@ public class L_BlockPlace_Check implements Listener {
 		} else {
 			plugin.getOwning().setOwner(event.getBlockPlaced(),
 					event.getPlayer());
-			new CheckThread(plugin, event.getBlockPlaced(), event.getPlayer())
-					.start();
+			new CheckThread(plugin, this, event.getBlockPlaced(),
+					event.getPlayer()).start();
 		}
+	}
+
+	protected synchronized void scheduleBlockRemove(reverseBlockTask task) {
+		timer.schedule(task, 10l);
 	}
 
 }
@@ -40,11 +49,14 @@ class CheckThread extends Thread {
 	private BlockOwn plugin;
 	private Block block;
 	private Player player;
+	private L_BlockPlace_Check listener;
 
-	protected CheckThread(BlockOwn plugin, Block block, Player player) {
+	protected CheckThread(BlockOwn plugin, L_BlockPlace_Check listener,
+			Block block, Player player) {
 		this.plugin = plugin;
 		this.block = block;
 		this.player = player;
+		this.listener = listener;
 	}
 
 	@Override
@@ -61,12 +73,8 @@ class CheckThread extends Thread {
 					if ((owner = plugin.getOwning().getOwner(
 							world.getBlockAt(x, y, z))) != null) {
 						if (!owner.getName().equalsIgnoreCase(player.getName())) {
-							plugin.getServer()
-									.getScheduler()
-									.runTaskLater(
-											plugin,
-											new reverseBlock(plugin, block,
-													player), 20l);
+							listener.scheduleBlockRemove(new reverseBlockTask(
+									plugin, block, player));
 							return;
 						}
 					}
@@ -76,12 +84,12 @@ class CheckThread extends Thread {
 	}
 }
 
-class reverseBlock implements Runnable {
+class reverseBlockTask extends TimerTask {
 	private Block block;
 	private BlockOwn plugin;
 	private Player player;
 
-	public reverseBlock(BlockOwn plugin, Block block, Player player) {
+	public reverseBlockTask(BlockOwn plugin, Block block, Player player) {
 		this.plugin = plugin;
 		this.block = block;
 		this.player = player;
@@ -90,7 +98,7 @@ class reverseBlock implements Runnable {
 	@Override
 	public void run() {
 		if (!block.getType().equals(Material.FIRE)) {
-			ItemStack items=null;
+			ItemStack items = null;
 			if (block.getType().equals(Material.WOOL)) {
 				for (ItemStack itemStack : block.getDrops()) {
 					items = itemStack;
