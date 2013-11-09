@@ -89,10 +89,11 @@ public class SQLOwningNetwork extends SQLOwning {
 				playerid = rs.getInt("playerid"); //$NON-NLS-1$
 			}
 		} catch (SQLException e) {
-
+			e.printStackTrace();//TODO
 		} catch (NullPointerException e) {
+			e.printStackTrace();//TODO
 		}
-		msql.doUpdate("INSERT IGNORE INTO block(world, x, y, z, ownerid) VALUES('" + world + "', '" + x + "', '" + y + "', '" + z + "', '" + playerid + "');"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		msql.doUpdate("INSERT INTO block(world, x, y, z, ownerid) VALUES('" + world + "', '" + x + "', '" + y + "', '" + z + "', '" + playerid + "') ON DUPLICATE KEY UPDATE world=VALUES(world), x=VALUES(x), y=VALUES(y), z=VALUES(z), ownerid=VALUES(ownerid);"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
 
 	@Override
