@@ -1,8 +1,5 @@
 package me.pheasn.blockown.listeners;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
@@ -20,11 +17,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class L_BlockPlace_Check implements Listener {
 	private BlockOwn plugin;
-	private Timer timer;
 
 	public L_BlockPlace_Check(BlockOwn plugin) {
 		this.plugin = plugin;
-		this.timer = new Timer();
 	}
 
 	@EventHandler
@@ -40,7 +35,7 @@ public class L_BlockPlace_Check implements Listener {
 	}
 
 	protected synchronized void scheduleBlockRemove(reverseBlockTask task) {
-		timer.schedule(task, 10l);
+		plugin.getServer().getScheduler().runTask(plugin, task);
 	}
 
 }
@@ -62,21 +57,21 @@ class CheckThread extends Thread {
 	@Override
 	public void run() {
 		int radius = Setting.RADIUS_BLOCK_PLACE_DENIED.getInt(plugin);
-		Location start = block.getLocation().add(radius, radius, radius);
+		Location end = block.getLocation().add(radius, radius, radius);
+		Location start = block.getLocation().subtract(radius, radius, radius);
 		World world = block.getWorld();
 		OfflinePlayer owner = null;
-		for (int x = start.getBlockX(); x >= start.getBlockX() - (radius * 2); x--) {
-			for (int y = start.getBlockY(); y >= start.getBlockY()
-					- (radius * 2); y--) {
-				for (int z = start.getBlockZ(); z >= start.getBlockZ()
-						- (radius * 2); z--) {
+		Block curBlock;
+		for (int x = start.getBlockX(); x <= end.getBlockX(); x++) {
+			for (int y = start.getBlockY(); y <= end.getBlockY(); y++) {
+				for (int z = start.getBlockZ(); z <= end.getBlockZ(); z++) {
 					if ((owner = plugin.getOwning().getOwner(
-							world.getBlockAt(x, y, z))) != null) {
-						if (!owner.getName().equalsIgnoreCase(player.getName())) {
-							listener.scheduleBlockRemove(new reverseBlockTask(
-									plugin, block, player));
-							return;
-						}
+							(curBlock = world.getBlockAt(x, y, z)))) != null
+							&& plugin.getPlayerSettings().isProtected(
+									curBlock.getType().name(), player, owner)) {
+						listener.scheduleBlockRemove(new reverseBlockTask(
+								plugin, block, player));
+						return;
 					}
 				}
 			}
@@ -84,7 +79,7 @@ class CheckThread extends Thread {
 	}
 }
 
-class reverseBlockTask extends TimerTask {
+class reverseBlockTask implements Runnable {
 	private Block block;
 	private BlockOwn plugin;
 	private Player player;

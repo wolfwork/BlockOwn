@@ -3,6 +3,8 @@ package me.pheasn.blockown;
 import java.util.TimerTask;
 import java.util.logging.Level;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import me.pheasn.blockown.owning.Owning.DatabaseType;
 
 public class AutoSaveTask extends TimerTask {
@@ -23,5 +25,6 @@ public class AutoSaveTask extends TimerTask {
 						Messages.getString("AutoSaveTask.1")); //$NON-NLS-1$
 			}
 		}
+		plugin.getPlayerSettings().save(YamlConfiguration.loadConfiguration(plugin.getProtectionsFile()));
 	}
 }

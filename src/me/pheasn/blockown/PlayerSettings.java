@@ -231,24 +231,25 @@ public class PlayerSettings {
 			return new LinkedList<String>();
 		}
 	}
-	
-	public HashMap<String, LinkedList<String>> getRawBlacklists(String ownerName){
+
+	public HashMap<String, LinkedList<String>> getRawBlacklists(String ownerName) {
 		OfflinePlayer owner = plugin.getServer().getOfflinePlayer(ownerName);
-		if(owner!=null){
+		if (owner != null) {
 			return this.getRawBlacklists(owner);
-		}else{
+		} else {
 			return new HashMap<String, LinkedList<String>>();
 		}
 	}
-	
-	public HashMap<String, LinkedList<String>> getRawBlacklists(OfflinePlayer owner){
-		if(this.blackLists.containsKey(owner.getName())){
+
+	public HashMap<String, LinkedList<String>> getRawBlacklists(
+			OfflinePlayer owner) {
+		if (this.blackLists.containsKey(owner.getName())) {
 			return this.blackLists.get(owner.getName());
-		}else{
+		} else {
 			return new HashMap<String, LinkedList<String>>();
 		}
 	}
-	
+
 	public LinkedList<String> getBlacklist(OfflinePlayer owner, String blockType) {
 		if (blackLists.containsKey(owner.getName())) {
 			HashMap<String, LinkedList<String>> playerBlacklists = blackLists
@@ -531,6 +532,9 @@ public class PlayerSettings {
 
 	public boolean isProtected(String blockType, OfflinePlayer against,
 			OfflinePlayer owner) {
+		if (against.getName().equalsIgnoreCase(owner.getName())) {
+			return false;
+		}
 		if (!Setting.ENABLE_PLAYERSETTINGS.getBoolean(plugin)) {
 			return false;
 		}

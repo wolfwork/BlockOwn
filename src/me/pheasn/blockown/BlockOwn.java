@@ -269,7 +269,6 @@ public class BlockOwn extends PheasnPlugin {
 			}
 		} catch (Exception e) {
 		}
-
 		this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
 	}
 
