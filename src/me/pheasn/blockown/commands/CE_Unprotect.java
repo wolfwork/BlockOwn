@@ -6,7 +6,6 @@ import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.PlayerSettings;
 
 import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,10 +23,13 @@ public class CE_Unprotect implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			Block target = BOPlayer.getInstance(player).getTargetBlock();
+			String target = BOPlayer.getInstance(player).getTargetBlock().getType().name();
 			String protectName;
+			if(args.length==2){
+				target=args[0];
+			}
 			if (target != null) {
-				String blockName = target.getType().name();
+				String blockName = target;
 				if (args.length == 1) {
 					protectName = args[0];
 					if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
@@ -36,7 +38,7 @@ public class CE_Unprotect implements CommandExecutor {
 								.getString("CE_Unprotect.allPlayers"); //$NON-NLS-1$
 					}
 					plugin.getPlayerSettings().blacklistRemove(player,
-							target.getType().name(), args[0]);
+							target, args[0]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else if (args.length == 2) {
