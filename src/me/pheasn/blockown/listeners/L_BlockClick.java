@@ -39,7 +39,7 @@ public class L_BlockClick implements Listener {
 						if (Setting.ENABLE_PROTECTED_MESSAGES
 								.getBoolean(plugin)) {
 							plugin.say(event.getPlayer(), ChatColor.RED,
-									Messages.getString("L_BlockClick.1")); //$NON-NLS-1$
+									Messages.getString("L_BlockClick.deny")); //$NON-NLS-1$
 						}
 					}
 				}

@@ -27,21 +27,21 @@ public class CE_MakePoor implements CommandExecutor {
 			if (args.length == 1) {
 				if (player.hasPermission(Permission.ADMIN.toString())) {
 					plugin.getOwning().deleteOwningsOf(playerName);
-					plugin.say(player, ChatColor.GREEN,
-							playerName + Messages.getString("CE_MakePoor.1")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.GREEN, Messages.getString(
+							"CE_MakePoor.success", playerName)); //$NON-NLS-1$
 					return true;
 				} else {
 					return false;
 				}
 			} else {
 				plugin.say(player, ChatColor.RED,
-						Messages.getString("CE_MakePoor.2")); //$NON-NLS-1$
+						Messages.getString("countArgs")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
 			plugin.getOwning().deleteOwningsOf(playerName);
 			plugin.con(ChatColor.GREEN,
-					playerName + Messages.getString("CE_MakePoor.3")); //$NON-NLS-1$
+					Messages.getString("CE_MakePoor.success", playerName)); //$NON-NLS-1$
 			return true;
 		}
 	}

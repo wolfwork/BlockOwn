@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import me.pheasn.blockown.BlockOwn.Setting;
-import me.pheasn.blockown.updater.Updater;
+import me.pheasn.pluginupdater.Updater;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;

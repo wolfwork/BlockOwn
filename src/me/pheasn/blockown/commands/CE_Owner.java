@@ -27,22 +27,21 @@ public class CE_Owner implements CommandExecutor {
 			if (target != null) {
 				if (plugin.getOwning().getOwner(target) != null) {
 					plugin.say(player, ChatColor.GREEN,
-							Messages.getString("CE_Owner.0") //$NON-NLS-1$
-									+ plugin.getOwning().getOwner(target)
-											.getName());
+							Messages.getString("CE_Owner.success", plugin //$NON-NLS-1$
+									.getOwning().getOwner(target).getName()));
 					return true;
 				} else {
 					plugin.say(player, ChatColor.GREEN,
-							Messages.getString("CE_Owner.1")); //$NON-NLS-1$
+							Messages.getString("CE_Owner.noOwner")); //$NON-NLS-1$
 					return true;
 				}
 			} else {
 				plugin.say(player, ChatColor.RED,
-						Messages.getString("CE_Owner.2")); //$NON-NLS-1$
+						Messages.getString("noTargetBlock")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("CE_Owner.3")); //$NON-NLS-1$
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return false;
 		}
 	}

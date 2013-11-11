@@ -51,18 +51,18 @@ public class CE_Protection implements CommandExecutor {
 				}
 				return true;
 			} else {
-				plugin.con(Messages.getString("CE_Protection.1")); //$NON-NLS-1$
+				plugin.con(Messages.getString("countArgs")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("CE_Protection.2")); //$NON-NLS-1$
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return true;
 		}
 	}
 
 	private void sendLists(Player player, LinkedList<String> protectionList) {
 		plugin.say(player, ChatColor.GREEN,
-				Messages.getString("CE_Protection.3")); //$NON-NLS-1$
+				Messages.getString("CE_Protection.listTitle")); //$NON-NLS-1$
 		for (String blacklistedPlayer : protectionList) {
 			plugin.say(player, ChatColor.RED, blacklistedPlayer);
 		}

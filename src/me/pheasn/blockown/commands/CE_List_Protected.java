@@ -28,28 +28,27 @@ public class CE_List_Protected implements CommandExecutor {
 			Player player = (Player) sender;
 			if (Setting.ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION
 					.getBoolean(plugin)) {
-				plugin.say(player, ChatColor.YELLOW,
-						Messages.getString("CE_List_Protected.0")); //$NON-NLS-1$
+				plugin.say(player, ChatColor.YELLOW, Messages
+						.getString("CE_List_Protected.everythingProtected")); //$NON-NLS-1$
 				return true;
 			}
 			HashMap<String, LinkedList<String>> protections = plugin
 					.getPlayerSettings().getRawBlacklists(player);
 			if (Setting.ENABLE_AUTOMATIC_CHEST_PROTECTION.getBoolean(plugin)) {
 				plugin.say(player, ChatColor.YELLOW,
-						Messages.getString("CE_List_Protected.1")); //$NON-NLS-1$
+						Messages.getString("CE_List_Protected.chestsProtected")); //$NON-NLS-1$
 			}
 			for (Entry<String, LinkedList<String>> entry : protections
 					.entrySet()) {
-				plugin.say(player, ChatColor.YELLOW,
-						Messages.getString("CE_List_Protected.2") + entry.getKey() //$NON-NLS-1$
-								+ Messages.getString("CE_List_Protected.3")); //$NON-NLS-1$
+				plugin.say(player, ChatColor.YELLOW, Messages.getString(
+						"CE_List_Protected.protectedMaterial", entry.getKey())); //$NON-NLS-1$
 				for (String material : entry.getValue()) {
 					plugin.say(player, ChatColor.GREEN, material);
 				}
 			}
 			return true;
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("CE_List_Protected.4")); //$NON-NLS-1$
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return true;
 		}
 	}

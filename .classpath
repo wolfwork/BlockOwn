@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="WorldEdit.jar"/>
 	<classpathentry kind="lib" path="Vault.jar"/>
 	<classpathentry kind="lib" path="craftbukkit.jar"/>
+	<classpathentry exported="true" kind="src" path="/PluginUpdater"/>
+	<classpathentry exported="true" kind="src" path="/PheasnPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

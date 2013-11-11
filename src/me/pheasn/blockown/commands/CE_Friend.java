@@ -28,21 +28,24 @@ public class CE_Friend implements CommandExecutor {
 				if (friend != null) {
 					plugin.getPlayerSettings().friendListAdd(friend.getName(),
 							player.getName());
-					plugin.say(player, ChatColor.GREEN, friend.getName()
-							+ Messages.getString("CE_Friend.0")); //$NON-NLS-1$
+					plugin.say(
+							player,
+							ChatColor.GREEN,
+							Messages.getString(
+									"CE_Friend.success", friend.getName())); //$NON-NLS-1$
 					return true;
 				} else {
 					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Friend.3")); //$NON-NLS-1$
+							Messages.getString("CE_Friend.playerNotFound")); //$NON-NLS-1$
 					return false;
 				}
 			} else {
 				plugin.say(player, ChatColor.RED,
-						Messages.getString("CE_Friend.1")); //$NON-NLS-1$
+						Messages.getString("countArgs")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("CE_Friend.2")); //$NON-NLS-1$
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return true;
 		}
 	}

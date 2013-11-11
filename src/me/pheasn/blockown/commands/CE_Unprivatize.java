@@ -28,13 +28,12 @@ public class CE_Unprivatize implements CommandExecutor {
 				if (blockType != null) {
 					plugin.getPlayerSettings().privateListRemove(
 							player.getName(), blockType.name());
-					plugin.say(player, ChatColor.GREEN,
-							Messages.getString("CE_Unprivatize.0") + args[0] //$NON-NLS-1$
-									+ Messages.getString("CE_Unprivatize.1")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.GREEN, Messages.getString(
+							"CE_Unprivatize.success", blockType.name())); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Unprivatize.4")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.RED, Messages
+							.getString("CE_Unprivatize.invalidMaterial")); //$NON-NLS-1$
 					return false;
 				}
 			} else if (args.length == 0) {
@@ -43,22 +42,21 @@ public class CE_Unprivatize implements CommandExecutor {
 							player.getName(),
 							BOPlayer.getInstance(player).getTargetBlock()
 									.getType().name());
-					plugin.say(player, ChatColor.GREEN,
-							Messages.getString("CE_Unprivatize.5") //$NON-NLS-1$
-									+ BOPlayer.getInstance(player)
-											.getTargetBlock().getType().name()
-									+ Messages.getString("CE_Unprivatize.6")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.GREEN, Messages.getString(
+							"CE_Unprivatize.success", //$NON-NLS-1$
+							BOPlayer.getInstance(player).getTargetBlock()
+									.getType().name()));
 					return true;
 				} else {
 					return false;
 				}
 			} else {
 				plugin.say(player, ChatColor.RED,
-						Messages.getString("CE_Unprivatize.2")); //$NON-NLS-1$
+						Messages.getString("countArgs")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("CE_Unprivatize.3")); //$NON-NLS-1$
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return true;
 		}
 	}

@@ -35,7 +35,7 @@ public class CE_Own implements CommandExecutor {
 			if (Setting.PERMISSION_NEEDED_FOR_OWN_COMMAND.getBoolean(plugin)
 					&& !player.hasPermission(Permission.OWN.toString())) {
 				plugin.say(player, ChatColor.RED,
-						Messages.getString("CE_Own.10")); //$NON-NLS-1$
+						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
 			}
 			if (args.length == 0) {
@@ -44,24 +44,26 @@ public class CE_Own implements CommandExecutor {
 				if (owner == null) {
 					plugin.getOwning().setOwner(target, player);
 					plugin.say(player, ChatColor.GREEN,
-							Messages.getString("CE_Own.0")); //$NON-NLS-1$
+							Messages.getString("CE_Own.success")); //$NON-NLS-1$
 					return true;
 				}
 				if (owner.getName().equalsIgnoreCase(player.getName())) {
 					plugin.say(player, ChatColor.YELLOW,
-							Messages.getString("CE_Own.1")); //$NON-NLS-1$
+							Messages.getString("CE_Own.unneccessary")); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Own.2") //$NON-NLS-1$
-									+ owner.getName() + "."); //$NON-NLS-1$
+					plugin.say(
+							player,
+							ChatColor.RED,
+							Messages.getString(
+									"CE_Own.ownedBy", owner.getName())); //$NON-NLS-1$
 					return false;
 				}
 			} else if (args.length == 1
 					&& args[0].equalsIgnoreCase("selection")) { //$NON-NLS-1$
 				if (plugin.getWorldEdit() == null) {
 					plugin.tell(sender, ChatColor.RED,
-							Messages.getString("CE_Own.3")); //$NON-NLS-1$
+							Messages.getString("CE_Own.selection.noWorldedit")); //$NON-NLS-1$
 					return false;
 				}
 				Selection selection;
@@ -101,24 +103,23 @@ public class CE_Own implements CommandExecutor {
 							plugin.say(
 									player,
 									ChatColor.RED,
-									Messages.getString("CE_Own.11") //$NON-NLS-1$
-											+ (selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
-													.getDouble(plugin))
-											+ " " //$NON-NLS-1$
-											+ plugin.getEconomy()
-													.currencyNamePlural()
-											+ Messages.getString("CE_Own.12")); //$NON-NLS-1$
+									Messages.getString(
+											"CE_Own.selection.noMoney",
+											(selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
+													.getDouble(plugin)), plugin
+													.getEconomy()
+													.currencyNamePlural()));
 							return true;
 						} else {
 							plugin.say(
 									player,
 									ChatColor.YELLOW,
-									Messages.getString("CE_Own.13") //$NON-NLS-1$
-											+ (selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
-													.getDouble(plugin))
-											+ " " //$NON-NLS-1$
-											+ plugin.getEconomy()
-													.currencyNamePlural());
+									Messages.getString(
+											"CE_Own.selection.howMuch",
+											(selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
+													.getDouble(plugin)), plugin
+													.getEconomy()
+													.currencyNamePlural()));
 							plugin.getEconomy()
 									.withdrawPlayer(
 											player.getName(),
@@ -130,28 +131,24 @@ public class CE_Own implements CommandExecutor {
 						plugin.getOwning().setOwner(selectedBlock, player);
 					}
 					plugin.tell(sender, ChatColor.GREEN,
-							Messages.getString("CE_Own.5")); //$NON-NLS-1$
+							Messages.getString("CE_Own.selection.success")); //$NON-NLS-1$
 					if (failed > 0) {
-						plugin.tell(
-								sender,
-								ChatColor.YELLOW,
-								Messages.getString("CE_Own.6") //$NON-NLS-1$
-										+ failed
-										+ Messages.getString("CE_Own.7")); //$NON-NLS-1$
+						plugin.tell(sender, ChatColor.YELLOW, Messages
+								.getString("CE_Own.selection.except", failed)); //$NON-NLS-1$
 					}
 					return true;
 				} else {
 					plugin.tell(sender, ChatColor.RED,
-							Messages.getString("CE_Own.8")); //$NON-NLS-1$
+							Messages.getString("CE_Own.selection.noArea")); //$NON-NLS-1$
 					return true;
 				}
 			} else {
 				plugin.tell(sender, ChatColor.RED,
-						Messages.getString("CE_Own.9")); //$NON-NLS-1$
+						Messages.getString("countArgs")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("CE_Own.4")); //$NON-NLS-1$
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return false;
 		}
 

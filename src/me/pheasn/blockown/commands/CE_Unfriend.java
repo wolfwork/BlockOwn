@@ -29,20 +29,20 @@ public class CE_Unfriend implements CommandExecutor {
 					plugin.getPlayerSettings().friendListRemove(args[0],
 							player.getName());
 					plugin.say(player, ChatColor.GREEN,
-							args[0] + Messages.getString("CE_Unfriend.0")); //$NON-NLS-1$
+							 Messages.getString("CE_Unfriend.success", friend.getName())); //$NON-NLS-1$
 					return true;
 				} else {
 					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Unfriend.3")); //$NON-NLS-1$
+							Messages.getString("CE_Unfriend.invalidPlayer")); //$NON-NLS-1$
 					return false;
 				}
 			} else {
 				plugin.say(player, ChatColor.RED,
-						Messages.getString("CE_Unfriend.1")); //$NON-NLS-1$
+						Messages.getString("countArgs")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			plugin.con(ChatColor.RED, Messages.getString("CE_Unfriend.2")); //$NON-NLS-1$
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return true;
 		}
 	}

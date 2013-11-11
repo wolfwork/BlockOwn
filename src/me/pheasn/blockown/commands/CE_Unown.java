@@ -41,18 +41,18 @@ public class CE_Unown implements CommandExecutor {
 										player.getName())) {
 							plugin.getOwning().removeOwner(target);
 							plugin.say(player, ChatColor.GREEN,
-									Messages.getString("CE_Unown.0")); //$NON-NLS-1$
+									Messages.getString("CE_Unown.success")); //$NON-NLS-1$
 							return true;
 						} else {
 							plugin.say(player, ChatColor.RED,
-									Messages.getString("CE_Unown.1")); //$NON-NLS-1$
+									Messages.getString("CE_Unown.unneccessary")); //$NON-NLS-1$
 						}
 					}
 				} else if (args.length == 1
 						&& args[0].equalsIgnoreCase("selection")) { //$NON-NLS-1$
 					if (plugin.getWorldEdit() == null) {
 						plugin.tell(sender, ChatColor.RED,
-								Messages.getString("CE_Unown.3")); //$NON-NLS-1$
+								Messages.getString("CE_Unown.selection.noWorldedit")); //$NON-NLS-1$
 						return false;
 					}
 					Selection selection;
@@ -81,20 +81,20 @@ public class CE_Unown implements CommandExecutor {
 							}
 						}
 						plugin.tell(sender, ChatColor.GREEN,
-								Messages.getString("CE_Unown.4")); //$NON-NLS-1$
+								Messages.getString("CE_Unown.selection.success")); //$NON-NLS-1$
 						return true;
 					} else {
 						plugin.tell(sender, ChatColor.RED,
-								Messages.getString("CE_Unown.5")); //$NON-NLS-1$
+								Messages.getString("CE_Unown.selection.noArea")); //$NON-NLS-1$
 						return true;
 					}
 				} else {
 					plugin.tell(sender, ChatColor.RED,
-							Messages.getString("CE_Unown.6")); //$NON-NLS-1$
+							Messages.getString("countArgs")); //$NON-NLS-1$
 					return false;
 				}
 			} else {
-				plugin.con(ChatColor.RED, Messages.getString("CE_Unown.2")); //$NON-NLS-1$
+				plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			}
 		} catch (Exception ex) {
 

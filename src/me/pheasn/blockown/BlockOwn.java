@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 
+import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.commands.CE_Friend;
 import me.pheasn.blockown.commands.CE_List_Friends;
 import me.pheasn.blockown.commands.CE_List_Private;
@@ -34,7 +35,7 @@ import me.pheasn.blockown.owning.Owning;
 import me.pheasn.blockown.owning.SQLOwningLocal;
 import me.pheasn.blockown.owning.SQLOwningNetwork;
 import me.pheasn.blockown.owning.Owning.DatabaseType;
-import me.pheasn.blockown.updater.Updater;
+import me.pheasn.pluginupdater.Updater;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.ChatColor;
@@ -76,12 +77,6 @@ public class BlockOwn extends PheasnPlugin {
 		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
 		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
 		ENABLE_PROTECTED_MESSAGES("ServerSettings.enableProtectedMessages"), //$NON-NLS-1$
-		ENABLE_AUTOUPDATE("ServerSettings.AutoUpdater.enable"), //$NON-NLS-1$
-		RELEASE_TYPE("ServerSettings.AutoUpdater.releaseType"), //$NON-NLS-1$
-		BROADCAST_TO_OPERATORS(
-				"ServerSettings.AutoUpdater.broadcastToOperators"), //$NON-NLS-1$
-		API_KEY("ServerSettings.AutoUpdater.apiKey"), //$NON-NLS-1$
-		AUTOUPDATE_INTERVAL("ServerSettings.AutoUpdater.autoUpdateInterval"), //$NON-NLS-1$
 		ENABLE_AUTOMATIC_CHEST_PROTECTION(
 				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
 		ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION(
@@ -212,7 +207,7 @@ public class BlockOwn extends PheasnPlugin {
 		protectionsFile = new File(pluginDir.getPath() + "/playerSettings.yml"); //$NON-NLS-1$
 		this.createEnv();
 		if (!Setting.ENABLE.getBoolean(this)) {
-			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.40")); //$NON-NLS-1$
+			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.enabled.false")); //$NON-NLS-1$
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -233,11 +228,11 @@ public class BlockOwn extends PheasnPlugin {
 
 		// enable AutoUpdater
 		updater = new Updater(this, this.pluginId, this.getFile(),
-				Setting.API_KEY.getString(this));
-		if (Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
+				me.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
+		if (me.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
 			updater.schedule(100l,
-					Setting.AUTOUPDATE_INTERVAL.getLong(this) * 1000);
-			this.con(Messages.getString("BlockOwn.93")); //$NON-NLS-1$
+					me.pheasn.pluginupdater.Updater.Setting.AUTOUPDATE_INTERVAL.getLong(this) * 1000);
+			this.con(Messages.getString("BlockOwn.updater.started")); //$NON-NLS-1$
 		}
 		// enable autoSaver
 		autoSaveThread = new AutoSaveThread(this);
@@ -250,7 +245,7 @@ public class BlockOwn extends PheasnPlugin {
 			worldEdit = (WorldEditPlugin) this.getServer().getPluginManager()
 					.getPlugin("WorldEdit"); //$NON-NLS-1$
 			if (worldEdit != null) {
-				this.con(Messages.getString("BlockOwn.24")); //$NON-NLS-1$
+				this.con(Messages.getString("BlockOwn.dependency.worldedit")); //$NON-NLS-1$
 			}
 		} catch (Exception e) {
 		}
@@ -264,12 +259,12 @@ public class BlockOwn extends PheasnPlugin {
 					economy = rsp.getProvider();
 				}
 				if (economy != null) {
-					this.con(Messages.getString("BlockOwn.25")); //$NON-NLS-1$
+					this.con(Messages.getString("BlockOwn.dependency.vault")); //$NON-NLS-1$
 				}
 			}
 		} catch (Exception e) {
 		}
-		this.con(Messages.getString("BlockOwn.41")); //$NON-NLS-1$
+		this.con(Messages.getString("BlockOwn.enabled.true")); //$NON-NLS-1$
 	}
 
 	@Override
@@ -332,7 +327,7 @@ public class BlockOwn extends PheasnPlugin {
 				this.tell(
 						sender,
 						ChatColor.RED,
-						Messages.getString("BlockOwn.44") + String.valueOf(((Player) sender).hasPermission(Permission.ADMIN.toString()))); //$NON-NLS-1$ 
+						Messages.getString("noPermission") + String.valueOf(((Player) sender).hasPermission(Permission.ADMIN.toString()))); //$NON-NLS-1$ 
 				return true;
 			}
 			if (args.length == 1) {
@@ -377,15 +372,15 @@ public class BlockOwn extends PheasnPlugin {
 		if (this.owning instanceof ClassicOwning) {
 			if (this.owning.save()) {
 				this.tell(sender, ChatColor.GREEN,
-						Messages.getString("BlockOwn.47")); //$NON-NLS-1$
+						Messages.getString("BlockOwn.owner.save.success")); //$NON-NLS-1$
 				return true;
 			} else {
 				this.tell(sender, ChatColor.RED,
-						Messages.getString("BlockOwn.48")); //$NON-NLS-1$
+						Messages.getString("BlockOwn.owner.save.error")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			this.tell(sender, Messages.getString("BlockOwn.100")); //$NON-NLS-1$
+			this.tell(sender, Messages.getString("BlockOwn.owner.save.unneccessary")); //$NON-NLS-1$
 			return true;
 		}
 	}
@@ -409,7 +404,7 @@ public class BlockOwn extends PheasnPlugin {
 					oldOwning = new SQLOwningNetwork(this);
 				} catch (ClassNotFoundException | MySQLNotConnectingException e) {
 					this.tell(sender, ChatColor.RED,
-							Messages.getString("BlockOwn.29")); //$NON-NLS-1$
+							Messages.getString("BlockOwn.import.connectError")); //$NON-NLS-1$
 					return false;
 				}
 
@@ -419,10 +414,10 @@ public class BlockOwn extends PheasnPlugin {
 			Thread importThread = new ImportThread(sender, this, oldOwning);
 			importThread.start();
 			this.tell(sender, ChatColor.GREEN,
-					Messages.getString("BlockOwn.30")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.import.started")); //$NON-NLS-1$
 			return true;
 		} else {
-			this.tell(sender, ChatColor.RED, Messages.getString("BlockOwn.32")); //$NON-NLS-1$
+			this.tell(sender, ChatColor.RED, Messages.getString("BlockOwn.import.unneccessary")); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -434,11 +429,11 @@ public class BlockOwn extends PheasnPlugin {
 		FileConfiguration config = this.getConfig();
 		updater.cancel();
 		updater = new Updater(this, this.pluginId, this.getFile(),
-				Setting.API_KEY.getString(this));
-		if (Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
+				me.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
+		if (me.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
 			updater.schedule(100l,
 					Setting.AUTOSAVE_INTERVAL.getLong(this) * 1000);
-			this.con(Messages.getString("BlockOwn.14")); //$NON-NLS-1$
+			this.con(Messages.getString("BlockOwn.updater.started")); //$NON-NLS-1$
 		}
 
 		if (autoSaveThread.isAlive()) {
@@ -458,7 +453,7 @@ public class BlockOwn extends PheasnPlugin {
 					owning = new SQLOwningLocal(this);
 				} catch (Exception e) {
 					this.tell(sender, ChatColor.RED,
-							Messages.getString("BlockOwn.1")); //$NON-NLS-1$
+							Messages.getString("BlockOwn.database.switch.error")); //$NON-NLS-1$
 					this.getServer().getPluginManager().disablePlugin(this);
 				}
 			} else if (owning.getType() != DatabaseType.SQL_NETWORK) {
@@ -467,7 +462,7 @@ public class BlockOwn extends PheasnPlugin {
 					owning = new SQLOwningNetwork(this);
 				} catch (Exception e) {
 					this.tell(sender, ChatColor.RED,
-							Messages.getString("BlockOwn.5")); //$NON-NLS-1$
+							Messages.getString("BlockOwn.database.switch.error")); //$NON-NLS-1$
 					this.getServer().getPluginManager().disablePlugin(this);
 				}
 			}
@@ -479,7 +474,7 @@ public class BlockOwn extends PheasnPlugin {
 			autoSaveThread = new AutoSaveThread(this);
 			autoSaveThread.start();
 		}
-		this.tell(sender, ChatColor.GREEN, Messages.getString("BlockOwn.50")); //$NON-NLS-1$
+		this.tell(sender, ChatColor.GREEN, Messages.getString("BlockOwn.reload.success")); //$NON-NLS-1$
 		return true;
 	}
 
@@ -487,79 +482,79 @@ public class BlockOwn extends PheasnPlugin {
 
 		Commands.BLOCKOWN.getCommand(this).setExecutor(this);
 		Commands.BLOCKOWN.getCommand(this).setUsage(
-				ChatColor.RED + Messages.getString("BlockOwn.6")); //$NON-NLS-1$
+				ChatColor.RED + Messages.getString("BlockOwn.usage.blockown")); //$NON-NLS-1$
 		Commands.BLOCKOWN.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.8")); //$NON-NLS-1$
+				Messages.getString("BlockOwn.description.blockown")); //$NON-NLS-1$
 
 		Commands.OWN.getCommand(this).setExecutor(new CE_Own(this));
 		Commands.OWN.getCommand(this).setUsage(
-				ChatColor.RED + Messages.getString("BlockOwn.11")); //$NON-NLS-1$
+				ChatColor.RED + Messages.getString("BlockOwn.usage.own")); //$NON-NLS-1$
 		Commands.OWN.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.13")); //$NON-NLS-1$
+				Messages.getString("BlockOwn.description.own")); //$NON-NLS-1$
 
 		Commands.UNOWN.getCommand(this).setExecutor(new CE_Unown(this));
 		Commands.UNOWN.getCommand(this).setUsage(
-				ChatColor.RED + Messages.getString("BlockOwn.16")); //$NON-NLS-1$
+				ChatColor.RED + Messages.getString("BlockOwn.usage.unown")); //$NON-NLS-1$
 		Commands.UNOWN.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.18")); //$NON-NLS-1$
+				Messages.getString("BlockOwn.description.unown")); //$NON-NLS-1$
 
 		Commands.OWNER.getCommand(this).setExecutor(new CE_Owner(this));
 		Commands.OWNER.getCommand(this).setUsage(
-				ChatColor.RED + Messages.getString("BlockOwn.21")); //$NON-NLS-1$
+				ChatColor.RED + Messages.getString("BlockOwn.usage.owner")); //$NON-NLS-1$
 		Commands.OWNER.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.23")); //$NON-NLS-1$
+				Messages.getString("BlockOwn.description.owner")); //$NON-NLS-1$
 		Commands.MAKE_POOR.getCommand(this).setExecutor(new CE_MakePoor(this));
 		Commands.MAKE_POOR.getCommand(this).setUsage(
-				Messages.getString("BlockOwn.3")); //$NON-NLS-1$
+				Messages.getString("BlockOwn.usage.makepoor")); //$NON-NLS-1$
 		Commands.MAKE_POOR.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.7")); //$NON-NLS-1$
+				Messages.getString("BlockOwn.description.makepoor")); //$NON-NLS-1$
 		if (!Setting.CASCADE_PROTECTION_COMMANDS.getBoolean(this)) {
 			Commands.PROTECT.getCommand(this).setExecutor(new CE_Protect(this));
 			Commands.PROTECT.getCommand(this).setUsage(
-					ChatColor.RED + Messages.getString("BlockOwn.26")); //$NON-NLS-1$
+					ChatColor.RED + Messages.getString("BlockOwn.usage.protect")); //$NON-NLS-1$
 			Commands.PROTECT.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.28")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.description.protect")); //$NON-NLS-1$
 
 			Commands.UNPROTECT.getCommand(this).setExecutor(
 					new CE_Unprotect(this));
 			Commands.UNPROTECT.getCommand(this).setUsage(
-					ChatColor.RED + Messages.getString("BlockOwn.31")); //$NON-NLS-1$
+					ChatColor.RED + Messages.getString("BlockOwn.usage.unprotect")); //$NON-NLS-1$
 			Commands.UNPROTECT.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.33")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.description.unprotect")); //$NON-NLS-1$
 
 			Commands.PROTECTION.getCommand(this).setExecutor(
 					new CE_Protection(this));
 			Commands.PROTECTION.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.17")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.usage.protection")); //$NON-NLS-1$
 			Commands.PROTECTION.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.20")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.description.protection")); //$NON-NLS-1$
 
 			Commands.PRIVATIZE.getCommand(this).setExecutor(
 					new CE_Privatize(this));
 			Commands.PRIVATIZE.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.2")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.usage.privatize")); //$NON-NLS-1$
 			Commands.PRIVATIZE.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.4")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.description.privatize")); //$NON-NLS-1$
 
 			Commands.UNPRIVATIZE.getCommand(this).setExecutor(
 					new CE_Unprivatize(this));
 			Commands.UNPRIVATIZE.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.9")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.usage.unprivatize")); //$NON-NLS-1$
 			Commands.UNPRIVATIZE.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.10")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.description.unprivatize")); //$NON-NLS-1$
 
 			Commands.FRIEND.getCommand(this).setExecutor(new CE_Friend(this));
 			Commands.FRIEND.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.12")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.usage.friend")); //$NON-NLS-1$
 			Commands.FRIEND.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.15")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.description.friend")); //$NON-NLS-1$
 
 			Commands.UNFRIEND.getCommand(this).setExecutor(
 					new CE_Unfriend(this));
 			Commands.UNFRIEND.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.19")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.usage.unfriend")); //$NON-NLS-1$
 			Commands.UNFRIEND.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.22")); //$NON-NLS-1$
+					Messages.getString("BlockOwn.description.unfriend")); //$NON-NLS-1$
 
 		} else {
 			this.unRegisterBukkitCommand(Commands.PROTECTION.getCommand(this));
@@ -595,25 +590,25 @@ public class BlockOwn extends PheasnPlugin {
 	private void createEnv() {
 		if (!pluginDir.exists()) {
 			try {
-				this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.34")); //$NON-NLS-1$
+				this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.prepare.start")); //$NON-NLS-1$
 				this.pluginDir.mkdir();
 				this.blockOwnerFile.createNewFile();
 				this.protectionsFile.createNewFile();
 				this.saveDefaultConfig();
 			} catch (IOException ex) {
-				this.con(ChatColor.RED, Messages.getString("BlockOwn.35")); //$NON-NLS-1$
+				this.con(ChatColor.RED, Messages.getString("BlockOwn.prepare.error")); //$NON-NLS-1$
 			}
 		}
 		if (!blockOwnerFile.exists()) {
 			try {
-				this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.36")); //$NON-NLS-1$
+				this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.prepare.new.owner")); //$NON-NLS-1$
 				blockOwnerFile.createNewFile();
 			} catch (IOException ex) {
-				this.con(ChatColor.RED, Messages.getString("BlockOwn.37")); //$NON-NLS-1$
+				this.con(ChatColor.RED, Messages.getString("BlockOwn.prepare.error")); //$NON-NLS-1$
 			}
 		}
 		if (!settingsFile.exists()) {
-			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.38")); //$NON-NLS-1$
+			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.prepare.new.config")); //$NON-NLS-1$
 			this.saveDefaultConfig();
 		}
 		if (!protectionsFile.exists()) {
@@ -640,12 +635,12 @@ public class BlockOwn extends PheasnPlugin {
 			} else {
 				owning = new ClassicOwning(this);
 			}
-			this.con(Messages.getString("BlockOwn.0")); //$NON-NLS-1$
+			this.con(Messages.getString("BlockOwn.database.connect.success")); //$NON-NLS-1$
 			return true;
 		} catch (ClassNotFoundException e1) {
 			return false;
 		} catch (MySQLNotConnectingException e2) {
-			this.con(ChatColor.RED, Messages.getString("BlockOwn.86")); //$NON-NLS-1$
+			this.con(ChatColor.RED, Messages.getString("BlockOwn.database.connect.error")); //$NON-NLS-1$
 			this.getServer().getPluginManager().disablePlugin(this);
 			return false;
 		}

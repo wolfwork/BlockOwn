@@ -32,7 +32,8 @@ public class CE_Unprotect implements CommandExecutor {
 					protectName = args[0];
 					if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
 						args[0] = PlayerSettings.ALL_PLAYERS;
-						protectName = Messages.getString("CE_Unprotect.0"); //$NON-NLS-1$
+						protectName = Messages
+								.getString("CE_Unprotect.allPlayers"); //$NON-NLS-1$
 					}
 					plugin.getPlayerSettings().blacklistRemove(player,
 							target.getType().name(), args[0]);
@@ -47,7 +48,8 @@ public class CE_Unprotect implements CommandExecutor {
 					}
 					if (args[1].equalsIgnoreCase("all")) { //$NON-NLS-1$
 						args[1] = PlayerSettings.ALL_PLAYERS;
-						protectName = Messages.getString("CE_Unprotect.5"); //$NON-NLS-1$
+						protectName = Messages
+								.getString("CE_Unprotect.allPlayers"); //$NON-NLS-1$
 					}
 					plugin.getPlayerSettings().blacklistRemove(player,
 							args[0].toUpperCase(), args[1]);
@@ -55,26 +57,24 @@ public class CE_Unprotect implements CommandExecutor {
 					return true;
 				} else {
 					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Unprotect.6")); //$NON-NLS-1$
+							Messages.getString("countArgs")); //$NON-NLS-1$
 					return false;
 				}
 			} else {
 				plugin.say(player, ChatColor.RED,
-						Messages.getString("CE_Unprotect.7")); //$NON-NLS-1$
+						Messages.getString("noTargetBlock")); //$NON-NLS-1$
 				return false;
 			}
 		} else {
-			plugin.con(Messages.getString("CE_Unprotect.8")); //$NON-NLS-1$
+			plugin.con(Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return false;
 		}
 	}
 
 	private void sendSuccessMessage(Player player, String blockName,
 			String protectName) {
-		plugin.say(player, ChatColor.GREEN,
-				Messages.getString("CE_Unprotect.9") + blockName.toLowerCase() //$NON-NLS-1$
-						+ Messages.getString("CE_Unprotect.10") + protectName //$NON-NLS-1$
-						+ "."); //$NON-NLS-1$
+		plugin.say(player, ChatColor.GREEN, Messages.getString(
+				"CE_Unprotect.success", blockName, protectName)); //$NON-NLS-1$
 	}
 
 }

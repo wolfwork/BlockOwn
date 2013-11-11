@@ -19,10 +19,10 @@ public class AutoSaveTask extends TimerTask {
 		if (plugin.getOwning().getType().equals(DatabaseType.CLASSIC)) {
 			if (plugin.getOwning().save()) {
 				plugin.getLogger().log(Level.FINEST,
-						Messages.getString("AutoSaveTask.0")); //$NON-NLS-1$
+						Messages.getString("AutoSaveTask.success")); //$NON-NLS-1$
 			} else {
 				plugin.getLogger().log(Level.WARNING,
-						Messages.getString("AutoSaveTask.1")); //$NON-NLS-1$
+						Messages.getString("AutoSaveTask.failure")); //$NON-NLS-1$
 			}
 		}
 		plugin.getPlayerSettings().save(YamlConfiguration.loadConfiguration(plugin.getProtectionsFile()));
