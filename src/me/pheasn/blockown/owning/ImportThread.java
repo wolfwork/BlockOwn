@@ -3,18 +3,18 @@ package me.pheasn.blockown.owning;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import me.pheasn.PheasnPlugin;
+import me.pheasn.blockown.BlockOwn;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 
 public class ImportThread extends Thread {
-	private PheasnPlugin plugin;
+	private BlockOwn plugin;
 	private Owning oldOwning;
 	private CommandSender sender;
 
-	public ImportThread(CommandSender sender, PheasnPlugin plugin,
+	public ImportThread(CommandSender sender, BlockOwn plugin,
 			Owning oldOwning) {
 		this.plugin = plugin;
 		this.oldOwning = oldOwning;

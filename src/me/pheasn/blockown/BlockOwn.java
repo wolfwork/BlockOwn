@@ -32,9 +32,9 @@ import me.pheasn.blockown.owning.ClassicOwning;
 import me.pheasn.blockown.owning.ImportThread;
 import me.pheasn.blockown.owning.MySQLNotConnectingException;
 import me.pheasn.blockown.owning.Owning;
-import me.pheasn.blockown.owning.Owning.DatabaseType;
 import me.pheasn.blockown.owning.SQLOwningLocal;
 import me.pheasn.blockown.owning.SQLOwningNetwork;
+import me.pheasn.blockown.owning.Owning.DatabaseType;
 import me.pheasn.pluginupdater.Updater;
 import net.milkbowl.vault.economy.Economy;
 

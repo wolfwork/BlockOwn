@@ -1,9 +1,9 @@
 package me.pheasn.blockown.listeners;
 
 import me.pheasn.blockown.BlockOwn;
+import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
-import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;

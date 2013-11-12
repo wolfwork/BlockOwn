@@ -2,10 +2,10 @@ package me.pheasn.blockown.commands;
 
 import me.pheasn.blockown.BOPlayer;
 import me.pheasn.blockown.BlockOwn;
-import me.pheasn.blockown.BlockOwn.Permission;
-import me.pheasn.blockown.BlockOwn.Setting;
 import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.PlayerSettings;
+import me.pheasn.blockown.BlockOwn.Permission;
+import me.pheasn.blockown.BlockOwn.Setting;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
