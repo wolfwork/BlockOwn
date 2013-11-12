@@ -3,9 +3,9 @@ package me.pheasn.blockown;
 import java.util.TimerTask;
 import java.util.logging.Level;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import me.pheasn.blockown.owning.Owning.DatabaseType;
+
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class AutoSaveTask extends TimerTask {
 	private BlockOwn plugin;
@@ -25,6 +25,8 @@ public class AutoSaveTask extends TimerTask {
 						Messages.getString("AutoSaveTask.failure")); //$NON-NLS-1$
 			}
 		}
-		plugin.getPlayerSettings().save(YamlConfiguration.loadConfiguration(plugin.getProtectionsFile()));
+		plugin.getPlayerSettings()
+				.save(YamlConfiguration.loadConfiguration(plugin
+						.getProtectionsFile()));
 	}
 }

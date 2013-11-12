@@ -2,9 +2,9 @@ package me.pheasn.blockown.commands;
 
 import me.pheasn.blockown.BOPlayer;
 import me.pheasn.blockown.BlockOwn;
-import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
+import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -65,7 +65,7 @@ public class CE_Privatize implements CommandExecutor {
 					plugin.say(player, ChatColor.YELLOW, Messages.getString(
 							"CE_Privatize.howMuch", Setting.PRICE_PRIVATIZE
 									.getDouble(plugin), plugin.getEconomy()
-									.currencyNamePlural())); //$NON-NLS-1$
+									.currencyNamePlural())); 
 					plugin.getEconomy().withdrawPlayer(player.getName(),
 							Setting.PRICE_PRIVATIZE.getDouble(plugin));
 				}
@@ -94,7 +94,7 @@ public class CE_Privatize implements CommandExecutor {
 							ChatColor.GREEN,
 							Messages.getString("CE_Privatize.success", BOPlayer
 									.getInstance(player).getTargetBlock()
-									.getType().name())); //$NON-NLS-1$
+									.getType().name())); 
 					return true;
 				} else {
 					return false;

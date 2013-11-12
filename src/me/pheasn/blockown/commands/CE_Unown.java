@@ -51,8 +51,8 @@ public class CE_Unown implements CommandExecutor {
 				} else if (args.length == 1
 						&& args[0].equalsIgnoreCase("selection")) { //$NON-NLS-1$
 					if (plugin.getWorldEdit() == null) {
-						plugin.tell(sender, ChatColor.RED,
-								Messages.getString("CE_Unown.selection.noWorldedit")); //$NON-NLS-1$
+						plugin.tell(sender, ChatColor.RED, Messages
+								.getString("CE_Unown.selection.noWorldedit")); //$NON-NLS-1$
 						return false;
 					}
 					Selection selection;
@@ -80,8 +80,8 @@ public class CE_Unown implements CommandExecutor {
 								}
 							}
 						}
-						plugin.tell(sender, ChatColor.GREEN,
-								Messages.getString("CE_Unown.selection.success")); //$NON-NLS-1$
+						plugin.tell(sender, ChatColor.GREEN, Messages
+								.getString("CE_Unown.selection.success")); //$NON-NLS-1$
 						return true;
 					} else {
 						plugin.tell(sender, ChatColor.RED,

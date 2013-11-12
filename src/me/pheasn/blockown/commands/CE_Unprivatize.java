@@ -42,10 +42,12 @@ public class CE_Unprivatize implements CommandExecutor {
 							player.getName(),
 							BOPlayer.getInstance(player).getTargetBlock()
 									.getType().name());
-					plugin.say(player, ChatColor.GREEN, Messages.getString(
-							"CE_Unprivatize.success", //$NON-NLS-1$
-							BOPlayer.getInstance(player).getTargetBlock()
-									.getType().name()));
+					plugin.say(
+							player,
+							ChatColor.GREEN,
+							Messages.getString("CE_Unprivatize.success", //$NON-NLS-1$
+									BOPlayer.getInstance(player)
+											.getTargetBlock().getType().name()));
 					return true;
 				} else {
 					return false;

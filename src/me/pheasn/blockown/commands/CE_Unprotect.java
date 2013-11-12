@@ -23,10 +23,11 @@ public class CE_Unprotect implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			String target = BOPlayer.getInstance(player).getTargetBlock().getType().name();
+			String target = BOPlayer.getInstance(player).getTargetBlock()
+					.getType().name();
 			String protectName;
-			if(args.length==2){
-				target=args[0];
+			if (args.length == 2) {
+				target = args[0];
 			}
 			if (target != null) {
 				String blockName = target;
@@ -37,8 +38,8 @@ public class CE_Unprotect implements CommandExecutor {
 						protectName = Messages
 								.getString("CE_Unprotect.allPlayers"); //$NON-NLS-1$
 					}
-					plugin.getPlayerSettings().blacklistRemove(player,
-							target, args[0]);
+					plugin.getPlayerSettings().blacklistRemove(player, target,
+							args[0]);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else if (args.length == 2) {

@@ -21,16 +21,18 @@ public class CE_List_Friends implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String cmd_label, String[] args) {
-		if(sender instanceof Player){
+		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_List_Friends.listTitle")); //$NON-NLS-1$
-			LinkedList<String> friends = plugin.getPlayerSettings().getFriendList(player);
-			for(String friend : friends){
+			plugin.say(player, ChatColor.YELLOW,
+					Messages.getString("CE_List_Friends.listTitle")); //$NON-NLS-1$
+			LinkedList<String> friends = plugin.getPlayerSettings()
+					.getFriendList(player);
+			for (String friend : friends) {
 				plugin.say(player, ChatColor.GREEN, friend);
 			}
 			return true;
-		}else{
-			plugin.con(ChatColor.RED,Messages.getString("justForPlayers")); //$NON-NLS-1$
+		} else {
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return true;
 		}
 	}

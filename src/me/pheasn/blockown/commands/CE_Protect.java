@@ -2,10 +2,10 @@ package me.pheasn.blockown.commands;
 
 import me.pheasn.blockown.BOPlayer;
 import me.pheasn.blockown.BlockOwn;
-import me.pheasn.blockown.Messages;
-import me.pheasn.blockown.PlayerSettings;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
+import me.pheasn.blockown.Messages;
+import me.pheasn.blockown.PlayerSettings;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -32,7 +32,8 @@ public class CE_Protect implements CommandExecutor {
 						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
 			}
-			String targetTypeName = BOPlayer.getInstance(player).getTargetBlock().getType().name();
+			String targetTypeName = BOPlayer.getInstance(player)
+					.getTargetBlock().getType().name();
 			if (args.length == 1 && targetTypeName != null) {
 				if (plugin.getPlayerSettings().isBlacklisted(args[0],
 						player.getName(), targetTypeName)) {
@@ -41,7 +42,7 @@ public class CE_Protect implements CommandExecutor {
 					return true;
 				}
 			} else if (args.length == 2) {
-				targetTypeName=args[0];
+				targetTypeName = args[0];
 				if (plugin.getPlayerSettings().isBlacklisted(args[1],
 						player.getName(), args[0])) {
 					plugin.say(player, ChatColor.YELLOW, Messages.getString(
@@ -97,7 +98,7 @@ public class CE_Protect implements CommandExecutor {
 					}
 					plugin.getPlayerSettings().blacklistAdd(player,
 							args[0].toUpperCase(), args[1]);
-					sendSuccessMessage(player,blockName, protectName);
+					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else {
 					plugin.say(player, ChatColor.RED,

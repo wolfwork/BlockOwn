@@ -22,16 +22,18 @@ public class CE_List_Private implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String cmd_label, String[] args) {
-		if(sender instanceof Player){
+		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_List_Private.listTitle")); //$NON-NLS-1$
-			LinkedList<Material> privateBlocks = plugin.getPlayerSettings().getPrivateList(player);
-			for(Material privateBlock : privateBlocks){
+			plugin.say(player, ChatColor.YELLOW,
+					Messages.getString("CE_List_Private.listTitle")); //$NON-NLS-1$
+			LinkedList<Material> privateBlocks = plugin.getPlayerSettings()
+					.getPrivateList(player);
+			for (Material privateBlock : privateBlocks) {
 				plugin.say(player, ChatColor.GREEN, privateBlock.name());
 			}
 			return true;
-		}else{
-			plugin.con(ChatColor.RED,Messages.getString("justForPlayers")); //$NON-NLS-1$
+		} else {
+			plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return true;
 		}
 	}

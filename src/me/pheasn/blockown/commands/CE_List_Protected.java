@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import me.pheasn.blockown.BlockOwn;
-import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.BlockOwn.Setting;
+import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
