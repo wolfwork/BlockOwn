@@ -40,10 +40,15 @@ public class CE_List_Protected implements CommandExecutor {
 			}
 			for (Entry<String, LinkedList<String>> entry : protections
 					.entrySet()) {
-				plugin.say(player, ChatColor.YELLOW, Messages.getString(
-						"CE_List_Protected.protectedMaterial", entry.getKey())); //$NON-NLS-1$
-				for (String material : entry.getValue()) {
-					plugin.say(player, ChatColor.GREEN, material);
+				if (entry.getValue().size() > 0) {
+					plugin.say(
+							player,
+							ChatColor.YELLOW,
+							Messages.getString(
+									"CE_List_Protected.protectedMaterial", entry.getKey())); //$NON-NLS-1$
+					for (String material : entry.getValue()) {
+						plugin.say(player, ChatColor.GREEN, material);
+					}
 				}
 			}
 			return true;
