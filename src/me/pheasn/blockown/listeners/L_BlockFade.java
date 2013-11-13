@@ -1,8 +1,8 @@
 package me.pheasn.blockown.listeners;
 
 import me.pheasn.blockown.BlockOwn;
-import net.minecraft.server.v1_6_R3.Material;
 
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFadeEvent;

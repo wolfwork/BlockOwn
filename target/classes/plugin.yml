@@ -1,0 +1,37 @@
+name: BlockOwn
+version: 0.7.1
+
+author: Pheasn
+
+main: me.pheasn.blockown.BlockOwn
+
+softdepend: [WorldEdit, Vault]
+
+commands:
+    
+  owner:
+    
+  own:
+    
+  unown:
+   
+  blockown:
+    aliases: bo
+  
+  protect:
+  
+  unprotect:
+  
+  friend:
+  
+  unfriend:
+  
+  privatize:
+    aliases: privatise
+    
+  unprivatize:
+    aliases: unprivatise
+    
+  protection:
+  
+  makepoor:

@@ -32,9 +32,9 @@ import me.pheasn.blockown.owning.ClassicOwning;
 import me.pheasn.blockown.owning.ImportThread;
 import me.pheasn.blockown.owning.MySQLNotConnectingException;
 import me.pheasn.blockown.owning.Owning;
+import me.pheasn.blockown.owning.Owning.DatabaseType;
 import me.pheasn.blockown.owning.SQLOwningLocal;
 import me.pheasn.blockown.owning.SQLOwningNetwork;
-import me.pheasn.blockown.owning.Owning.DatabaseType;
 import me.pheasn.pluginupdater.Updater;
 import net.milkbowl.vault.economy.Economy;
 
@@ -94,7 +94,8 @@ public class BlockOwn extends PheasnPlugin {
 		PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
 		PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
 		ENABLE_ECONOMY("ServerSettings.Economy.enable"), //$NON-NLS-1$
-		RADIUS_BLOCK_PLACE_DENIED("ServerSettings.radiusBlockPlaceDenied"); //$NON-NLS-1$
+		RADIUS_BLOCK_PLACE_DENIED("ServerSettings.radiusBlockPlaceDenied"), //$NON-NLS-1$
+		ENABLE_OWNED_BLOCK_DROPS("ServerSettings.enableOwnedBlockDrops"); //$NON-NLS-1$
 		private String s;
 
 		private Setting(String s) {
