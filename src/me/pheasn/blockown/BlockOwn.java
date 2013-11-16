@@ -223,7 +223,9 @@ public class BlockOwn extends PheasnPlugin {
 		PROTECT_AND_PRIVATIZE("blockown.protect"), //$NON-NLS-1$
 		ADMIN("blockown.admin"), //$NON-NLS-1$
 		OWN_PLACE("blockown.own.place"), //$NON-NLS-1$
+		OWN_PLACE_CREATIVE("blockown.own.place.creative"), //$NON-NLS-1$
 		OWN_COMMAND("blockown.own.command"), //$NON-NLS-1$
+		OWN_COMMAND_CREATIVE("blockown.own.command.creative"), //$NON-NLS-1$
 		UNOWN("blockown.unown"), //$NON-NLS-1$
 		FRIEND("blockown.friend"); //$NON-NLS-1$
 

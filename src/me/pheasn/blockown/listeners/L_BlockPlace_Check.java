@@ -4,6 +4,7 @@ import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -26,15 +27,15 @@ public class L_BlockPlace_Check implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (Setting.PERMISSION_NEEDED_OWN_PLACE.getBoolean(plugin)
 				&& !event.getPlayer().hasPermission(Permission.OWN_PLACE.toString())) {
-		} else {
-			plugin.getOwning().setOwner(event.getBlockPlaced(),
-					event.getPlayer());
-			new CheckThread(plugin, this, event.getBlockPlaced(),
-					event.getPlayer()).start();
+			if(!(event.getPlayer().getGameMode()==GameMode.CREATIVE && event.getPlayer().hasPermission(Permission.OWN_PLACE_CREATIVE.toString()))){
+				return;
+			}
 		}
+		plugin.getOwning().setOwner(event.getBlockPlaced(),	event.getPlayer());
+		new CheckThread(plugin, this, event.getBlockPlaced(), event.getPlayer()).start();
 	}
 
-	protected synchronized void scheduleBlockRemove(reverseBlockTask task) {
+	protected synchronized void removeBlock(reverseBlockTask task) {
 		plugin.getServer().getScheduler().runTask(plugin, task);
 	}
 
@@ -69,7 +70,7 @@ class CheckThread extends Thread {
 							(curBlock = world.getBlockAt(x, y, z)))) != null
 							&& plugin.getPlayerSettings().isProtected(
 									curBlock.getType().name(), player, owner)) {
-						listener.scheduleBlockRemove(new reverseBlockTask(
+						listener.removeBlock(new reverseBlockTask(
 								plugin, block, player));
 						return;
 					}

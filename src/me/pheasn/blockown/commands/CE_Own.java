@@ -9,6 +9,7 @@ import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -34,9 +35,11 @@ public class CE_Own implements CommandExecutor {
 			Player player = (Player) sender;
 			if (Setting.PERMISSION_NEEDED_OWN_COMMAND.getBoolean(plugin)
 					&& !player.hasPermission(Permission.OWN_COMMAND.toString())) {
+				if(!(player.getGameMode()==GameMode.CREATIVE&&player.hasPermission(Permission.OWN_COMMAND_CREATIVE.toString()))){
 				plugin.say(player, ChatColor.RED,
 						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
+				}
 			}
 			if (args.length == 0) {
 				Block target = BOPlayer.getInstance(player).getTargetBlock();
