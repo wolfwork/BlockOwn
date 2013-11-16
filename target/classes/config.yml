@@ -1,10 +1,11 @@
-Settings-Version: 0.7.1
+Settings-Version: 0.7.2
 ServerSettings:
   enable: true
   serverName:
   autoSaveInterval: 1200
   enablePlayerSettings: true
   enableProtectedMessages: true
+  protectOnlyLeftClicks: false
   enableAutomaticChestProtection: true
   enableAutomaticUniversalProtection: false
   adminsIgnoreProtection: false

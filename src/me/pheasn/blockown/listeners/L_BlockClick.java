@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class L_BlockClick implements Listener {
@@ -35,6 +36,11 @@ public class L_BlockClick implements Listener {
 					if (plugin.getPlayerSettings().isProtected(
 							event.getClickedBlock().getType().name(),
 							event.getPlayer(), owner)) {
+						if (Setting.PROTECT_ONLY_LEFT_CLICKS.getBoolean(plugin)
+								&& !event.getAction().equals(
+										Action.LEFT_CLICK_BLOCK)) {
+							return;
+						}
 						event.setCancelled(true);
 						if (Setting.ENABLE_PROTECTED_MESSAGES
 								.getBoolean(plugin)) {

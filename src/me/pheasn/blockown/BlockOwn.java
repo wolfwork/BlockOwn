@@ -77,6 +77,7 @@ public class BlockOwn extends PheasnPlugin {
 		AUTOUPDATE_INTERVAL_old("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
 		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
 		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
+		PROTECT_ONLY_LEFT_CLICKS("ServerSettings.protectOnlyLeftClicks"), //$NON-NLS-1$
 		ENABLE_PROTECTED_MESSAGES("ServerSettings.enableProtectedMessages"), //$NON-NLS-1$
 		ENABLE_AUTOMATIC_CHEST_PROTECTION(
 				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
@@ -239,7 +240,8 @@ public class BlockOwn extends PheasnPlugin {
 							.getLong(this) * 1000);
 			this.con(Messages.getString("BlockOwn.updater.started")); //$NON-NLS-1$
 		}
-		// enable autoSaver
+
+		// enable AutoSaver
 		autoSaveThread = new AutoSaveThread(this);
 		if (Setting.AUTOSAVE_INTERVAL.getLong(this) != 0) {
 			autoSaveThread.start();
@@ -317,13 +319,21 @@ public class BlockOwn extends PheasnPlugin {
 			}
 			if (args.length == 2) {
 				if (args[0].equalsIgnoreCase("list")) { //$NON-NLS-1$
-					switch (args[1].toLowerCase()) {
-					case ("private"):return new CE_List_Private(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
-					case ("protected"):return new CE_List_Protected(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
-					case ("friends"):return new CE_List_Friends(this).onCommand(sender, cmd, cmd_label, new String[0]); //$NON-NLS-1$
+					if (args[1].equalsIgnoreCase("private")) { //$NON-NLS-1$
+						return new CE_List_Private(this).onCommand(sender, cmd,
+								cmd_label, new String[0]);
+					}
+					if (args[1].equalsIgnoreCase("protected")) { //$NON-NLS-1$
+						return new CE_List_Protected(this).onCommand(sender,
+								cmd, cmd_label, new String[0]);
+					}
+					if (args[1].equalsIgnoreCase("friends")) { //$NON-NLS-1$
+						return new CE_List_Friends(this).onCommand(sender, cmd,
+								cmd_label, new String[0]);
 					}
 				}
 			}
+
 			// If sender is a player, check for his permission
 			boolean isPlayer = sender instanceof Player;
 			if (isPlayer
@@ -407,7 +417,11 @@ public class BlockOwn extends PheasnPlugin {
 
 				try {
 					oldOwning = new SQLOwningNetwork(this);
-				} catch (ClassNotFoundException | MySQLNotConnectingException e) {
+				} catch (ClassNotFoundException e) {
+					this.tell(sender, ChatColor.RED,
+							Messages.getString("BlockOwn.import.connectError")); //$NON-NLS-1$
+					return false;
+				} catch(MySQLNotConnectingException e){
 					this.tell(sender, ChatColor.RED,
 							Messages.getString("BlockOwn.import.connectError")); //$NON-NLS-1$
 					return false;

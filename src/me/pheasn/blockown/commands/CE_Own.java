@@ -32,6 +32,12 @@ public class CE_Own implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			if (Setting.PERMISSION_NEEDED_FOR_OWNING.getBoolean(plugin)
+					&& !player.hasPermission(Permission.OWN.toString())) {
+				plugin.say(player, ChatColor.RED,
+						Messages.getString("noPermission")); //$NON-NLS-1$
+				return true;
+			}
 			if (Setting.PERMISSION_NEEDED_FOR_OWN_COMMAND.getBoolean(plugin)
 					&& !player.hasPermission(Permission.OWN.toString())) {
 				plugin.say(player, ChatColor.RED,
