@@ -10,6 +10,7 @@ ServerSettings:
     OwnThroughCommand: false
     UnownThroughCommand: false
     ProtectAndPrivatizeCommand: false
+    FriendCommand: false
   Protection:
     enable: true
     cascadeCommands: false
