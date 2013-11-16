@@ -17,8 +17,8 @@ public class L_BlockPlace_NoCheck implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (Setting.PERMISSION_NEEDED_FOR_OWNING.getBoolean(plugin)
-				&& !event.getPlayer().hasPermission(Permission.OWN.toString())) {
+		if (Setting.PERMISSION_NEEDED_OWN_PLACE.getBoolean(plugin)
+				&& !event.getPlayer().hasPermission(Permission.OWN_PLACE.toString())) {
 		} else {
 			plugin.getOwning().setOwner(event.getBlockPlaced(),
 					event.getPlayer());

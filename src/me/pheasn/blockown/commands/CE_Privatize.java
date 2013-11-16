@@ -26,9 +26,9 @@ public class CE_Privatize implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (Setting.PERMISSION_NEEDED_FOR_PROTECT_COMMAND
+			if (Setting.PERMISSION_NEEDED_PROTECT_AND_PRIVATIZE_COMMAND
 					.getBoolean(plugin)
-					&& !player.hasPermission(Permission.PROTECT.toString())) {
+					&& !player.hasPermission(Permission.PROTECT_AND_PRIVATIZE.toString())) {
 				plugin.say(player, ChatColor.RED,
 						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
@@ -48,26 +48,26 @@ public class CE_Privatize implements CommandExecutor {
 							Messages.getString("CE_Privatize.unneccessary")); //$NON-NLS-1$
 					return true;
 				}
-			} else if (Setting.ENABLE_ECONOMY.getBoolean(plugin)) {
+			} else if (Setting.ECONOMY_ENABLE.getBoolean(plugin)) {
 				return false;
 			}
-			if (Setting.ENABLE_ECONOMY.getBoolean(plugin)
+			if (Setting.ECONOMY_ENABLE.getBoolean(plugin)
 					&& plugin.getEconomy() != null
-					&& Setting.PRICE_PRIVATIZE.getDouble(plugin) > 0.0) {
-				if (plugin.getEconomy().getBalance(player.getName()) < Setting.PRICE_PRIVATIZE
+					&& Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin) > 0.0) {
+				if (plugin.getEconomy().getBalance(player.getName()) < Setting.ECONOMY_PRICE_PRIVATIZE
 						.getDouble(plugin)) {
 					plugin.say(player, ChatColor.RED, Messages.getString(
-							"CE_Privatize.noMoney", Setting.PRICE_PRIVATIZE //$NON-NLS-1$
+							"CE_Privatize.noMoney", Setting.ECONOMY_PRICE_PRIVATIZE //$NON-NLS-1$
 									.getDouble(plugin), plugin.getEconomy()
 									.currencyNamePlural()));
 					return true;
 				} else {
 					plugin.say(player, ChatColor.YELLOW, Messages.getString(
-							"CE_Privatize.howMuch", Setting.PRICE_PRIVATIZE
+							"CE_Privatize.howMuch", Setting.ECONOMY_PRICE_PRIVATIZE
 									.getDouble(plugin), plugin.getEconomy()
 									.currencyNamePlural())); 
 					plugin.getEconomy().withdrawPlayer(player.getName(),
-							Setting.PRICE_PRIVATIZE.getDouble(plugin));
+							Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin));
 				}
 			}
 			if (args.length == 1) {

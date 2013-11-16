@@ -24,8 +24,8 @@ public class L_BlockPlace_Check implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (Setting.PERMISSION_NEEDED_FOR_OWNING.getBoolean(plugin)
-				&& !event.getPlayer().hasPermission(Permission.OWN.toString())) {
+		if (Setting.PERMISSION_NEEDED_OWN_PLACE.getBoolean(plugin)
+				&& !event.getPlayer().hasPermission(Permission.OWN_PLACE.toString())) {
 		} else {
 			plugin.getOwning().setOwner(event.getBlockPlaced(),
 					event.getPlayer());
@@ -56,7 +56,7 @@ class CheckThread extends Thread {
 
 	@Override
 	public void run() {
-		int radius = Setting.RADIUS_BLOCK_PLACE_DENIED.getInt(plugin);
+		int radius = Setting.PROTECTION_RADIUS.getInt(plugin);
 		Location end = block.getLocation().add(radius, radius, radius);
 		Location start = block.getLocation().subtract(radius, radius, radius);
 		World world = block.getWorld();

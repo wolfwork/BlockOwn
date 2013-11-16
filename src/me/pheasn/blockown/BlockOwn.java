@@ -70,33 +70,69 @@ public class BlockOwn extends PheasnPlugin {
 
 	public enum Setting {
 		SETTINGS_VERSION("Settings-Version"), //$NON-NLS-1$
-		ENABLE("ServerSettings.enable"), //$NON-NLS-1$
-		ENABLE_AUTOUPDATE_old("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
-		ENABLE_AUTOUPDATE_old2("ServerSettings.AutoUpdater.enableAutoUpdate"), //$NON-NLS-1$
-		API_KEY_old("ServerSettings.apiKey"), //$NON-NLS-1$
-		AUTOUPDATE_INTERVAL_old("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
-		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
-		ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
-		PROTECT_ONLY_LEFT_CLICKS("ServerSettings.protectOnlyLeftClicks"), //$NON-NLS-1$
-		ENABLE_PROTECTED_MESSAGES("ServerSettings.enableProtectedMessages"), //$NON-NLS-1$
-		ENABLE_AUTOMATIC_CHEST_PROTECTION(
-				"ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
-		ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION(
-				"ServerSettings.enableAutomaticUniversalProtection"), //$NON-NLS-1$
-		ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
-		CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), //$NON-NLS-1$
+
+		// ServerSettings
+		ENABLE("ServerSettings.enable"), //$NON-NLS-1$	
 		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"), //$NON-NLS-1$
-		PERMISSION_NEEDED_FOR_PROTECT_COMMAND(
-				"ServerSettings.permissionNeededForProtectCommand"), //$NON-NLS-1$
-		PERMISSION_NEEDED_FOR_OWN_COMMAND(
-				"ServerSettings.permissionNeededForOwnCommand"), //$NON-NLS-1$
-		PERMISSION_NEEDED_FOR_OWNING("ServerSettings.permissionNeededForOwning"), //$NON-NLS-1$
-		PRICE_PROTECT("ServerSettings.Economy.protectPrice"), //$NON-NLS-1$
-		PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
-		PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
-		ENABLE_ECONOMY("ServerSettings.Economy.enable"), //$NON-NLS-1$
-		RADIUS_BLOCK_PLACE_DENIED("ServerSettings.radiusBlockPlaceDenied"), //$NON-NLS-1$
-		ENABLE_OWNED_BLOCK_DROPS("ServerSettings.enableOwnedBlockDrops"); //$NON-NLS-1$
+		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
+		ENABLE_OWNED_BLOCK_DROPS("ServerSettings.enableOwnedBlockDrops"), //$NON-NLS-1$
+
+		// OptionalPermissions
+		PERMISSION_NEEDED_OWN_PLACE("ServerSettings.PermissionNeeded.OwnThroughBlockPlace"), //$NON-NLS-1$
+		PERMISSION_NEEDED_OWN_COMMAND("ServerSettings.PermissionNeeded.OwnThroughCommand"), //$NON-NLS-1$
+		PERMISSION_NEEDED_UNOWN_COMMAND("ServerSettings.PermissionNeeded.UnownThroughCommand"), //$NON-NLS-1$
+		PERMISSION_NEEDED_FRIEND_COMMAND("ServerSettings.PermissionNeeded.FriendCommand"), //$NON-NLS-1$
+		PERMISSION_NEEDED_PROTECT_AND_PRIVATIZE_COMMAND("ServerSettings.PermissionNeeded.ProtectAndPrivatizeCommand"), //$NON-NLS-1$
+
+		// Protection
+		PROTECTION_ENABLE("ServerSettings.Protection.enable"), //$NON-NLS-1$
+		PROTECTION_CASCADE("ServerSettings.Protection.cascadeCommands"), //$NON-NLS-1$
+		PROTECTION_ENABLE_MESSAGES("ServerSettings.Protection.enableMessages"), //$NON-NLS-1$
+		PROTECTION_ONLY_LEFT_CLICKS("ServerSettings.Protection.onlyLeftClicks"), //$NON-NLS-1$
+		PROTECTION_AUTO_CHEST("ServerSettings.Protection.autoProtectChests"), //$NON-NLS-1$
+		PROTECTION_AUTO_EVERYTHING(	"ServerSettings.Protection.autoProtectEverything"), //$NON-NLS-1$
+		PROTECTION_ADMINS_IGNORE_PROTECTION("ServerSettings.Protection.adminsIgnoreProtection"), //$NON-NLS-1$
+		PROTECTION_RADIUS("ServerSettings.Protection.radius"), //$NON-NLS-1$
+
+		// ECONOMY
+		ECONOMY_ENABLE("ServerSettings.Economy.enable"), //$NON-NLS-1$
+		ECONOMY_PRICE_PROTECT("ServerSettings.Economy.protectPrice"), //$NON-NLS-1$
+		ECONOMY_PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
+		ECONOMY_PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
+
+		// OLD
+		@Deprecated
+		ENABLE_AUTOUPDATE_old("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
+		@Deprecated
+		ENABLE_AUTOUPDATE_old2("ServerSettings.AutoUpdater.enableAutoUpdate"), //$NON-NLS-1$
+		@Deprecated
+		API_KEY_old("ServerSettings.apiKey"), //$NON-NLS-1$
+		@Deprecated
+		AUTOUPDATE_INTERVAL_old("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
+
+		@Deprecated
+		OLD_ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
+		@Deprecated
+		OLD_PROTECT_ONLY_LEFT_CLICKS("ServerSettings.protectOnlyLeftClicks"), //$NON-NLS-1$
+		@Deprecated
+		OLD_ENABLE_PROTECTED_MESSAGES("ServerSettings.enableProtectedMessages"), //$NON-NLS-1$
+		@Deprecated
+		OLD_ENABLE_AUTOMATIC_CHEST_PROTECTION("ServerSettings.enableAutomaticChestProtection"), //$NON-NLS-1$
+		@Deprecated
+		OLD_ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION("ServerSettings.enableAutomaticUniversalProtection"), //$NON-NLS-1$
+		@Deprecated
+		OLD_ADMINS_IGNORE_PROTECTION("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
+		@Deprecated
+		OLD_CASCADE_PROTECTION_COMMANDS("ServerSettings.cascadeProtectionCommands"), //$NON-NLS-1$
+		@Deprecated
+		OLD_PERMISSION_NEEDED_FOR_PROTECT_COMMAND("ServerSettings.permissionNeededForProtectCommand"), //$NON-NLS-1$
+		@Deprecated
+		OLD_PERMISSION_NEEDED_FOR_OWN_COMMAND("ServerSettings.permissionNeededForOwnCommand"), //$NON-NLS-1$
+		@Deprecated
+		OLD_PERMISSION_NEEDED_FOR_OWNING("ServerSettings.permissionNeededForOwning"), //$NON-NLS-1$
+		@Deprecated
+		OLD_RADIUS_BLOCK_PLACE_DENIED("ServerSettings.radiusBlockPlaceDenied"); //$NON-NLS-1$
+
 		private String s;
 
 		private Setting(String s) {
@@ -135,6 +171,23 @@ public class BlockOwn extends PheasnPlugin {
 		public double getDouble(PheasnPlugin plugin) {
 			return plugin.getConfig().getDouble(s);
 		}
+
+		/**
+		 * Sets the value to the specified Object and
+		 * deletes deprecated Setting oldSetting.
+		 * @param plugin plugin which provides the config to change
+		 * @param value new value
+		 * @param oldSetting old, deprecated Setting which is set to null
+		 */
+		public void update(PheasnPlugin plugin, Object value, Setting oldSetting) {
+			plugin.getConfig().set(s, value);
+			plugin.getConfig().set(oldSetting.toString(), null);
+		}
+		
+		public void set(PheasnPlugin plugin, Object value){
+			plugin.getConfig().set(s, value);
+		}
+		
 	}
 
 	public enum Commands {
@@ -167,9 +220,13 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	public enum Permission {
-		PROTECT("blockown.protect"), //$NON-NLS-1$
+		PROTECT_AND_PRIVATIZE("blockown.protect"), //$NON-NLS-1$
 		ADMIN("blockown.admin"), //$NON-NLS-1$
-		OWN("blockown.own"); //$NON-NLS-1$
+		OWN_PLACE("blockown.own.place"), //$NON-NLS-1$
+		OWN_COMMAND("blockown.own.command"), //$NON-NLS-1$
+		UNOWN("blockown.unown"), //$NON-NLS-1$
+		FRIEND("blockown.friend"); //$NON-NLS-1$
+
 		private String s;
 
 		private Permission(String s) {
@@ -225,8 +282,6 @@ public class BlockOwn extends PheasnPlugin {
 		this.cleanUpOldSettings();
 		this.getConfig().set(Setting.SETTINGS_VERSION.toString(),
 				this.getDescription().getVersion());
-		this.getConfig().set("ServerSettings.AutoUpdater.enableAutoUpdater", //$NON-NLS-1$
-				null);
 		this.saveConfig();
 		this.initializeMetrics();
 
@@ -278,7 +333,7 @@ public class BlockOwn extends PheasnPlugin {
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String cmd_label, String[] args) {
 		if (args.length > 0) {
-			if (Setting.CASCADE_PROTECTION_COMMANDS.getBoolean(this)) {
+			if (Setting.PROTECTION_CASCADE.getBoolean(this)) {
 				String[] newargs;
 				try {
 					newargs = new String[args.length - 1];
@@ -421,7 +476,7 @@ public class BlockOwn extends PheasnPlugin {
 					this.tell(sender, ChatColor.RED,
 							Messages.getString("BlockOwn.import.connectError")); //$NON-NLS-1$
 					return false;
-				} catch(MySQLNotConnectingException e){
+				} catch (MySQLNotConnectingException e) {
 					this.tell(sender, ChatColor.RED,
 							Messages.getString("BlockOwn.import.connectError")); //$NON-NLS-1$
 					return false;
@@ -530,7 +585,7 @@ public class BlockOwn extends PheasnPlugin {
 				Messages.getString("BlockOwn.usage.makepoor")); //$NON-NLS-1$
 		Commands.MAKE_POOR.getCommand(this).setDescription(
 				Messages.getString("BlockOwn.description.makepoor")); //$NON-NLS-1$
-		if (!Setting.CASCADE_PROTECTION_COMMANDS.getBoolean(this)) {
+		if (!Setting.PROTECTION_CASCADE.getBoolean(this)) {
 			Commands.PROTECT.getCommand(this).setExecutor(new CE_Protect(this));
 			Commands.PROTECT.getCommand(this).setUsage(
 					ChatColor.RED
@@ -602,7 +657,7 @@ public class BlockOwn extends PheasnPlugin {
 				.registerEvents(new L_BlockFade(this), this);
 		this.getServer().getPluginManager()
 				.registerEvents(new L_StructureGrow(this), this);
-		if (Setting.RADIUS_BLOCK_PLACE_DENIED.getInt(this) == 0) {
+		if (Setting.PROTECTION_RADIUS.getInt(this) == 0) {
 			this.getServer().getPluginManager()
 					.registerEvents(new L_BlockPlace_NoCheck(this), this);
 		} else {
@@ -678,10 +733,29 @@ public class BlockOwn extends PheasnPlugin {
 
 	private void cleanUpOldSettings() {
 		FileConfiguration config = this.getConfig();
+		// VERY OLD
 		config.set(Setting.API_KEY_old.toString(), null);
 		config.set(Setting.AUTOUPDATE_INTERVAL_old.toString(), null);
 		config.set(Setting.ENABLE_AUTOUPDATE_old.toString(), null);
 		config.set(Setting.ENABLE_AUTOUPDATE_old2.toString(), null);
+		this.getConfig().set("ServerSettings.AutoUpdater.enableAutoUpdater", null); //$NON-NLS-1$
+
+		// 0.7.3 clean up
+		if(Updater.compare(Setting.SETTINGS_VERSION.getString(this), "0.7.3")==-1){
+		Setting.PROTECTION_ADMINS_IGNORE_PROTECTION.update(this, Setting.OLD_ADMINS_IGNORE_PROTECTION.getBoolean(this), Setting.OLD_ADMINS_IGNORE_PROTECTION);
+		Setting.PROTECTION_AUTO_CHEST.update(this, Setting.OLD_ENABLE_AUTOMATIC_CHEST_PROTECTION.getBoolean(this),Setting.OLD_ENABLE_AUTOMATIC_CHEST_PROTECTION);
+		Setting.PROTECTION_AUTO_EVERYTHING.update(this, Setting.OLD_ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.getBoolean(this), Setting.OLD_ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION);
+		Setting.PROTECTION_CASCADE.update(this,Setting.OLD_CASCADE_PROTECTION_COMMANDS.getBoolean(this), Setting.OLD_CASCADE_PROTECTION_COMMANDS);
+		Setting.PROTECTION_ENABLE.update(this, Setting.OLD_ENABLE_PLAYERSETTINGS.getBoolean(this), Setting.OLD_ENABLE_PLAYERSETTINGS);
+		Setting.PROTECTION_ENABLE_MESSAGES.update(this, Setting.OLD_ENABLE_PROTECTED_MESSAGES.getBoolean(this), Setting.OLD_ENABLE_PROTECTED_MESSAGES);
+		Setting.PROTECTION_ONLY_LEFT_CLICKS.update(this, Setting.OLD_PROTECT_ONLY_LEFT_CLICKS.getBoolean(this), Setting.OLD_PROTECT_ONLY_LEFT_CLICKS);
+		Setting.PROTECTION_RADIUS.update(this, Setting.OLD_RADIUS_BLOCK_PLACE_DENIED.getInt(this), Setting.OLD_RADIUS_BLOCK_PLACE_DENIED);
+		
+		Setting.PERMISSION_NEEDED_OWN_COMMAND.update(this, Setting.OLD_PERMISSION_NEEDED_FOR_OWN_COMMAND.getBoolean(this),Setting.OLD_PERMISSION_NEEDED_FOR_OWN_COMMAND);
+		Setting.PERMISSION_NEEDED_OWN_PLACE.update(this, Setting.OLD_PERMISSION_NEEDED_FOR_OWNING.getBoolean(this), Setting.OLD_PERMISSION_NEEDED_FOR_OWNING);
+		Setting.PERMISSION_NEEDED_PROTECT_AND_PRIVATIZE_COMMAND.update(this, Setting.OLD_PERMISSION_NEEDED_FOR_PROTECT_COMMAND.getBoolean(this), Setting.OLD_PERMISSION_NEEDED_FOR_PROTECT_COMMAND);
+		}
+		
 		this.saveConfig();
 	}
 

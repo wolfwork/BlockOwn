@@ -348,10 +348,10 @@ public class PlayerSettings {
 				}
 			}
 		}
-		if (Setting.ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.getBoolean(plugin)) {
+		if (Setting.PROTECTION_AUTO_EVERYTHING.getBoolean(plugin)) {
 			return true;
 		}
-		if (Setting.ENABLE_AUTOMATIC_CHEST_PROTECTION.getBoolean(plugin)
+		if (Setting.PROTECTION_AUTO_CHEST.getBoolean(plugin)
 				&& (blockType.equalsIgnoreCase(Material.CHEST.name()) || blockType
 						.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
 			return true;
@@ -535,7 +535,7 @@ public class PlayerSettings {
 		if (against.getName().equalsIgnoreCase(owner.getName())) {
 			return false;
 		}
-		if (!Setting.ENABLE_PLAYERSETTINGS.getBoolean(plugin)) {
+		if (!Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
 			return false;
 		}
 		if (!blockType.equalsIgnoreCase(ALL_BLOCKS)) {
@@ -556,7 +556,7 @@ public class PlayerSettings {
 	public LinkedList<String> getProtection(String blockType,
 			OfflinePlayer owner) {
 		LinkedList<String> protection = new LinkedList<String>();
-		if (!Setting.ENABLE_PLAYERSETTINGS.getBoolean(plugin)) {
+		if (!Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
 			return protection;
 		}
 		if (!blockType.equalsIgnoreCase(ALL_BLOCKS)) {

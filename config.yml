@@ -1,21 +1,24 @@
 Settings-Version: 0.7.3
 ServerSettings:
   enable: true
+  disableInWorlds: []
   serverName:
   autoSaveInterval: 1200
-  enablePlayerSettings: true
-  enableProtectedMessages: true
-  protectOnlyLeftClicks: false
-  enableAutomaticChestProtection: true
-  enableAutomaticUniversalProtection: false
-  adminsIgnoreProtection: false
-  cascadeProtectionCommands: false
-  disableInWorlds: []
-  permissionNeededForProtectCommand: false
-  permissionNeededForOwnCommand: false
-  permissionNeededForOwning: false
-  radiusBlockPlaceDenied: 0
   enableOwnedBlockDrops: true
+  PermissionNeeded:
+    OwnThroughBlockPlace: false
+    OwnThroughCommand: false
+    UnownThroughCommand: false
+    ProtectAndPrivatizeCommand: false
+  Protection:
+    enable: true
+    cascadeCommands: false
+    enableMessages: true
+    onlyLeftClicks: false
+    autoProtectChests: true
+    autoProtectEverything: false
+    adminsIgnoreProtection: false
+    radius: 0
   AutoUpdater:
     enable: true
     releaseType: release

@@ -1,6 +1,8 @@
 package me.pheasn.blockown.commands;
 
 import me.pheasn.blockown.BlockOwn;
+import me.pheasn.blockown.BlockOwn.Permission;
+import me.pheasn.blockown.BlockOwn.Setting;
 import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
@@ -22,6 +24,10 @@ public class CE_Friend implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			if(Setting.PERMISSION_NEEDED_FRIEND_COMMAND.getBoolean(plugin)&&!player.hasPermission(Permission.FRIEND.toString())){
+				plugin.say(player, ChatColor.RED,Messages.getString("noPermission"));
+				return true;
+			}
 			if (args.length == 1) {
 				OfflinePlayer friend = plugin.getServer().getOfflinePlayer(
 						args[0]);

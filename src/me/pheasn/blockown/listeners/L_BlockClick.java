@@ -21,9 +21,9 @@ public class L_BlockClick implements Listener {
 
 	@EventHandler
 	public void onBlockClick(PlayerInteractEvent event) {
-		if (Setting.ENABLE_PLAYERSETTINGS.getBoolean(plugin)) {
+		if (Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
 			if (event.getClickedBlock() != null) {
-				if (Setting.ADMINS_IGNORE_PROTECTION.getBoolean(plugin)
+				if (Setting.PROTECTION_ADMINS_IGNORE_PROTECTION.getBoolean(plugin)
 						&& event.getPlayer().hasPermission(
 								Permission.ADMIN.toString())) {
 					return;
@@ -36,13 +36,13 @@ public class L_BlockClick implements Listener {
 					if (plugin.getPlayerSettings().isProtected(
 							event.getClickedBlock().getType().name(),
 							event.getPlayer(), owner)) {
-						if (Setting.PROTECT_ONLY_LEFT_CLICKS.getBoolean(plugin)
+						if (Setting.PROTECTION_ONLY_LEFT_CLICKS.getBoolean(plugin)
 								&& !event.getAction().equals(
 										Action.LEFT_CLICK_BLOCK)) {
 							return;
 						}
 						event.setCancelled(true);
-						if (Setting.ENABLE_PROTECTED_MESSAGES
+						if (Setting.PROTECTION_ENABLE_MESSAGES
 								.getBoolean(plugin)) {
 							plugin.say(event.getPlayer(), ChatColor.RED,
 									Messages.getString("L_BlockClick.deny")); //$NON-NLS-1$

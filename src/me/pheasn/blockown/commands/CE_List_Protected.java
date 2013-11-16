@@ -26,7 +26,7 @@ public class CE_List_Protected implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (Setting.ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION
+			if (Setting.PROTECTION_AUTO_EVERYTHING
 					.getBoolean(plugin)) {
 				plugin.say(player, ChatColor.YELLOW, Messages
 						.getString("CE_List_Protected.everythingProtected")); //$NON-NLS-1$
@@ -34,7 +34,7 @@ public class CE_List_Protected implements CommandExecutor {
 			}
 			HashMap<String, LinkedList<String>> protections = plugin
 					.getPlayerSettings().getRawBlacklists(player);
-			if (Setting.ENABLE_AUTOMATIC_CHEST_PROTECTION.getBoolean(plugin)) {
+			if (Setting.PROTECTION_AUTO_CHEST.getBoolean(plugin)) {
 				plugin.say(player, ChatColor.YELLOW,
 						Messages.getString("CE_List_Protected.chestsProtected")); //$NON-NLS-1$
 			}

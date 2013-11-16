@@ -2,6 +2,8 @@ package me.pheasn.blockown.commands;
 
 import me.pheasn.blockown.BOPlayer;
 import me.pheasn.blockown.BlockOwn;
+import me.pheasn.blockown.BlockOwn.Permission;
+import me.pheasn.blockown.BlockOwn.Setting;
 import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
@@ -29,6 +31,10 @@ public class CE_Unown implements CommandExecutor {
 		try {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
+				if(Setting.PERMISSION_NEEDED_UNOWN_COMMAND.getBoolean(plugin)&&!player.hasPermission(Permission.UNOWN.toString())){
+					plugin.say(player, ChatColor.RED, Messages.getString("noPermission"));
+					return true;
+				}
 				if (args.length == 0) {
 					Block target = BOPlayer.getInstance(player)
 							.getTargetBlock();
@@ -51,8 +57,8 @@ public class CE_Unown implements CommandExecutor {
 				} else if (args.length == 1
 						&& args[0].equalsIgnoreCase("selection")) { //$NON-NLS-1$
 					if (plugin.getWorldEdit() == null) {
-						plugin.tell(sender, ChatColor.RED, Messages
-								.getString("CE_Unown.selection.noWorldedit")); //$NON-NLS-1$
+						plugin.tell(sender, ChatColor.RED, 
+								Messages.getString("CE_Unown.selection.noWorldedit")); //$NON-NLS-1$
 						return false;
 					}
 					Selection selection;
@@ -70,12 +76,9 @@ public class CE_Unown implements CommandExecutor {
 							for (int y = yMin; y <= yMax; y++) {
 								for (int z = zMin; z <= zMax; z++) {
 									Block block = w.getBlockAt(x, y, z);
-									OfflinePlayer owner = plugin.getOwning()
-											.getOwner(block);
-									if (owner.getName().equalsIgnoreCase(
-											player.getName())) {
-										plugin.getOwning().removeOwner(
-												w.getBlockAt(x, y, z));
+									OfflinePlayer owner = plugin.getOwning().getOwner(block);
+									if (owner.getName().equalsIgnoreCase(player.getName())) {
+										plugin.getOwning().removeOwner(w.getBlockAt(x, y, z));
 									}
 								}
 							}

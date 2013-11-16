@@ -25,9 +25,9 @@ public class CE_Protect implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (Setting.PERMISSION_NEEDED_FOR_PROTECT_COMMAND
+			if (Setting.PERMISSION_NEEDED_PROTECT_AND_PRIVATIZE_COMMAND
 					.getBoolean(plugin)
-					&& !player.hasPermission(Permission.PROTECT.toString())) {
+					&& !player.hasPermission(Permission.PROTECT_AND_PRIVATIZE.toString())) {
 				plugin.say(player, ChatColor.RED,
 						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
@@ -49,26 +49,26 @@ public class CE_Protect implements CommandExecutor {
 							"CE_Protect.unneccessary", args[1])); //$NON-NLS-1$
 					return true;
 				}
-			} else if (Setting.ENABLE_ECONOMY.getBoolean(plugin)) {
+			} else if (Setting.ECONOMY_ENABLE.getBoolean(plugin)) {
 				return false;
 			}
-			if (Setting.ENABLE_ECONOMY.getBoolean(plugin)
+			if (Setting.ECONOMY_ENABLE.getBoolean(plugin)
 					&& plugin.getEconomy() != null
-					&& Setting.PRICE_PROTECT.getDouble(plugin) > 0.0) {
-				if (plugin.getEconomy().getBalance(player.getName()) < Setting.PRICE_PROTECT
+					&& Setting.ECONOMY_PRICE_PROTECT.getDouble(plugin) > 0.0) {
+				if (plugin.getEconomy().getBalance(player.getName()) < Setting.ECONOMY_PRICE_PROTECT
 						.getDouble(plugin)) {
 					plugin.say(player, ChatColor.RED, Messages.getString(
-							"CE_Protect.noMoney", Setting.PRICE_PROTECT //$NON-NLS-1$
+							"CE_Protect.noMoney", Setting.ECONOMY_PRICE_PROTECT //$NON-NLS-1$
 									.getDouble(plugin), plugin.getEconomy()
 									.currencyNamePlural()));
 					return true;
 				} else {
 					plugin.say(player, ChatColor.YELLOW, Messages.getString(
-							"CE_Protect.howMuch", Setting.PRICE_PROTECT //$NON-NLS-1$
+							"CE_Protect.howMuch", Setting.ECONOMY_PRICE_PROTECT //$NON-NLS-1$
 									.getDouble(plugin), plugin.getEconomy()
 									.currencyNamePlural()));
 					plugin.getEconomy().withdrawPlayer(player.getName(),
-							Setting.PRICE_PROTECT.getDouble(plugin));
+							Setting.ECONOMY_PRICE_PROTECT.getDouble(plugin));
 				}
 			}
 			String protectName;

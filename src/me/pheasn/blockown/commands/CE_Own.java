@@ -32,14 +32,8 @@ public class CE_Own implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (Setting.PERMISSION_NEEDED_FOR_OWNING.getBoolean(plugin)
-					&& !player.hasPermission(Permission.OWN.toString())) {
-				plugin.say(player, ChatColor.RED,
-						Messages.getString("noPermission")); //$NON-NLS-1$
-				return true;
-			}
-			if (Setting.PERMISSION_NEEDED_FOR_OWN_COMMAND.getBoolean(plugin)
-					&& !player.hasPermission(Permission.OWN.toString())) {
+			if (Setting.PERMISSION_NEEDED_OWN_COMMAND.getBoolean(plugin)
+					&& !player.hasPermission(Permission.OWN_COMMAND.toString())) {
 				plugin.say(player, ChatColor.RED,
 						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
@@ -100,18 +94,18 @@ public class CE_Own implements CommandExecutor {
 							}
 						}
 					}
-					if (Setting.ENABLE_ECONOMY.getBoolean(plugin)
+					if (Setting.ECONOMY_ENABLE.getBoolean(plugin)
 							&& plugin.getEconomy() != null
-							&& Setting.PRICE_OWN_SELECTION.getDouble(plugin) > 0.0) {
+							&& Setting.ECONOMY_PRICE_OWN_SELECTION.getDouble(plugin) > 0.0) {
 						if (plugin.getEconomy().getBalance(player.getName()) < (selectedBlocks
-								.size() * Setting.PRICE_OWN_SELECTION
+								.size() * Setting.ECONOMY_PRICE_OWN_SELECTION
 								.getDouble(plugin))) {
 							plugin.say(
 									player,
 									ChatColor.RED,
 									Messages.getString(
 											"CE_Own.selection.noMoney",
-											(selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
+											(selectedBlocks.size() * Setting.ECONOMY_PRICE_OWN_SELECTION
 													.getDouble(plugin)), plugin
 													.getEconomy()
 													.currencyNamePlural()));
@@ -122,14 +116,14 @@ public class CE_Own implements CommandExecutor {
 									ChatColor.YELLOW,
 									Messages.getString(
 											"CE_Own.selection.howMuch",
-											(selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
+											(selectedBlocks.size() * Setting.ECONOMY_PRICE_OWN_SELECTION
 													.getDouble(plugin)), plugin
 													.getEconomy()
 													.currencyNamePlural()));
 							plugin.getEconomy()
 									.withdrawPlayer(
 											player.getName(),
-											(selectedBlocks.size() * Setting.PRICE_OWN_SELECTION
+											(selectedBlocks.size() * Setting.ECONOMY_PRICE_OWN_SELECTION
 													.getDouble(plugin)));
 						}
 					}
