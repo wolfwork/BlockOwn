@@ -1,6 +1,6 @@
 package me.pheasn.blockown.owning;
 
-import me.pheasn.blockown.owning.mysql.MySql;
+import me.pheasn.blockown.mysql.MySql;
 
 public abstract class SQLOwning extends Owning {
 	protected MySql msql;

@@ -1,4 +1,4 @@
-package me.pheasn.blockown.owning.mysql;
+package me.pheasn.blockown.mysql;
 
 public class TableDefinition {
 	private String name;

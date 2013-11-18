@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import me.pheasn.blockown.BlockOwn;
-import me.pheasn.blockown.owning.mysql.MySqlNetwork;
-import me.pheasn.blockown.owning.mysql.TableDefinition;
+import me.pheasn.blockown.mysql.MySqlNetwork;
+import me.pheasn.blockown.mysql.TableDefinition;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.WorldCreator;

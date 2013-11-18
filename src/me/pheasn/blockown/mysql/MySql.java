@@ -1,4 +1,4 @@
-package me.pheasn.blockown.owning.mysql;
+package me.pheasn.blockown.mysql;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

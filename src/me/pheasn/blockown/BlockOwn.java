@@ -705,6 +705,10 @@ public class BlockOwn extends PheasnPlugin {
 		}
 	}
 
+	/**
+	 * Connects to owning database
+	 * @return false if couldn't connect to database.
+	 */
 	private boolean establishOwning() {
 		try {
 			if (this.getConfig().getBoolean(
@@ -761,6 +765,9 @@ public class BlockOwn extends PheasnPlugin {
 		this.saveConfig();
 	}
 
+	/**
+	 * Initializes PluginMetrics by Hidendra to submit stats
+	 */
 	private void initializeMetrics() {
 		try {
 			Metrics metrics = new Metrics(this);
@@ -807,7 +814,7 @@ public class BlockOwn extends PheasnPlugin {
 		return this.owning;
 	}
 
-	// CREDITS FOR THIS GO TO zeeveener !
+	// Credits for this go to zeeveener !
 	private static Object getPrivateField(Object object, String field)
 			throws SecurityException, NoSuchFieldException,
 			IllegalArgumentException, IllegalAccessException {
@@ -818,7 +825,11 @@ public class BlockOwn extends PheasnPlugin {
 		objectField.setAccessible(false);
 		return result;
 	}
-
+	
+	/**
+	 * Unregisters a PluginCommand from Bukkit, not revertible!
+	 * @param cmd PluginCommand that is going to be unregistered.
+	 */
 	private void unRegisterBukkitCommand(PluginCommand cmd) {
 		try {
 			Object result = getPrivateField(

@@ -5,6 +5,10 @@
 	<artifactId>BlockOwn</artifactId>
 	<repositories>
 		<repository>
+			<id>Plugin Metrics</id>
+			<url>http://repo.mcstats.org/content/repositories/public</url>
+		</repository>
+		<repository>
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
 		</repository>
@@ -75,12 +79,14 @@
 		<dependency>
 			<groupId>me.pheasn</groupId>
 			<artifactId>PheasnPlugin</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.1-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>me.pheasn.pluginupdater</groupId>
 			<artifactId>PluginUpdater</artifactId>
 			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>
@@ -104,6 +110,13 @@
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldedit</artifactId>
 			<version>5.5.8-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mcstats.bukkit</groupId>
+			<artifactId>metrics</artifactId>
+			<version>R7</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<version>0.7.4-SNAPSHOT</version>
