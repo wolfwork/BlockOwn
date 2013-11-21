@@ -287,8 +287,7 @@ public class BlockOwn extends PheasnPlugin {
 		this.playerSettings = new PlayerSettings(this);
 		this.getConfig().options().copyDefaults(true);
 		this.cleanUpOldSettings();
-		this.getConfig().set(Setting.SETTINGS_VERSION.toString(),
-				this.getDescription().getVersion());
+		Setting.SETTINGS_VERSION.set(this, this.getDescription().getVersion());
 		this.saveConfig();
 		this.initializeMetrics();
 
@@ -681,6 +680,7 @@ public class BlockOwn extends PheasnPlugin {
 				this.blockOwnerFile.createNewFile();
 				this.protectionsFile.createNewFile();
 				this.saveDefaultConfig();
+				Setting.SETTINGS_VERSION.set(this, this.getDescription().getVersion());
 			} catch (IOException ex) {
 				this.con(ChatColor.RED,
 						Messages.getString("BlockOwn.prepare.error")); //$NON-NLS-1$
@@ -700,6 +700,7 @@ public class BlockOwn extends PheasnPlugin {
 			this.con(ChatColor.YELLOW,
 					Messages.getString("BlockOwn.prepare.new.config")); //$NON-NLS-1$
 			this.saveDefaultConfig();
+			Setting.SETTINGS_VERSION.set(this, this.getDescription().getVersion());
 		}
 		if (!protectionsFile.exists()) {
 			try {
