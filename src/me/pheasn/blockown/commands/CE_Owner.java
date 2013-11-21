@@ -1,6 +1,6 @@
 package me.pheasn.blockown.commands;
 
-import me.pheasn.blockown.BOPlayer;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
@@ -23,7 +23,7 @@ public class CE_Owner implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			Block target = BOPlayer.getInstance(player).getTargetBlock();
+			Block target = User.getInstance(player).getTargetBlock();
 			if (target != null) {
 				if (plugin.getOwning().getOwner(target) != null) {
 					plugin.say(player, ChatColor.GREEN,

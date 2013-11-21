@@ -1,6 +1,6 @@
 package me.pheasn.blockown.commands;
 
-import me.pheasn.blockown.BOPlayer;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.PlayerSettings;
@@ -32,7 +32,7 @@ public class CE_Protect implements CommandExecutor {
 						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
 			}
-			String targetTypeName = BOPlayer.getInstance(player)
+			String targetTypeName = User.getInstance(player)
 					.getTargetBlock().getType().name();
 			if (args.length == 1 && targetTypeName != null) {
 				if (plugin.getPlayerSettings().isBlacklisted(args[0],

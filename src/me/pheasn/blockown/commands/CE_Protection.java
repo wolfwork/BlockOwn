@@ -2,7 +2,7 @@ package me.pheasn.blockown.commands;
 
 import java.util.LinkedList;
 
-import me.pheasn.blockown.BOPlayer;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.PlayerSettings;
@@ -26,11 +26,11 @@ public class CE_Protection implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (args.length == 0) {
-				if (BOPlayer.getInstance(player).getTargetBlock() != null) {
+				if (User.getInstance(player).getTargetBlock() != null) {
 					sendLists(
 							player,
 							plugin.getPlayerSettings().getProtection(
-									BOPlayer.getInstance(player)
+									User.getInstance(player)
 											.getTargetBlock().getType().name(),
 									player));
 					return true;

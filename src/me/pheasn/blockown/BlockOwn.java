@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 
+import me.pheasn.Base.Use;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.commands.CE_Friend;
 import me.pheasn.blockown.commands.CE_List_Friends;
@@ -44,7 +45,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.mcstats.Metrics;
@@ -56,9 +56,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 public class BlockOwn extends PheasnPlugin {
 	private PlayerSettings playerSettings;
 	private Owning owning = null;
-	private File pluginDir;
 	private File blockOwnerFile;
-	private File settingsFile;
 	private File protectionsFile;
 	private Updater updater;
 	private Thread autoSaveThread;
@@ -91,7 +89,6 @@ public class BlockOwn extends PheasnPlugin {
 		PROTECTION_ONLY_LEFT_CLICKS("ServerSettings.Protection.onlyLeftClicks"), //$NON-NLS-1$
 		PROTECTION_AUTO_CHEST("ServerSettings.Protection.autoProtectChests"), //$NON-NLS-1$
 		PROTECTION_AUTO_EVERYTHING(	"ServerSettings.Protection.autoProtectEverything"), //$NON-NLS-1$
-		PROTECTION_ADMINS_IGNORE_PROTECTION("ServerSettings.Protection.adminsIgnoreProtection"), //$NON-NLS-1$
 		PROTECTION_RADIUS("ServerSettings.Protection.radius"), //$NON-NLS-1$
 
 		// ECONOMY
@@ -100,7 +97,7 @@ public class BlockOwn extends PheasnPlugin {
 		ECONOMY_PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
 		ECONOMY_PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
 
-		// OLD
+		// very OLD 
 		@Deprecated
 		ENABLE_AUTOUPDATE_old("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
 		@Deprecated
@@ -110,6 +107,7 @@ public class BlockOwn extends PheasnPlugin {
 		@Deprecated
 		AUTOUPDATE_INTERVAL_old("ServerSettings.autoUpdateInterval"), //$NON-NLS-1$
 
+		// Old since 0.7.3
 		@Deprecated
 		OLD_ENABLE_PLAYERSETTINGS("ServerSettings.enablePlayerSettings"), //$NON-NLS-1$
 		@Deprecated
@@ -131,7 +129,11 @@ public class BlockOwn extends PheasnPlugin {
 		@Deprecated
 		OLD_PERMISSION_NEEDED_FOR_OWNING("ServerSettings.permissionNeededForOwning"), //$NON-NLS-1$
 		@Deprecated
-		OLD_RADIUS_BLOCK_PLACE_DENIED("ServerSettings.radiusBlockPlaceDenied"); //$NON-NLS-1$
+		OLD_RADIUS_BLOCK_PLACE_DENIED("ServerSettings.radiusBlockPlaceDenied"), //$NON-NLS-1$
+
+		// Old since 0.7.4
+		@Deprecated
+		OLD_PROTECTION_ADMINS_IGNORE_PROTECTION("ServerSettings.Protection.adminsIgnoreProtection"); //$NON-NLS-1$
 
 		private String s;
 
@@ -227,7 +229,9 @@ public class BlockOwn extends PheasnPlugin {
 		OWN_COMMAND("blockown.own.command"), //$NON-NLS-1$
 		OWN_COMMAND_CREATIVE("blockown.own.command.creative"), //$NON-NLS-1$
 		UNOWN("blockown.unown"), //$NON-NLS-1$
-		FRIEND("blockown.friend"); //$NON-NLS-1$
+		FRIEND("blockown.friend"), //$NON-NLS-1$
+		IGNORE_PROTECTION("blockown.ignore"), //$NON-NLS-1$
+		MAKE_POOR("blockown.makepoor"); //$NON-NLS-1$
 
 		private String s;
 
@@ -247,8 +251,7 @@ public class BlockOwn extends PheasnPlugin {
 			this.owning.save();
 		}
 		if (playerSettings != null) {
-			this.playerSettings.save(YamlConfiguration
-					.loadConfiguration(protectionsFile));
+			this.playerSettings.save();
 		}
 		if (updater != null) {
 			updater.cancel();
@@ -263,10 +266,12 @@ public class BlockOwn extends PheasnPlugin {
 	public void onEnable() {
 		super.onEnable();
 		console = this.getServer().getConsoleSender();
-		pluginDir = new File("./plugins/" + this.getName() + "/"); //$NON-NLS-1$ //$NON-NLS-2$
-		blockOwnerFile = new File(pluginDir.getPath() + "/blocks.dat"); //$NON-NLS-1$
-		settingsFile = new File(pluginDir.getPath() + "/config.yml"); //$NON-NLS-1$
-		protectionsFile = new File(pluginDir.getPath() + "/playerSettings.yml"); //$NON-NLS-1$
+		if(this.findBase()){
+			this.getBase().registerAddon(Use.OWNING, this, true);
+			this.getBase().registerAddon(Use.PROTECTION, this, true);
+		}
+		blockOwnerFile = new File(this.getPluginDirectory().getPath() + "/blocks.dat"); //$NON-NLS-1$
+		protectionsFile = new File(this.getPluginDirectory().getPath() + "/playerSettings.yml"); //$NON-NLS-1$
 		this.createEnv();
 		if (!Setting.ENABLE.getBoolean(this)) {
 			this.con(ChatColor.YELLOW,
@@ -501,8 +506,7 @@ public class BlockOwn extends PheasnPlugin {
 
 	private boolean reload(CommandSender sender) {
 		this.reloadConfig();
-		playerSettings.save(YamlConfiguration
-				.loadConfiguration(protectionsFile));
+		playerSettings.save();
 		FileConfiguration config = this.getConfig();
 		updater.cancel();
 		updater = new Updater(this, this.pluginId, this.getFile(),
@@ -669,11 +673,11 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	private void createEnv() {
-		if (!pluginDir.exists()) {
+		if (!this.getPluginDirectory().exists()) {
 			try {
 				this.con(ChatColor.YELLOW,
 						Messages.getString("BlockOwn.prepare.start")); //$NON-NLS-1$
-				this.pluginDir.mkdir();
+				this.getPluginDirectory().mkdir();
 				this.blockOwnerFile.createNewFile();
 				this.protectionsFile.createNewFile();
 				this.saveDefaultConfig();
@@ -692,7 +696,7 @@ public class BlockOwn extends PheasnPlugin {
 						Messages.getString("BlockOwn.prepare.error")); //$NON-NLS-1$
 			}
 		}
-		if (!settingsFile.exists()) {
+		if (!this.getConfigFile().exists()) {
 			this.con(ChatColor.YELLOW,
 					Messages.getString("BlockOwn.prepare.new.config")); //$NON-NLS-1$
 			this.saveDefaultConfig();
@@ -747,8 +751,7 @@ public class BlockOwn extends PheasnPlugin {
 		this.getConfig().set("ServerSettings.AutoUpdater.enableAutoUpdater", null); //$NON-NLS-1$
 
 		// 0.7.3 clean up
-		if(Updater.compare(Setting.SETTINGS_VERSION.getString(this), "0.7.3")==-1){
-		Setting.PROTECTION_ADMINS_IGNORE_PROTECTION.update(this, Setting.OLD_ADMINS_IGNORE_PROTECTION.getBoolean(this), Setting.OLD_ADMINS_IGNORE_PROTECTION);
+		if(compareVersions(Setting.SETTINGS_VERSION.getString(this), "0.7.3")==-1){
 		Setting.PROTECTION_AUTO_CHEST.update(this, Setting.OLD_ENABLE_AUTOMATIC_CHEST_PROTECTION.getBoolean(this),Setting.OLD_ENABLE_AUTOMATIC_CHEST_PROTECTION);
 		Setting.PROTECTION_AUTO_EVERYTHING.update(this, Setting.OLD_ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.getBoolean(this), Setting.OLD_ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION);
 		Setting.PROTECTION_CASCADE.update(this,Setting.OLD_CASCADE_PROTECTION_COMMANDS.getBoolean(this), Setting.OLD_CASCADE_PROTECTION_COMMANDS);
@@ -761,7 +764,10 @@ public class BlockOwn extends PheasnPlugin {
 		Setting.PERMISSION_NEEDED_OWN_PLACE.update(this, Setting.OLD_PERMISSION_NEEDED_FOR_OWNING.getBoolean(this), Setting.OLD_PERMISSION_NEEDED_FOR_OWNING);
 		Setting.PERMISSION_NEEDED_PROTECT_AND_PRIVATIZE_COMMAND.update(this, Setting.OLD_PERMISSION_NEEDED_FOR_PROTECT_COMMAND.getBoolean(this), Setting.OLD_PERMISSION_NEEDED_FOR_PROTECT_COMMAND);
 		}
-		
+
+		// 0.7.4
+		Setting.OLD_PROTECTION_ADMINS_IGNORE_PROTECTION.set(this, null);
+
 		this.saveConfig();
 	}
 

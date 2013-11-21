@@ -20,29 +20,26 @@ public class CE_MakePoor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String cmd_label, String[] args) {
-		String playerName = plugin.getServer().getOfflinePlayer(args[0])
-				.getName();
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			if (args.length == 1) {
-				if (player.hasPermission(Permission.ADMIN.toString())) {
+		if (args.length == 1) {
+			String playerName = plugin.getServer().getOfflinePlayer(args[0]).getName();
+			if (sender instanceof Player) {
+				Player player = (Player) sender;
+				if (player.hasPermission(Permission.MAKE_POOR.toString()) || player.hasPermission(Permission.ADMIN.toString())) {
 					plugin.getOwning().deleteOwningsOf(playerName);
-					plugin.say(player, ChatColor.GREEN, Messages.getString(
-							"CE_MakePoor.success", playerName)); //$NON-NLS-1$
+					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_MakePoor.success", playerName)); //$NON-NLS-1$
 					return true;
 				} else {
-					return false;
+					plugin.say(player, ChatColor.RED, Messages.getString("noPermission"));
+					return true;
 				}
 			} else {
-				plugin.say(player, ChatColor.RED,
-						Messages.getString("countArgs")); //$NON-NLS-1$
-				return false;
+				plugin.getOwning().deleteOwningsOf(playerName);
+				plugin.con(ChatColor.GREEN,	Messages.getString("CE_MakePoor.success", playerName)); //$NON-NLS-1$
+				return true;
 			}
 		} else {
-			plugin.getOwning().deleteOwningsOf(playerName);
-			plugin.con(ChatColor.GREEN,
-					Messages.getString("CE_MakePoor.success", playerName)); //$NON-NLS-1$
-			return true;
+			plugin.tell(sender, ChatColor.RED, Messages.getString("countArgs")); //$NON-NLS-1$
+			return false;
 		}
 	}
 }

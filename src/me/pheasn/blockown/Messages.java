@@ -10,7 +10,6 @@ public class Messages {
 			.getBundle(BUNDLE_NAME);
 
 	public static String getString(String key) {
-
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
@@ -27,6 +26,6 @@ public class Messages {
 	}
 
 	private Messages() {
-
+		
 	}
 }

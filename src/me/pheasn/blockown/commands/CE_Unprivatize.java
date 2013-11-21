@@ -1,6 +1,6 @@
 package me.pheasn.blockown.commands;
 
-import me.pheasn.blockown.BOPlayer;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
@@ -37,16 +37,16 @@ public class CE_Unprivatize implements CommandExecutor {
 					return false;
 				}
 			} else if (args.length == 0) {
-				if (BOPlayer.getInstance(player).getTargetBlock() != null) {
+				if (User.getInstance(player).getTargetBlock() != null) {
 					plugin.getPlayerSettings().privateListRemove(
 							player.getName(),
-							BOPlayer.getInstance(player).getTargetBlock()
+							User.getInstance(player).getTargetBlock()
 									.getType().name());
 					plugin.say(
 							player,
 							ChatColor.GREEN,
 							Messages.getString("CE_Unprivatize.success", //$NON-NLS-1$
-									BOPlayer.getInstance(player)
+									User.getInstance(player)
 											.getTargetBlock().getType().name()));
 					return true;
 				} else {

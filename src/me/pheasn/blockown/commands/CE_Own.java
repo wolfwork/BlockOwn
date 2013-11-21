@@ -2,7 +2,7 @@ package me.pheasn.blockown.commands;
 
 import java.util.ArrayList;
 
-import me.pheasn.blockown.BOPlayer;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.BlockOwn.Permission;
@@ -42,7 +42,7 @@ public class CE_Own implements CommandExecutor {
 				}
 			}
 			if (args.length == 0) {
-				Block target = BOPlayer.getInstance(player).getTargetBlock();
+				Block target = User.getInstance(player).getTargetBlock();
 				OfflinePlayer owner = plugin.getOwning().getOwner(target);
 				if (owner == null) {
 					plugin.getOwning().setOwner(target, player);

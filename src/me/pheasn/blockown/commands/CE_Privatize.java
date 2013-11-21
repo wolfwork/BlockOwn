@@ -1,6 +1,6 @@
 package me.pheasn.blockown.commands;
 
-import me.pheasn.blockown.BOPlayer;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.BlockOwn.Permission;
@@ -33,7 +33,7 @@ public class CE_Privatize implements CommandExecutor {
 						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
 			}
-			Block target = BOPlayer.getInstance(player).getTargetBlock();
+			Block target = User.getInstance(player).getTargetBlock();
 			if (args.length == 0 && target != null) {
 				if (plugin.getPlayerSettings().isPrivate(player.getName(),
 						target.getType().name())) {
@@ -84,15 +84,15 @@ public class CE_Privatize implements CommandExecutor {
 					return false;
 				}
 			} else if (args.length == 0) {
-				if (BOPlayer.getInstance(player).getTargetBlock() != null) {
+				if (User.getInstance(player).getTargetBlock() != null) {
 					plugin.getPlayerSettings().privateListAdd(
 							player.getName(),
-							BOPlayer.getInstance(player).getTargetBlock()
+							User.getInstance(player).getTargetBlock()
 									.getType().name());
 					plugin.say(
 							player,
 							ChatColor.GREEN,
-							Messages.getString("CE_Privatize.success", BOPlayer
+							Messages.getString("CE_Privatize.success", User
 									.getInstance(player).getTargetBlock()
 									.getType().name())); 
 					return true;

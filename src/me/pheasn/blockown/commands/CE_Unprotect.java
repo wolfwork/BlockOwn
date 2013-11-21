@@ -1,6 +1,6 @@
 package me.pheasn.blockown.commands;
 
-import me.pheasn.blockown.BOPlayer;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 import me.pheasn.blockown.PlayerSettings;
@@ -23,7 +23,7 @@ public class CE_Unprotect implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			String target = BOPlayer.getInstance(player).getTargetBlock()
+			String target = User.getInstance(player).getTargetBlock()
 					.getType().name();
 			String protectName;
 			if (args.length == 2) {

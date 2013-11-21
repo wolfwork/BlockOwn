@@ -1,7 +1,6 @@
 package me.pheasn.blockown.owning;
 
 public class MySQLNotConnectingException extends Exception {
-
 	/**
 	 * 
 	 */

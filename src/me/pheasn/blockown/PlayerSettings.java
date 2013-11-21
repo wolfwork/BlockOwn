@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.BlockOwn.Setting;
-import me.pheasn.pluginupdater.Updater;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -31,10 +31,9 @@ public class PlayerSettings {
 		privateLists = new HashMap<String, LinkedList<Material>>();
 		blackLists = new HashMap<String, HashMap<String, LinkedList<String>>>();
 		friendLists = new HashMap<String, LinkedList<String>>();
-		if (Updater
-				.compare(Setting.SETTINGS_VERSION.getString(plugin), "0.6.0") == -1) { //$NON-NLS-1$
+		if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin), "0.6.0") == -1) { //$NON-NLS-1$
 			importOld();
-		} else if (Updater.compare(Setting.SETTINGS_VERSION.getString(plugin),
+		} else if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin),
 				"0.6.2") == -1) { //$NON-NLS-1$
 			initialize(plugin.getConfig());
 		} else {
@@ -166,14 +165,13 @@ public class PlayerSettings {
 				}
 			}
 			config.set("PlayerSettings", null); //$NON-NLS-1$
-			this.save(YamlConfiguration.loadConfiguration(plugin
-					.getProtectionsFile()));
+			this.save();
 		}
 	}
 
 	// Save method for 0.6+
-	public void save(FileConfiguration config) {
-
+	public void save() {
+		FileConfiguration config = YamlConfiguration.loadConfiguration(plugin.getProtectionsFile());
 		// ABSOLUTELY PRIVATE TYPES
 		config.set("PrivateBlocks", null); //$NON-NLS-1$
 		for (Entry<String, LinkedList<Material>> entry : privateLists
@@ -581,7 +579,6 @@ public class PlayerSettings {
 
 	@Override
 	public void finalize() {
-		this.save(YamlConfiguration.loadConfiguration(plugin
-				.getProtectionsFile()));
+		this.save();
 	}
 }

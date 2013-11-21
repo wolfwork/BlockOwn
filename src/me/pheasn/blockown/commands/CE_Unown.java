@@ -1,6 +1,6 @@
 package me.pheasn.blockown.commands;
 
-import me.pheasn.blockown.BOPlayer;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
@@ -36,7 +36,7 @@ public class CE_Unown implements CommandExecutor {
 					return true;
 				}
 				if (args.length == 0) {
-					Block target = BOPlayer.getInstance(player)
+					Block target = User.getInstance(player)
 							.getTargetBlock();
 
 					if (target != null) {
