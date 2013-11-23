@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import me.pheasn.Base.Use;
+import me.pheasn.Database;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.commands.CE_Friend;
 import me.pheasn.blockown.commands.CE_List_Friends;
@@ -72,6 +73,7 @@ public class BlockOwn extends PheasnPlugin {
 		// ServerSettings
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$	
 		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"), //$NON-NLS-1$
+		SERVER_NAME("ServerSettings.serverName"), //$NON-NLS-1$	
 		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
 		ENABLE_OWNED_BLOCK_DROPS("ServerSettings.enableOwnedBlockDrops"), //$NON-NLS-1$
 
@@ -820,6 +822,20 @@ public class BlockOwn extends PheasnPlugin {
 	public Owning getOwning() {
 		return this.owning;
 	}
+	
+	@Override
+	public String getServerNameSettingPath() {
+		return Setting.SERVER_NAME.toString();
+	}
+
+	@Override
+	public Database getDatabase(Use use) {
+		switch(use){
+		//TODO 	case PROTECTION: return this.getPlayerSettings();
+			case OWNING: return this.getOwning();
+			default: return null;
+		}
+	}
 
 	// Credits for this go to zeeveener !
 	private static Object getPrivateField(Object object, String field)
@@ -857,5 +873,4 @@ public class BlockOwn extends PheasnPlugin {
 			e.printStackTrace();
 		}
 	}
-
 }
