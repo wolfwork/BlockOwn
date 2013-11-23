@@ -11,10 +11,12 @@ import java.util.Set;
 import me.pheasn.Base.Use;
 import me.pheasn.Material;
 import me.pheasn.OfflineUser;
+import me.pheasn.Protection;
 import me.pheasn.TypeBased_Protection;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.BlockOwn.Setting;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,7 +37,9 @@ public class PlayerSettings extends TypeBased_Protection{
 		if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin), "0.6.0") == -1) { //$NON-NLS-1$
 			importOld06();
 		} else if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin),	"0.6.2") == -1) { //$NON-NLS-1$
-			initialize(plugin.getConfig());
+			importOld08(plugin.getConfig());
+		} else if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin), "0.8") == -1){
+			importOld08(YamlConfiguration.loadConfiguration(plugin.getProtectionsFile()));
 		} else {
 			FileConfiguration config = YamlConfiguration.loadConfiguration(plugin.getProtectionsFile());
 			initialize(config);
@@ -94,16 +98,16 @@ public class PlayerSettings extends TypeBased_Protection{
 				for (String blockTypeName : config.getConfigurationSection(
 						"Protections." + playerName).getKeys(false)) { //$NON-NLS-1$
 					Material material = Material.getMaterial(blockTypeName);
-					blackLists.get(player).put(material,
-							new LinkedList<OfflineUser>());
-					for (String blacklistedPlayerName : config
-							.getStringList("Protections." + playerName + "." //$NON-NLS-1$ //$NON-NLS-2$
-									+ blockTypeName)) {
-						OfflineUser blacklistedPlayer = OfflineUser.getInstance(blacklistedPlayerName);
-						if (blacklistedPlayer != null) {
-							blacklistedPlayerName = blacklistedPlayer.getName();
-							blackLists.get(player).get(material).add(blacklistedPlayer);
-						} else {
+					if(material != null){
+						blackLists.get(player).put(material, new LinkedList<OfflineUser>());
+						for (String blacklistedPlayerName : config
+								.getStringList("Protections." + playerName + "." //$NON-NLS-1$ //$NON-NLS-2$
+										+ blockTypeName)) {
+							OfflineUser blacklistedPlayer = OfflineUser.getInstance(blacklistedPlayerName);
+							if (blacklistedPlayer != null) {
+								blacklistedPlayerName = blacklistedPlayer.getName();
+								blackLists.get(player).get(material).add(blacklistedPlayer);
+							}
 						}
 					}
 				}
@@ -163,8 +167,69 @@ public class PlayerSettings extends TypeBased_Protection{
 	}
 
 	@Deprecated
-	public void importOld08(){ //TODO ALL_BLOCKS and ALL_PLAYERS have changed
+	public void importOld08(FileConfiguration config){ //TODO check this
 		
+		// ABSOLUTELY PRIVATE TYPES
+		if (config.get("PrivateBlocks") != null) { //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("PrivateBlocks") //$NON-NLS-1$
+					.getKeys(false);
+			for (String player : keys) {
+				privateLists.put(OfflineUser.getInstance(player), new LinkedList<Material>());
+				List<String> privateTypes = config
+						.getStringList("PrivateBlocks." + player); //$NON-NLS-1$
+				for (String privateTypeName : privateTypes) {
+					try {
+						Material privateType = Material
+								.getMaterial(privateTypeName);
+						if (privateType != null) {
+							privateLists.get(player).add(privateType);
+						}
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
+		// FRIENDLISTS
+		if (config.get("FriendLists") != null) { //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("FriendLists") //$NON-NLS-1$
+					.getKeys(false);
+			for (String playerName : keys) {
+				OfflineUser player = OfflineUser.getInstance(playerName);
+				friendLists.put(player, new LinkedList<OfflineUser>());
+				List<String> friendList = config.getStringList("FriendLists." + playerName); //$NON-NLS-1$
+				for (String friendName : friendList) {
+					try {
+						OfflineUser friend = OfflineUser.getInstance(friendName);
+						if (friend != null) {
+							friendLists.get(player).add(friend);
+						}
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
+		// BLACKLISTS
+		if (config.get("Protections") != null) { //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("Protections") //$NON-NLS-1$
+					.getKeys(false);
+			for (String playerName: keys) {
+				OfflineUser player = OfflineUser.getInstance(playerName);
+				blackLists.put(player, new HashMap<Material, LinkedList<OfflineUser>>());
+				for (String blockTypeName : config.getConfigurationSection(
+						"Protections." + playerName).getKeys(false)) { //$NON-NLS-1$
+					Material material = (blockTypeName.equalsIgnoreCase("#all#")) ?  Material.getMaterial(Protection.ALL_BLOCKS) : Material.getMaterial(blockTypeName);
+					if(material != null){
+						blackLists.get(player).put(material, new LinkedList<OfflineUser>());
+						for (String blacklistedPlayerName : config.getStringList("Protections." + playerName + "." + blockTypeName)) { //$NON-NLS-1$ //$NON-NLS-2$
+							OfflineUser blacklistedPlayer = (blacklistedPlayerName.equalsIgnoreCase("#all#")) ? OfflineUser.getInstance(Protection.ALL_PLAYERS) : OfflineUser.getInstance(blacklistedPlayerName);
+							if (blacklistedPlayer != null) {
+								blackLists.get(player).get(material).add(blacklistedPlayer);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	// Save method for 0.6+
@@ -368,7 +433,7 @@ public class PlayerSettings extends TypeBased_Protection{
 	}
 
 	public void addPrivate(Material material, OfflineUser owner) {
-		if(material != Material.ALL_BLOCKS){
+		if(material != Material.ALL_BLOCKS && owner != OfflineUser.ALL_PLAYERS){
 			if (privateLists.get(owner) == null) {
 				privateLists.put(owner, new LinkedList<Material>());
 			}
@@ -451,6 +516,7 @@ public class PlayerSettings extends TypeBased_Protection{
 	}
 
 	public void addFriend(OfflineUser candidate, OfflineUser owner) {
+		if(candidate.equals(OfflineUser.ALL_PLAYERS)) return;
 		try {
 			if (friendLists.get(owner) == null) {
 				friendLists.put(owner, new LinkedList<OfflineUser>());
@@ -499,12 +565,15 @@ public class PlayerSettings extends TypeBased_Protection{
 		if (this.isPrivate(owner, material)) {
 				return false;
 		}
+		plugin.say(ChatColor.RED, "NOT PRIVATE");//TODO
 		if(this.isFriend(candidate, owner)){
 			return true;
 		}
+		plugin.say(ChatColor.RED, "NOT FRIENDS");
 		if (this.isBlacklisted(candidate, owner, material)) {
 			return false;
 		}
+		plugin.say(ChatColor.RED, "NOT PROTECTED");
 		return true;
 	}
 	

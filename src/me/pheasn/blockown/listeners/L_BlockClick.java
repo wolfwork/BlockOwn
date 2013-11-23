@@ -27,8 +27,7 @@ public class L_BlockClick implements Listener {
 			if (event.getClickedBlock() != null) {
 				if (event.getPlayer().hasPermission(Permission.IGNORE_PROTECTION.toString()) || event.getPlayer().hasPermission(Permission.ADMIN.toString())) return;
 				OfflineUser owner = OfflineUser.getInstance(plugin.getOwning().getOwner(event.getClickedBlock()));
-				if (owner != null
-						&& !owner.getName().equalsIgnoreCase(event.getPlayer().getName())) {
+				if (owner != null && !owner.getName().equalsIgnoreCase(event.getPlayer().getName())) {
 					if (!plugin.getPlayerSettings().canAccess(Material.getMaterial(event.getClickedBlock().getType()), User.getInstance(event.getPlayer()), owner)) {
 						if (Setting.PROTECTION_ONLY_LEFT_CLICKS.getBoolean(plugin)	&& !event.getAction().equals(Action.LEFT_CLICK_BLOCK)) return;
 						event.setCancelled(true);
