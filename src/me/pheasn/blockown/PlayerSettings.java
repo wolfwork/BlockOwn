@@ -2,34 +2,36 @@ package me.pheasn.blockown;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.pheasn.Base.Use;
+import me.pheasn.Material;
+import me.pheasn.TypeBased_Protection;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.BlockOwn.Setting;
 
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-public class PlayerSettings {
+public class PlayerSettings extends TypeBased_Protection{ //TODO CONSTANTS FOR ALL PLAYERS AND ALL BLOCKS CHANGED, IMPORT OLD VALUES!!!
 	private BlockOwn plugin;
-	public static final String ALL_PLAYERS = "#all#"; //$NON-NLS-1$
-	public static final String ALL_BLOCKS = "#ALL#"; //$NON-NLS-1$
 	private HashMap<String, LinkedList<Material>> privateLists;
 	private HashMap<String, LinkedList<String>> friendLists;
-	private HashMap<String, HashMap<String, LinkedList<String>>> blackLists;
+	private HashMap<String, HashMap<Material, LinkedList<String>>> blackLists;
 
 	public PlayerSettings(BlockOwn plugin) {
 		this.plugin = plugin;
 		// lists = new HashMap<String, HashMap<String, LinkedList<String>[]>>();
 		privateLists = new HashMap<String, LinkedList<Material>>();
-		blackLists = new HashMap<String, HashMap<String, LinkedList<String>>>();
+		blackLists = new HashMap<String, HashMap<Material, LinkedList<String>>>();
 		friendLists = new HashMap<String, LinkedList<String>>();
 		if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin), "0.6.0") == -1) { //$NON-NLS-1$
 			importOld();
@@ -92,11 +94,11 @@ public class PlayerSettings {
 					.getKeys(false);
 			for (String player : keys) {
 				blackLists.put(player,
-						new HashMap<String, LinkedList<String>>());
+						new HashMap<Material, LinkedList<String>>());
 				for (String blockTypeName : config.getConfigurationSection(
 						"Protections." + player).getKeys(false)) { //$NON-NLS-1$
-					blockTypeName = blockTypeName.toUpperCase();
-					blackLists.get(player).put(blockTypeName,
+					Material material = Material.getMaterial(blockTypeName);
+					blackLists.get(player).put(material,
 							new LinkedList<String>());
 					for (String blacklistedPlayerName : config
 							.getStringList("Protections." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
@@ -145,12 +147,11 @@ public class PlayerSettings {
 					.getKeys(false);
 			for (String player : keys) {
 				blackLists.put(player,
-						new HashMap<String, LinkedList<String>>());
+						new HashMap<Material, LinkedList<String>>());
 				for (String blockTypeName : config.getConfigurationSection(
 						"PlayerSettings." + player).getKeys(false)) { //$NON-NLS-1$
-					blockTypeName = blockTypeName.toUpperCase();
-					blackLists.get(player).put(blockTypeName,
-							new LinkedList<String>());
+					Material material = Material.getMaterial(blockTypeName);
+					blackLists.get(player).put(material, new LinkedList<String>());
 					for (String blacklistedPlayerName : config
 							.getStringList("PlayerSettings." + player + "." //$NON-NLS-1$ //$NON-NLS-2$
 									+ blockTypeName + ".BLACKLIST")) { //$NON-NLS-1$
@@ -195,13 +196,13 @@ public class PlayerSettings {
 		}
 		// BLACKLISTS
 		config.set("Protections", null); //$NON-NLS-1$
-		for (Entry<String, HashMap<String, LinkedList<String>>> playerBlacklists : blackLists
+		for (Entry<String, HashMap<Material, LinkedList<String>>> playerBlacklists : blackLists
 				.entrySet()) {
-			for (Entry<String, LinkedList<String>> playerBlacklist : playerBlacklists
+			for (Entry<Material, LinkedList<String>> playerBlacklist : playerBlacklists
 					.getValue().entrySet()) {
 				if (playerBlacklist.getValue().size() > 0) {
 					config.set("Protections." + playerBlacklists.getKey() + "." //$NON-NLS-1$ //$NON-NLS-2$
-							+ playerBlacklist.getKey(),
+							+ playerBlacklist.getKey().name(),
 							playerBlacklist.getValue());
 				}
 			}
@@ -215,13 +216,31 @@ public class PlayerSettings {
 		}
 	}
 
+	public HashMap<Material, LinkedList<String>> getRawBlacklists(String ownerName) {
+		OfflinePlayer owner = plugin.getServer().getOfflinePlayer(ownerName);
+		if (owner != null) {
+			return this.getRawBlacklists(owner);
+		} else {
+			return new HashMap<Material, LinkedList<String>>();
+		}
+	}
+
+	public HashMap<Material, LinkedList<String>> getRawBlacklists(
+			OfflinePlayer owner) {
+		if (this.blackLists.containsKey(owner.getName())) {
+			return this.blackLists.get(owner.getName());
+		} else {
+			return new HashMap<Material, LinkedList<String>>();
+		}
+	}
+
 	public LinkedList<String> getBlacklist(String ownerName,
-			String blockTypeName) {
+			Material material) {
 		try {
 			OfflinePlayer owner = plugin.getServer()
 					.getOfflinePlayer(ownerName);
 			if (owner != null) {
-				return this.getBlacklist(owner, blockTypeName);
+				return this.getBlacklist(owner, material);
 			} else {
 				return new LinkedList<String>();
 			}
@@ -230,72 +249,38 @@ public class PlayerSettings {
 		}
 	}
 
-	public HashMap<String, LinkedList<String>> getRawBlacklists(String ownerName) {
-		OfflinePlayer owner = plugin.getServer().getOfflinePlayer(ownerName);
-		if (owner != null) {
-			return this.getRawBlacklists(owner);
-		} else {
-			return new HashMap<String, LinkedList<String>>();
-		}
-	}
-
-	public HashMap<String, LinkedList<String>> getRawBlacklists(
-			OfflinePlayer owner) {
-		if (this.blackLists.containsKey(owner.getName())) {
-			return this.blackLists.get(owner.getName());
-		} else {
-			return new HashMap<String, LinkedList<String>>();
-		}
-	}
-
-	public LinkedList<String> getBlacklist(OfflinePlayer owner, String blockType) {
-		if (blackLists.containsKey(owner.getName())) {
-			HashMap<String, LinkedList<String>> playerBlacklists = blackLists
-					.get(owner.getName());
-			LinkedList<String> blacklist = new LinkedList<String>();
-			blockType = blockType.toUpperCase();
-			if (!(blockType == ALL_BLOCKS)) {
-				if (playerBlacklists.containsKey(ALL_BLOCKS)) {
-					blacklist.addAll(playerBlacklists.get(ALL_BLOCKS));
-				}
+	public LinkedList<String> getBlacklist(OfflinePlayer owner, Material material) {
+		HashMap<Material, LinkedList<String>> playerBlacklists;
+		if ((playerBlacklists = blackLists.get(owner.getName())) != null) {
+			LinkedList<String> blacklist;
+			if ((blacklist = playerBlacklists.get(material)) != null) {
+				return blacklist;
 			}
-			if (playerBlacklists.containsKey(blockType)) {
-				for (String player : playerBlacklists.get(blockType)) {
-					if (!blacklist.contains(player)) {
-						blacklist.add(player);
-					}
-				}
-			}
-			return blacklist;
-		} else {
-			return new LinkedList<String>();
 		}
+		return new LinkedList<String>();
 	}
 
-	public void blacklistAdd(String owner, String blockType,
+	public void blacklistAdd(String owner, Material material,
 			String blacklistedPlayerName) {
-		blockType = blockType.toUpperCase();
 		OfflinePlayer blacklistedPlayer = plugin.getServer().getOfflinePlayer(
 				blacklistedPlayerName);
 		if (blacklistedPlayer != null) {
 			blacklistedPlayerName = blacklistedPlayer.getName();
-			if (!blackLists.containsKey(owner)) {
-				blackLists
-						.put(owner, new HashMap<String, LinkedList<String>>());
+			if (blackLists.get(owner) == null) {
+				blackLists.put(owner, new HashMap<Material, LinkedList<String>>());
 			}
-			if (!blackLists.get(owner).containsKey(blockType)) {
-				blackLists.get(owner).put(blockType, new LinkedList<String>());
+			if (blackLists.get(owner).get(material) == null) {
+				blackLists.get(owner).put(material, new LinkedList<String>());
 			}
-			if (!blackLists.get(owner).get(blockType)
-					.contains(blacklistedPlayerName)) {
-				blackLists.get(owner).get(blockType).add(blacklistedPlayerName);
+			if (!blackLists.get(owner).get(material).contains(blacklistedPlayerName)) {
+				blackLists.get(owner).get(material).add(blacklistedPlayerName);
 			}
 		}
 	}
 
-	public void blacklistAdd(OfflinePlayer owner, String blockType,
+	public void blacklistAdd(OfflinePlayer owner, Material material,
 			String blacklistedPlayer) {
-		blacklistAdd(owner.getName(), blockType, blacklistedPlayer);
+		blacklistAdd(owner.getName(), material, blacklistedPlayer);
 	}
 
 	public void blacklistRemove(String owner, String blockType,
@@ -320,17 +305,16 @@ public class PlayerSettings {
 	}
 
 	public boolean isBlacklisted(OfflinePlayer player, OfflinePlayer owner,
-			String blockType) {
+			Material material) {
 		try {
-			return isBlacklisted(player.getName(), owner.getName(), blockType);
+			return isBlacklisted(player.getName(), owner.getName(), material);
 		} catch (Exception ex) {
 			return false;
 		}
 	}
 
 	public boolean isBlacklisted(String candidateName, String ownerName,
-			String blockType) {
-		blockType = blockType.toUpperCase();
+			Material material) {
 		OfflinePlayer candidate = plugin.getServer().getOfflinePlayer(
 				candidateName);
 		if (Setting.DISABLE_IN_WORLDS.getList(plugin) != null) {
@@ -350,17 +334,14 @@ public class PlayerSettings {
 			return true;
 		}
 		if (Setting.PROTECTION_AUTO_CHEST.getBoolean(plugin)
-				&& (blockType.equalsIgnoreCase(Material.CHEST.name()) || blockType
-						.equalsIgnoreCase(Material.ENDER_CHEST.name()))) {
+				&& (material.name().equals(org.bukkit.Material.CHEST.name()) || material.name().equals(org.bukkit.Material.ENDER_CHEST.name()))) {
 			return true;
 		}
 		if (candidate != null) {
 			candidateName = candidate.getName();
 			try {
-				LinkedList<String> blacklist = this.getBlacklist(ownerName,
-						blockType);
-				if (blacklist.contains(candidateName)
-						|| blacklist.contains(ALL_PLAYERS)) {
+				LinkedList<String> blacklist = this.getBlacklist(ownerName,	material);
+				if (blacklist.contains(candidateName) || blacklist.contains(ALL_PLAYERS)) {
 					return true;
 				} else {
 					return false;
@@ -528,37 +509,64 @@ public class PlayerSettings {
 		return this.isFriend(candidate, owner);
 	}
 
-	public boolean isProtected(String blockType, OfflinePlayer against,
+	public boolean canAccess(Material material, OfflinePlayer candidate,
 			OfflinePlayer owner) {
-		if (against.getName().equalsIgnoreCase(owner.getName())) {
-			return false;
-		}
-		if (!Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
-			return false;
-		}
-		if (!blockType.equalsIgnoreCase(ALL_BLOCKS)) {
-			if (this.isPrivate(owner, Material.getMaterial(blockType))) {
-				return true;
-			}
-		}
-		if (friendLists.containsKey(owner.getName())
-				&& friendLists.get(owner.getName()).contains(against.getName())) {
-			return false;
-		}
-		if (this.isBlacklisted(against, owner, blockType)) {
+		if(owner == null){
 			return true;
 		}
-		return false;
+		if (candidate.getName().equalsIgnoreCase(owner.getName())) {
+			return true;
+		}
+		if (!Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
+			return true;
+		}
+		if (this.isPrivate(owner, material)) {
+				return false;
+		}
+		LinkedList<String> friends;
+		if ((friends = friendLists.get(owner.getName())) != null && friends.contains(candidate.getName())) {
+			return true;
+		}
+		if (this.isBlacklisted(candidate, owner, material)) {
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean canAccess(OfflinePlayer candidate, Block block) {
+		OfflinePlayer owner = ((me.pheasn.Owning) plugin.getAddonDatabase(Use.OWNING)).getOwner(block);
+		if(owner == null){
+			return true;
+		}
+		if (candidate.getName().equalsIgnoreCase(owner.getName())) {
+			return true;
+		}
+		if (!Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
+			return true;
+		}
+		if (this.isPrivate(owner, Material.getMaterial(block.getType()))) {
+			return false;
+		}
+		LinkedList<String> friends;
+		if ((friends = friendLists.get(owner.getName())) != null
+				&& friends.contains(candidate.getName())) {
+			return true;
+		}
+		if (this.isBlacklisted(candidate, owner, Material.getMaterial(block.getType()))) {
+			return false;
+		}
+		return true;
 	}
 
-	public LinkedList<String> getProtection(String blockType,
+	public LinkedList<String> getProtection(Material material,
 			OfflinePlayer owner) {
 		LinkedList<String> protection = new LinkedList<String>();
 		if (!Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
 			return protection;
 		}
-		if (!blockType.equalsIgnoreCase(ALL_BLOCKS)) {
-			if (this.isPrivate(owner, Material.getMaterial(blockType))) {
+		if (!material.name().equals(Material.ALL_BLOCKS)) {
+			if (this.isPrivate(owner, material)) {
 				for (OfflinePlayer player : plugin.getServer()
 						.getOfflinePlayers()) {
 					protection.add(player.getName());
@@ -566,8 +574,8 @@ public class PlayerSettings {
 				return protection;
 			}
 		}
-		protection = this.getBlacklist(owner, blockType);
-		for (String blackListedPlayerName : this.getBlacklist(owner, blockType)) {
+		protection = this.getBlacklist(owner, material);
+		for (String blackListedPlayerName : this.getBlacklist(owner, material)) {
 			if (this.friendLists.containsKey(owner.getName())
 					&& this.friendLists.get(owner.getName()).contains(
 							blackListedPlayerName)) {
@@ -580,5 +588,43 @@ public class PlayerSettings {
 	@Override
 	public void finalize() {
 		this.save();
+	}
+
+	@Override
+	public void addFriend(OfflinePlayer friend, OfflinePlayer owner) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFriend(OfflinePlayer friend, OfflinePlayer owner) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addPrivate(Material material, OfflinePlayer owner) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removePrivate(Material material, OfflinePlayer owner) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addBlacklisted(Material material, String candidateName,
+			OfflinePlayer owner) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeBlacklisted(Material material, String candidateName,
+			OfflinePlayer owner) {
+		// TODO Auto-generated method stub
+		
 	}
 }
