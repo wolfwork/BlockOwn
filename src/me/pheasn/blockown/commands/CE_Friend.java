@@ -1,12 +1,13 @@
 package me.pheasn.blockown.commands;
 
+import me.pheasn.OfflineUser;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,25 +25,19 @@ public class CE_Friend implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if(Setting.PERMISSION_NEEDED_FRIEND_COMMAND.getBoolean(plugin)&&!player.hasPermission(Permission.FRIEND.toString())){
+			User user = User.getInstance(player);
+			if(Setting.PERMISSION_NEEDED_FRIEND_COMMAND.getBoolean(plugin) && !player.hasPermission(Permission.FRIEND.toString())){
 				plugin.say(player, ChatColor.RED,Messages.getString("noPermission"));
 				return true;
 			}
 			if (args.length == 1) {
-				OfflinePlayer friend = plugin.getServer().getOfflinePlayer(
-						args[0]);
+				OfflineUser friend = OfflineUser.getInstance(args[0]);
 				if (friend != null) {
-					plugin.getPlayerSettings().friendListAdd(friend.getName(),
-							player.getName());
-					plugin.say(
-							player,
-							ChatColor.GREEN,
-							Messages.getString(
-									"CE_Friend.success", friend.getName())); //$NON-NLS-1$
+					plugin.getPlayerSettings().addFriend(friend, user);
+					plugin.say(player,	ChatColor.GREEN, Messages.getString("CE_Friend.success", friend.getName())); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Friend.playerNotFound")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.RED, Messages.getString("CE_Friend.playerNotFound")); //$NON-NLS-1$
 					return false;
 				}
 			} else {

@@ -2,6 +2,8 @@ package me.pheasn.blockown.commands;
 
 import java.util.LinkedList;
 
+import me.pheasn.OfflineUser;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
@@ -23,12 +25,12 @@ public class CE_List_Friends implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			User user = User.getInstance(player);
 			plugin.say(player, ChatColor.YELLOW,
 					Messages.getString("CE_List_Friends.listTitle")); //$NON-NLS-1$
-			LinkedList<String> friends = plugin.getPlayerSettings()
-					.getFriendList(player);
-			for (String friend : friends) {
-				plugin.say(player, ChatColor.GREEN, friend);
+			LinkedList<OfflineUser> friends = plugin.getPlayerSettings().getFriendList(user);
+			for (OfflineUser friend : friends) {
+				plugin.say(player, ChatColor.GREEN, friend.getName());
 			}
 			return true;
 		} else {

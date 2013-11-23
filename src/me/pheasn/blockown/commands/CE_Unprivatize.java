@@ -1,11 +1,12 @@
 package me.pheasn.blockown.commands;
 
+import me.pheasn.Material;
 import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,38 +24,28 @@ public class CE_Unprivatize implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			User user = User.getInstance(player);
 			if (args.length == 1) {
-				Material blockType = Material.getMaterial(args[0]);
-				if (blockType != null) {
-					plugin.getPlayerSettings().privateListRemove(
-							player.getName(), blockType.name());
-					plugin.say(player, ChatColor.GREEN, Messages.getString(
-							"CE_Unprivatize.success", blockType.name())); //$NON-NLS-1$
+				Material material = Material.getMaterial(args[0]);
+				if (material != null) {
+					plugin.getPlayerSettings().removePrivate(material, user);
+					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unprivatize.success", material.name())); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED, Messages
-							.getString("CE_Unprivatize.invalidMaterial")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.RED, Messages.getString("CE_Unprivatize.invalidMaterial")); //$NON-NLS-1$
 					return false;
 				}
 			} else if (args.length == 0) {
-				if (User.getInstance(player).getTargetBlock() != null) {
-					plugin.getPlayerSettings().privateListRemove(
-							player.getName(),
-							User.getInstance(player).getTargetBlock()
-									.getType().name());
-					plugin.say(
-							player,
-							ChatColor.GREEN,
-							Messages.getString("CE_Unprivatize.success", //$NON-NLS-1$
-									User.getInstance(player)
-											.getTargetBlock().getType().name()));
+				Block target = user.getTargetBlock();
+				if (target != null) {
+					plugin.getPlayerSettings().removePrivate(Material.getMaterial(target.getType()), user);
+					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unprivatize.success", target.getType().name())); //$NON-NLS-1$
 					return true;
 				} else {
 					return false;
 				}
 			} else {
-				plugin.say(player, ChatColor.RED,
-						Messages.getString("countArgs")); //$NON-NLS-1$
+				plugin.say(player, ChatColor.RED, Messages.getString("countArgs")); //$NON-NLS-1$
 				return false;
 			}
 		} else {

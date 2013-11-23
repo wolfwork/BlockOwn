@@ -1,10 +1,11 @@
 package me.pheasn.blockown.commands;
 
+import me.pheasn.OfflineUser;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,26 +23,19 @@ public class CE_Unfriend implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			User user = User.getInstance(player);
 			if (args.length == 1) {
-				OfflinePlayer friend = plugin.getServer().getOfflinePlayer(
-						args[0]);
+				OfflineUser friend = OfflineUser.getInstance(args[0]);
 				if (friend != null) {
-					plugin.getPlayerSettings().friendListRemove(args[0],
-							player.getName());
-					plugin.say(
-							player,
-							ChatColor.GREEN,
-							Messages.getString(
-									"CE_Unfriend.success", friend.getName())); //$NON-NLS-1$
+					plugin.getPlayerSettings().removeFriend(friend, user);
+					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unfriend.success", friend.getName())); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Unfriend.invalidPlayer")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.RED, Messages.getString("CE_Unfriend.invalidPlayer")); //$NON-NLS-1$
 					return false;
 				}
 			} else {
-				plugin.say(player, ChatColor.RED,
-						Messages.getString("countArgs")); //$NON-NLS-1$
+				plugin.say(player, ChatColor.RED, Messages.getString("countArgs")); //$NON-NLS-1$
 				return false;
 			}
 		} else {

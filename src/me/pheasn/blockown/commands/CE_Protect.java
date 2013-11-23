@@ -1,5 +1,7 @@
 package me.pheasn.blockown.commands;
 
+import me.pheasn.Material;
+import me.pheasn.OfflineUser;
 import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
@@ -8,6 +10,7 @@ import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
 import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,6 +28,7 @@ public class CE_Protect implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			User user = User.getInstance(player);
 			if (Setting.PERMISSION_NEEDED_PROTECT_AND_PRIVATIZE_COMMAND
 					.getBoolean(plugin)
 					&& !player.hasPermission(Permission.PROTECT_AND_PRIVATIZE.toString())) {
@@ -32,21 +36,20 @@ public class CE_Protect implements CommandExecutor {
 						Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
 			}
-			String targetTypeName = User.getInstance(player)
-					.getTargetBlock().getType().name();
-			if (args.length == 1 && targetTypeName != null) {
+			Block target= User.getInstance(player).getTargetBlock();
+			if (args.length == 1 && target != null) {
 				if (plugin.getPlayerSettings().isBlacklisted(args[0],
-						player.getName(), targetTypeName)) {
+						player.getName(), Material.getMaterial(target.getType()))) {
 					plugin.say(player, ChatColor.YELLOW, Messages.getString(
 							"CE_Protect.unneccessary", args[0])); //$NON-NLS-1$
 					return true;
 				}
 			} else if (args.length == 2) {
-				targetTypeName = args[0];
+				Material targetMaterial = Material.getMaterial(args[0]);
 				if (plugin.getPlayerSettings().isBlacklisted(args[1],
-						player.getName(), args[0])) {
+						player.getName(), targetMaterial)) {
 					plugin.say(player, ChatColor.YELLOW, Messages.getString(
-							"CE_Protect.unneccessary", args[1])); //$NON-NLS-1$
+							"CE_Protect.unneccessary", targetMaterial.name())); //$NON-NLS-1$
 					return true;
 				}
 			} else if (Setting.ECONOMY_ENABLE.getBoolean(plugin)) {
@@ -72,18 +75,22 @@ public class CE_Protect implements CommandExecutor {
 				}
 			}
 			String protectName;
-			if (targetTypeName != null) {
 				if (args.length == 1) {
-					protectName = args[0];
-					if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
-						args[0] = PlayerSettings.ALL_PLAYERS;
-						protectName = Messages
-								.getString("CE_Protect.allPlayers"); //$NON-NLS-1$
+					if(target != null){
+						protectName = args[0];
+						if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
+							args[0] = PlayerSettings.ALL_PLAYERS;
+							protectName = Messages.getString("CE_Protect.allPlayers"); //$NON-NLS-1$
+						}
+						OfflineUser against = OfflineUser.getInstance(args[0]);
+						Material targetMaterial = Material.getMaterial(target.getType());
+						plugin.getPlayerSettings().addBlacklisted(targetMaterial, against, OfflineUser.getInstance(player.getName()));
+						sendSuccessMessage(player, targetMaterial.name(), protectName);
+						return true;
+					} else {
+						plugin.say(player, ChatColor.RED, Messages.getString("noTargetBlock")); //$NON-NLS-1$
+						return false;
 					}
-					plugin.getPlayerSettings().blacklistAdd(player,
-							targetTypeName, args[0]);
-					sendSuccessMessage(player, targetTypeName, protectName);
-					return true;
 				} else if (args.length == 2) {
 					String blockName = args[0];
 					protectName = args[1];
@@ -91,13 +98,14 @@ public class CE_Protect implements CommandExecutor {
 						args[0] = PlayerSettings.ALL_BLOCKS;
 						blockName = "all"; //$NON-NLS-1$
 					}
+					Material material = Material.getMaterial(args[0]);
 					if (args[1].equalsIgnoreCase("all")) { //$NON-NLS-1$
 						args[1] = PlayerSettings.ALL_PLAYERS;
 						protectName = Messages
 								.getString("CE_Protect.allPlayers"); //$NON-NLS-1$
 					}
-					plugin.getPlayerSettings().blacklistAdd(player,
-							args[0].toUpperCase(), args[1]);
+					OfflineUser against = OfflineUser.getInstance(args[1]);
+					plugin.getPlayerSettings().addBlacklisted(material, against, user);
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else {
@@ -105,11 +113,7 @@ public class CE_Protect implements CommandExecutor {
 							Messages.getString("countArgs")); //$NON-NLS-1$
 					return false;
 				}
-			} else {
-				plugin.say(player, ChatColor.RED,
-						Messages.getString("noTargetBlock")); //$NON-NLS-1$
-				return false;
-			}
+			
 		} else {
 			plugin.con(Messages.getString("justForPlayers")); //$NON-NLS-1$
 			return false;

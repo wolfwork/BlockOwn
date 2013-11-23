@@ -2,10 +2,10 @@ package me.pheasn.blockown.commands;
 
 import java.util.LinkedList;
 
+import me.pheasn.Material;
 import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
-import me.pheasn.blockown.PlayerSettings;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -25,29 +25,21 @@ public class CE_Protection implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			User user = User.getInstance(player);
 			if (args.length == 0) {
 				if (User.getInstance(player).getTargetBlock() != null) {
 					sendLists(
 							player,
-							plugin.getPlayerSettings().getProtection(
-									User.getInstance(player)
-											.getTargetBlock().getType().name(),
-									player));
+							plugin.getPlayerSettings().getProtection(Material.getMaterial(user.getTargetBlock().getType()), user));
 					return true;
 				} else {
 					return false;
 				}
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
-					sendLists(
-							player,
-							plugin.getPlayerSettings().getProtection(
-									PlayerSettings.ALL_BLOCKS, player));
+					sendLists(player, plugin.getPlayerSettings().getProtection(Material.ALL_BLOCKS, user));
 				} else {
-					sendLists(
-							player,
-							plugin.getPlayerSettings().getProtection(
-									args[0].toUpperCase(), player));
+					sendLists(player, plugin.getPlayerSettings().getProtection(Material.getMaterial(args[0]), user));
 				}
 				return true;
 			} else {

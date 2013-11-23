@@ -1,13 +1,14 @@
 package me.pheasn.blockown.listeners;
 
+import me.pheasn.Material;
+import me.pheasn.OfflineUser;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -61,15 +62,13 @@ class CheckThread extends Thread {
 		Location end = block.getLocation().add(radius, radius, radius);
 		Location start = block.getLocation().subtract(radius, radius, radius);
 		World world = block.getWorld();
-		OfflinePlayer owner = null;
+		OfflineUser owner;
 		Block curBlock;
 		for (int x = start.getBlockX(); x <= end.getBlockX(); x++) {
 			for (int y = start.getBlockY(); y <= end.getBlockY(); y++) {
 				for (int z = start.getBlockZ(); z <= end.getBlockZ(); z++) {
-					if ((owner = plugin.getOwning().getOwner(
-							(curBlock = world.getBlockAt(x, y, z)))) != null
-							&& plugin.getPlayerSettings().isProtected(
-									curBlock.getType().name(), player, owner)) {
+					if ((owner = OfflineUser.getInstance(plugin.getOwning().getOwner((curBlock = world.getBlockAt(x, y, z))))) != null
+							&& !plugin.getPlayerSettings().canAccess(Material.getMaterial(curBlock.getType()), User.getInstance(player), owner)) {
 						listener.removeBlock(new reverseBlockTask(
 								plugin, block, player));
 						return;
@@ -93,9 +92,9 @@ class reverseBlockTask implements Runnable {
 
 	@Override
 	public void run() {
-		if (!block.getType().equals(Material.FIRE)) {
+		if (!block.getType().equals(org.bukkit.Material.FIRE)) {
 			ItemStack items = null;
-			if (block.getType().equals(Material.WOOL)) {
+			if (block.getType().equals(org.bukkit.Material.WOOL)) {
 				for (ItemStack itemStack : block.getDrops()) {
 					items = itemStack;
 					break;
@@ -105,7 +104,7 @@ class reverseBlockTask implements Runnable {
 			}
 			player.getInventory().addItem(items);
 		}
-		block.setType(Material.AIR);
+		block.setType(org.bukkit.Material.AIR);
 		plugin.getOwning().removeOwner(block);
 	}
 

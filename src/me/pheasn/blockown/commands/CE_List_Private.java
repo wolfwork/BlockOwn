@@ -2,11 +2,12 @@ package me.pheasn.blockown.commands;
 
 import java.util.LinkedList;
 
+import me.pheasn.Material;
+import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,10 +25,10 @@ public class CE_List_Private implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			User user = User.getInstance(player);
 			plugin.say(player, ChatColor.YELLOW,
 					Messages.getString("CE_List_Private.listTitle")); //$NON-NLS-1$
-			LinkedList<Material> privateBlocks = plugin.getPlayerSettings()
-					.getPrivateList(player);
+			LinkedList<Material> privateBlocks = plugin.getPlayerSettings().getPrivateList(user);
 			for (Material privateBlock : privateBlocks) {
 				plugin.say(player, ChatColor.GREEN, privateBlock.name());
 			}
