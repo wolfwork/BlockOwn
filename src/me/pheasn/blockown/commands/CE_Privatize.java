@@ -27,53 +27,43 @@ public class CE_Privatize implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			User user = User.getInstance(player);
-			if (Setting.PERMISSION_NEEDED_PROTECT_AND_PRIVATIZE_COMMAND
-					.getBoolean(plugin)
+			if (Setting.PERMISSION_NEEDED_PROTECT_AND_PRIVATIZE_COMMAND.getBoolean(plugin)
 					&& !player.hasPermission(Permission.PROTECT_AND_PRIVATIZE.toString())) {
-				plugin.say(player, ChatColor.RED,
-						Messages.getString("noPermission")); //$NON-NLS-1$
+				plugin.say(player, ChatColor.RED, Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
 			}
 			Block target = user.getTargetBlock();
 			if (args.length == 0 && target != null) {
 				if (plugin.getPlayerSettings().isPrivate(player.getName(),	target.getType().name())) {
-					plugin.say(player, ChatColor.YELLOW,
-							Messages.getString("CE_Privatize.unneccessary")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Privatize.unneccessary")); //$NON-NLS-1$
 					return true;
 				}
-			} else if (args.length == 1) {
+			} else if (args.length == 1 && Material.getMaterial(args[0]) != null) {
 				if (plugin.getPlayerSettings().isPrivate(player.getName(),	args[0])) {
-					plugin.say(player, ChatColor.YELLOW,
-							Messages.getString("CE_Privatize.unneccessary")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Privatize.unneccessary")); //$NON-NLS-1$
 					return true;
 				}
 			} else if (Setting.ECONOMY_ENABLE.getBoolean(plugin)) {
 				return false;
 			}
-			if (Setting.ECONOMY_ENABLE.getBoolean(plugin)
-					&& plugin.getEconomy() != null
-					&& Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin) > 0.0) {
-				if (plugin.getEconomy().getBalance(player.getName()) < Setting.ECONOMY_PRICE_PRIVATIZE
-						.getDouble(plugin)) {
+			if (Setting.ECONOMY_ENABLE.getBoolean(plugin) && plugin.getEconomy() != null && Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin) > 0.0) {
+				if (plugin.getEconomy().getBalance(player.getName()) < Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin)) {
 					plugin.say(player, ChatColor.RED, Messages.getString(
 							"CE_Privatize.noMoney", Setting.ECONOMY_PRICE_PRIVATIZE //$NON-NLS-1$
 									.getDouble(plugin), plugin.getEconomy()
 									.currencyNamePlural()));
 					return true;
 				} else {
-					plugin.say(player, ChatColor.YELLOW, Messages.getString(
-							"CE_Privatize.howMuch", Setting.ECONOMY_PRICE_PRIVATIZE
-									.getDouble(plugin), plugin.getEconomy()
-									.currencyNamePlural())); 
+					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Privatize.howMuch", Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin), plugin.getEconomy().currencyNamePlural())); 
 					plugin.getEconomy().withdrawPlayer(player.getName(), Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin));
 				}
 			}
 			if (args.length == 1) {
-				Material blockType = Material.getMaterial(args[0]);
-				if (blockType != null) {
-					plugin.getPlayerSettings().addPrivate(blockType, user);
+				Material material = Material.getMaterial(args[0]);
+				if (material != null) {
+					plugin.getPlayerSettings().addPrivate(material, user.getOfflineUser());
 					plugin.say(player, ChatColor.GREEN, Messages.getString(
-							"CE_Privatize.success", blockType.name())); //$NON-NLS-1$
+							"CE_Privatize.success", material.name())); //$NON-NLS-1$
 					return true;
 				} else {
 					plugin.say(player, ChatColor.RED,
@@ -82,7 +72,7 @@ public class CE_Privatize implements CommandExecutor {
 				}
 			} else if (args.length == 0) {
 				if (target != null) {
-					plugin.getPlayerSettings().addPrivate(Material.getMaterial(target.getType()), user);
+					plugin.getPlayerSettings().addPrivate(Material.getMaterial(target.getType()), user.getOfflineUser());
 					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Privatize.success", target.getType().name())); 
 					return true;
 				} else {

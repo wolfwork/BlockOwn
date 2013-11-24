@@ -30,16 +30,16 @@ public class CE_Protection implements CommandExecutor {
 				if (User.getInstance(player).getTargetBlock() != null) {
 					sendLists(
 							player,
-							plugin.getPlayerSettings().getProtection(Material.getMaterial(user.getTargetBlock().getType()), user));
+							plugin.getPlayerSettings().getProtection(Material.getMaterial(user.getTargetBlock().getType()), user.getOfflineUser()));
 					return true;
 				} else {
 					return false;
 				}
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
-					sendLists(player, plugin.getPlayerSettings().getProtection(Material.ALL_BLOCKS, user));
+					sendLists(player, plugin.getPlayerSettings().getProtection(Material.ALL_BLOCKS, user.getOfflineUser()));
 				} else {
-					sendLists(player, plugin.getPlayerSettings().getProtection(Material.getMaterial(args[0]), user));
+					sendLists(player, plugin.getPlayerSettings().getProtection(Material.getMaterial(args[0]), user.getOfflineUser()));
 				}
 				return true;
 			} else {

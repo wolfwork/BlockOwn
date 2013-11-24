@@ -1,5 +1,6 @@
 package me.pheasn.blockown.commands;
 
+import me.pheasn.OfflineUser;
 import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
@@ -8,7 +9,6 @@ import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -31,6 +31,7 @@ public class CE_Unown implements CommandExecutor {
 		try {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
+				OfflineUser user = OfflineUser.getInstance(player);
 				if(Setting.PERMISSION_NEEDED_UNOWN_COMMAND.getBoolean(plugin)&&!player.hasPermission(Permission.UNOWN.toString())){
 					plugin.say(player, ChatColor.RED, Messages.getString("noPermission"));
 					return true;
@@ -40,25 +41,19 @@ public class CE_Unown implements CommandExecutor {
 							.getTargetBlock();
 
 					if (target != null) {
-						OfflinePlayer owner = plugin.getOwning().getOwner(
-								target);
-						if (owner != null
-								&& owner.getName().equalsIgnoreCase(
-										player.getName())) {
+						OfflineUser owner = plugin.getOwning().getOwner(target);
+						if (owner != null && owner.equals(user)) {
 							plugin.getOwning().removeOwner(target);
-							plugin.say(player, ChatColor.GREEN,
-									Messages.getString("CE_Unown.success")); //$NON-NLS-1$
+							plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unown.success")); //$NON-NLS-1$
 							return true;
 						} else {
-							plugin.say(player, ChatColor.RED,
-									Messages.getString("CE_Unown.unneccessary")); //$NON-NLS-1$
+							plugin.say(player, ChatColor.RED, Messages.getString("CE_Unown.unneccessary")); //$NON-NLS-1$
 						}
 					}
 				} else if (args.length == 1
 						&& args[0].equalsIgnoreCase("selection")) { //$NON-NLS-1$
 					if (plugin.getWorldEdit() == null) {
-						plugin.tell(sender, ChatColor.RED, 
-								Messages.getString("CE_Unown.selection.noWorldedit")); //$NON-NLS-1$
+						plugin.tell(sender, ChatColor.RED, Messages.getString("CE_Unown.selection.noWorldedit")); //$NON-NLS-1$
 						return false;
 					}
 					Selection selection;
@@ -76,30 +71,27 @@ public class CE_Unown implements CommandExecutor {
 							for (int y = yMin; y <= yMax; y++) {
 								for (int z = zMin; z <= zMax; z++) {
 									Block block = w.getBlockAt(x, y, z);
-									OfflinePlayer owner = plugin.getOwning().getOwner(block);
-									if (owner.getName().equalsIgnoreCase(player.getName())) {
-										plugin.getOwning().removeOwner(w.getBlockAt(x, y, z));
+									OfflineUser owner = plugin.getOwning().getOwner(block);
+									if (owner.equals(user)) {
+										plugin.getOwning().removeOwner(block);
 									}
 								}
 							}
 						}
-						plugin.tell(sender, ChatColor.GREEN, Messages
-								.getString("CE_Unown.selection.success")); //$NON-NLS-1$
+						plugin.tell(sender, ChatColor.GREEN, Messages.getString("CE_Unown.selection.success")); //$NON-NLS-1$
 						return true;
 					} else {
-						plugin.tell(sender, ChatColor.RED,
-								Messages.getString("CE_Unown.selection.noArea")); //$NON-NLS-1$
+						plugin.tell(sender, ChatColor.RED, Messages.getString("CE_Unown.selection.noArea")); //$NON-NLS-1$
 						return true;
 					}
 				} else {
-					plugin.tell(sender, ChatColor.RED,
-							Messages.getString("countArgs")); //$NON-NLS-1$
+					plugin.tell(sender, ChatColor.RED, Messages.getString("countArgs")); //$NON-NLS-1$
 					return false;
 				}
 			} else {
 				plugin.con(ChatColor.RED, Messages.getString("justForPlayers")); //$NON-NLS-1$
 			}
-		} catch (Exception ex) {
+		} catch (Exception e) {
 
 		}
 		return false;

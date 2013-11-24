@@ -1,5 +1,6 @@
 package me.pheasn.blockown.listeners;
 
+import me.pheasn.OfflineUser;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
@@ -18,13 +19,11 @@ public class L_BlockPlace_NoCheck implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (Setting.PERMISSION_NEEDED_OWN_PLACE.getBoolean(plugin)
-				&& !event.getPlayer().hasPermission(Permission.OWN_PLACE.toString())) {
+		if (Setting.PERMISSION_NEEDED_OWN_PLACE.getBoolean(plugin) && !event.getPlayer().hasPermission(Permission.OWN_PLACE.toString())) {
 			if(!(event.getPlayer().getGameMode()==GameMode.CREATIVE && event.getPlayer().hasPermission(Permission.OWN_PLACE_CREATIVE.toString()))){
 				return;
 			}
 		}
-			plugin.getOwning().setOwner(event.getBlockPlaced(),
-					event.getPlayer());
+		plugin.getOwning().setOwner(event.getBlockPlaced(), OfflineUser.getInstance(event.getPlayer()));
 	}
 }

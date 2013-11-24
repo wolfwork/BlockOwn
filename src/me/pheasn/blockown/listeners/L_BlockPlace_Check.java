@@ -2,7 +2,6 @@ package me.pheasn.blockown.listeners;
 
 import me.pheasn.Material;
 import me.pheasn.OfflineUser;
-import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
@@ -26,13 +25,12 @@ public class L_BlockPlace_Check implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (Setting.PERMISSION_NEEDED_OWN_PLACE.getBoolean(plugin)
-				&& !event.getPlayer().hasPermission(Permission.OWN_PLACE.toString())) {
+		if (Setting.PERMISSION_NEEDED_OWN_PLACE.getBoolean(plugin) && !event.getPlayer().hasPermission(Permission.OWN_PLACE.toString())) {
 			if(!(event.getPlayer().getGameMode()==GameMode.CREATIVE && event.getPlayer().hasPermission(Permission.OWN_PLACE_CREATIVE.toString()))){
 				return;
 			}
 		}
-		plugin.getOwning().setOwner(event.getBlockPlaced(),	event.getPlayer());
+		plugin.getOwning().setOwner(event.getBlockPlaced(),	OfflineUser.getInstance(event.getPlayer()));
 		new CheckThread(plugin, this, event.getBlockPlaced(), event.getPlayer()).start();
 	}
 
@@ -67,10 +65,8 @@ class CheckThread extends Thread {
 		for (int x = start.getBlockX(); x <= end.getBlockX(); x++) {
 			for (int y = start.getBlockY(); y <= end.getBlockY(); y++) {
 				for (int z = start.getBlockZ(); z <= end.getBlockZ(); z++) {
-					if ((owner = OfflineUser.getInstance(plugin.getOwning().getOwner((curBlock = world.getBlockAt(x, y, z))))) != null
-							&& !plugin.getPlayerSettings().canAccess(Material.getMaterial(curBlock.getType()), User.getInstance(player), owner)) {
-						listener.removeBlock(new reverseBlockTask(
-								plugin, block, player));
+					if ((owner = plugin.getOwning().getOwner((curBlock = world.getBlockAt(x, y, z)))) != null && !plugin.getPlayerSettings().canAccess(Material.getMaterial(curBlock.getType()), OfflineUser.getInstance(player), owner)) {
+						listener.removeBlock(new reverseBlockTask(plugin, block, player));
 						return;
 					}
 				}

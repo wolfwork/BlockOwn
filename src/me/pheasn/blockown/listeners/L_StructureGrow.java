@@ -1,8 +1,8 @@
 package me.pheasn.blockown.listeners;
 
+import me.pheasn.OfflineUser;
 import me.pheasn.blockown.BlockOwn;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,17 +17,15 @@ public class L_StructureGrow implements Listener {
 
 	@EventHandler
 	public void onStructureGrow(StructureGrowEvent event) {
-		OfflinePlayer offlinePlayer = null;
+		OfflineUser owner = null;
 		for (BlockState blockState : event.getBlocks()) {
 			if (plugin.getOwning().getOwner(blockState.getBlock()) != null) {
-				offlinePlayer = plugin.getOwning().getOwner(
-						blockState.getBlock());
+				owner = plugin.getOwning().getOwner(blockState.getBlock());
 			}
 		}
-		if (offlinePlayer != null) {
+		if (owner != null) {
 			for (BlockState blockState : event.getBlocks()) {
-				plugin.getOwning().setOwner(blockState.getBlock(),
-						offlinePlayer);
+				plugin.getOwning().setOwner(blockState.getBlock(), owner);
 			}
 		}
 	}

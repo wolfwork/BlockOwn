@@ -40,7 +40,7 @@ public class CE_Unprotect implements CommandExecutor {
 						protectName = Messages.getString("CE_Unprotect.allPlayers"); //$NON-NLS-1$
 					}
 					OfflineUser against = OfflineUser.getInstance(args[0]);
-					plugin.getPlayerSettings().removeBlacklisted(Material.getMaterial(target), against, user);
+					plugin.getPlayerSettings().removeBlacklisted(Material.getMaterial(target), against, user.getOfflineUser());
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else if (args.length == 2) {
@@ -56,7 +56,7 @@ public class CE_Unprotect implements CommandExecutor {
 						protectName = Messages.getString("CE_Unprotect.allPlayers"); //$NON-NLS-1$
 					}
 					OfflineUser against = OfflineUser.getInstance(args[1]);
-					plugin.getPlayerSettings().removeBlacklisted(material, against, user);
+					plugin.getPlayerSettings().removeBlacklisted(material, against, user.getOfflineUser());
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else {

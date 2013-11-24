@@ -24,7 +24,10 @@ public abstract class SQLOwning extends Owning {
 			return s;
 		}
 	}
-
-	abstract boolean playerExists(String player);
+	
+	/**
+	 * Checks whether player is already in the database
+	 */
+	protected abstract boolean playerExists(String player);
 
 }

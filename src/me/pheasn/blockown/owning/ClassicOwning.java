@@ -4,26 +4,25 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import me.pheasn.OfflineUser;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 
 public class ClassicOwning extends Owning {
-	private HashMap<Block, String> ownings;
+	private HashMap<Block, OfflineUser> ownings;
 
 	public ClassicOwning(BlockOwn plugin) {
 		this.type = DatabaseType.CLASSIC;
 		this.plugin = plugin;
-		ownings = new HashMap<Block, String>();
+		ownings = new HashMap<Block, OfflineUser>();
 		this.load();
 	}
 
@@ -34,31 +33,23 @@ public class ClassicOwning extends Owning {
 				FileReader reader = new FileReader(plugin.getBlockOwnerFile());
 				BufferedReader bufferedReader = new BufferedReader(reader);
 				String owning;
-				ArrayList<String> players = new ArrayList<String>();
-				for (OfflinePlayer offlinePlayer : plugin.getServer()
-						.getOfflinePlayers()) {
-					players.add(offlinePlayer.getName());
-				}
 				while ((owning = bufferedReader.readLine()) != null) {
 					String[] owningDiv = owning.split(":"); //$NON-NLS-1$
 					String worldName = owningDiv[0];
 					String[] BlockCoordinates = owningDiv[1].split("#"); //$NON-NLS-1$
 					String playerName = owningDiv[2];
+					OfflineUser player = OfflineUser.getInstance(playerName);
 					if (plugin.getServer().getWorld(worldName) == null) {
 						plugin.getServer().createWorld(
 								new WorldCreator(worldName));
 					}
-					if (plugin.getServer().getWorld(worldName) != null
-							&& players.contains(playerName)) {
-						Block block = plugin
-								.getServer()
-								.getWorld(worldName)
-								.getBlockAt(
-										Integer.valueOf(BlockCoordinates[0]),
-										Integer.valueOf(BlockCoordinates[1]),
-										Integer.valueOf(BlockCoordinates[2]));
+					if (plugin.getServer().getWorld(worldName) != null && player != null) {
+						Block block = plugin.getServer().getWorld(worldName).getBlockAt(
+								Integer.valueOf(BlockCoordinates[0]),
+								Integer.valueOf(BlockCoordinates[1]),
+								Integer.valueOf(BlockCoordinates[2]));
 						if (!block.getType().equals(Material.AIR)) {
-							ownings.put(block, playerName);
+							ownings.put(block, player);
 						}
 					}
 				}
@@ -87,17 +78,19 @@ public class ClassicOwning extends Owning {
 			FileWriter fileWriter = new FileWriter(plugin.getBlockOwnerFile(),
 					false);
 			@SuppressWarnings("unchecked")
-			final HashMap<Block, String> curOwnings = (HashMap<Block, String>) ownings
+			final HashMap<Block, OfflineUser> curOwnings = (HashMap<Block, OfflineUser>) ownings
 					.clone();
-			for (Entry<Block, String> entry : curOwnings.entrySet()) {
+			for (Entry<Block, OfflineUser> entry : curOwnings.entrySet()) {
 				Block block = entry.getKey();
-				fileWriter
-						.write(block.getWorld().getName()
+				fileWriter.write(block.getWorld().getName()
 								+ ":" //$NON-NLS-1$
 								+ block.getX()
-								+ "#" + block.getY() + "#" //$NON-NLS-1$ //$NON-NLS-2$
+								+ "#" //$NON-NLS-1$
+								+ block.getY()
+								+ "#" //$NON-NLS-1$
 								+ block.getZ()
-								+ ":" + entry.getValue() + System.getProperty("line.separator")); //$NON-NLS-1$ //$NON-NLS-2$
+								+ ":" //$NON-NLS-1$
+								+ entry.getValue().getName() + System.getProperty("line.separator")); //$NON-NLS-1$
 			}
 			fileWriter.flush();
 			fileWriter.close();
@@ -109,47 +102,37 @@ public class ClassicOwning extends Owning {
 	}
 
 	@Override
-	public OfflinePlayer getOwner(Block block) {
+	public OfflineUser getOwner(Block block) {
 		try {
-			return plugin.getServer().getOfflinePlayer(ownings.get(block));
+			return ownings.get(block);
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Override
-	public synchronized void setOwner(Block block, OfflinePlayer offlinePlayer) {
-		ownings.put(block, offlinePlayer.getName());
-	}
-
-	@Override
-	public synchronized void setOwner(Block block, String player) {
-		ownings.put(block, player);
+	public synchronized void setOwner(Block block, OfflineUser offlineUser) {
+		ownings.put(block, offlineUser);
 	}
 
 	@Override
 	public void removeOwner(Block block) {
-		if (ownings.containsKey(block)) {
+		if (ownings.get(block) != null) {
 			ownings.remove(block);
 		}
 	}
 
 	@Override
-	public void deleteOwningsOf(OfflinePlayer offlinePlayer) {
-		deleteOwningsOf(offlinePlayer.getName());
-	}
-
-	@Override
-	public void deleteOwningsOf(String player) {
-		for (Entry<Block, String> entry : ownings.entrySet()) {
-			if (entry.getValue().equalsIgnoreCase(player)) {
+	public void deleteOwningsOf(OfflineUser player) {
+		for (Entry<Block, OfflineUser> entry : ownings.entrySet()) {
+			if (entry.getValue().equals(player)) {
 				this.removeOwner(entry.getKey());
 			}
 		}
 	}
 
 	@Override
-	public HashMap<Block, String> getOwnings() {
+	public HashMap<Block, OfflineUser> getOwnings() {
 		return ownings;
 	}
 }

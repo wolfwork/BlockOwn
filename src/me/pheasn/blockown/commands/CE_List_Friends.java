@@ -28,7 +28,7 @@ public class CE_List_Friends implements CommandExecutor {
 			User user = User.getInstance(player);
 			plugin.say(player, ChatColor.YELLOW,
 					Messages.getString("CE_List_Friends.listTitle")); //$NON-NLS-1$
-			LinkedList<OfflineUser> friends = plugin.getPlayerSettings().getFriendList(user);
+			LinkedList<OfflineUser> friends = plugin.getPlayerSettings().getFriendList(user.getOfflineUser());
 			for (OfflineUser friend : friends) {
 				plugin.say(player, ChatColor.GREEN, friend.getName());
 			}

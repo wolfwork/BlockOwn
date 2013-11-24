@@ -22,6 +22,5 @@ public abstract class Owning implements me.pheasn.Owning{
 
 	public DatabaseType getType() {
 		return type;
-		
 	}
 }

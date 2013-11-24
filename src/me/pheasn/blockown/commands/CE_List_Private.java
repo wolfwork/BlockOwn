@@ -28,7 +28,7 @@ public class CE_List_Private implements CommandExecutor {
 			User user = User.getInstance(player);
 			plugin.say(player, ChatColor.YELLOW,
 					Messages.getString("CE_List_Private.listTitle")); //$NON-NLS-1$
-			LinkedList<Material> privateBlocks = plugin.getPlayerSettings().getPrivateList(user);
+			LinkedList<Material> privateBlocks = plugin.getPlayerSettings().getPrivateList(user.getOfflineUser());
 			for (Material privateBlock : privateBlocks) {
 				plugin.say(player, ChatColor.GREEN, privateBlock.name());
 			}

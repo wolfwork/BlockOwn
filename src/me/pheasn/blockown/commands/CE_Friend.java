@@ -33,7 +33,7 @@ public class CE_Friend implements CommandExecutor {
 			if (args.length == 1) {
 				OfflineUser friend = OfflineUser.getInstance(args[0]);
 				if (friend != null) {
-					plugin.getPlayerSettings().addFriend(friend, user);
+					plugin.getPlayerSettings().addFriend(friend, user.getOfflineUser());
 					plugin.say(player,	ChatColor.GREEN, Messages.getString("CE_Friend.success", friend.getName())); //$NON-NLS-1$
 					return true;
 				} else {

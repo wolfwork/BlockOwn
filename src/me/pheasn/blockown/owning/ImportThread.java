@@ -3,6 +3,7 @@ package me.pheasn.blockown.owning;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import me.pheasn.OfflineUser;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
 
@@ -24,14 +25,13 @@ public class ImportThread extends Thread {
 
 	@Override
 	public void run() {
-		HashMap<Block, String> oldOwnings = oldOwning.getOwnings();
-		for (Entry<Block, String> entry : oldOwnings.entrySet()) {
+		HashMap<Block, OfflineUser> oldOwnings = oldOwning.getOwnings();
+		for (Entry<Block, OfflineUser> entry : oldOwnings.entrySet()) {
 			if (plugin.getOwning().getOwner(entry.getKey()) == null) {
 				plugin.getOwning().setOwner(entry.getKey(), entry.getValue());
 			}
 		}
 		oldOwning.save();
-		plugin.tell(sender, ChatColor.GREEN,
-				Messages.getString("ImportThread.success")); //$NON-NLS-1$
+		plugin.tell(sender, ChatColor.GREEN, Messages.getString("ImportThread.success")); //$NON-NLS-1$
 	}
 }

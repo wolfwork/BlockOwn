@@ -29,7 +29,6 @@ public class PlayerSettings extends TypeBased_Protection{
 
 	public PlayerSettings(BlockOwn plugin) {
 		this.plugin = plugin;
-		// lists = new HashMap<String, HashMap<String, LinkedList<String>[]>>();
 		privateLists = new HashMap<OfflineUser, LinkedList<Material>>();
 		blackLists = new HashMap<OfflineUser, HashMap<Material, LinkedList<OfflineUser>>>();
 		friendLists = new HashMap<OfflineUser, LinkedList<OfflineUser>>();
@@ -50,12 +49,11 @@ public class PlayerSettings extends TypeBased_Protection{
 
 		// ABSOLUTELY PRIVATE TYPES
 		if (config.get("PrivateBlocks") != null) { //$NON-NLS-1$
-			Set<String> keys = config.getConfigurationSection("PrivateBlocks") //$NON-NLS-1$
-					.getKeys(false);
-			for (String player : keys) {
-				privateLists.put(OfflineUser.getInstance(player), new LinkedList<Material>());
-				List<String> privateTypes = config
-						.getStringList("PrivateBlocks." + player); //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("PrivateBlocks").getKeys(false); //$NON-NLS-1$
+			for (String playerName : keys) {
+				OfflineUser player = OfflineUser.getInstance(playerName);
+				privateLists.put(player, new LinkedList<Material>());
+				List<String> privateTypes = config.getStringList("PrivateBlocks." + playerName); //$NON-NLS-1$
 				for (String privateTypeName : privateTypes) {
 					try {
 						Material privateType = Material.getMaterial(privateTypeName);
@@ -67,10 +65,10 @@ public class PlayerSettings extends TypeBased_Protection{
 				}
 			}
 		}
+
 		// FRIENDLISTS
 		if (config.get("FriendLists") != null) { //$NON-NLS-1$
-			Set<String> keys = config.getConfigurationSection("FriendLists") //$NON-NLS-1$
-					.getKeys(false);
+			Set<String> keys = config.getConfigurationSection("FriendLists").getKeys(false); //$NON-NLS-1$
 			for (String playerName : keys) {
 				OfflineUser player = OfflineUser.getInstance(playerName);
 				friendLists.put(player, new LinkedList<OfflineUser>());
@@ -86,6 +84,7 @@ public class PlayerSettings extends TypeBased_Protection{
 				}
 			}
 		}
+
 		// BLACKLISTS
 		if (config.get("Protections") != null) { //$NON-NLS-1$
 			Set<String> keys = config.getConfigurationSection("Protections") //$NON-NLS-1$
@@ -164,21 +163,20 @@ public class PlayerSettings extends TypeBased_Protection{
 		}
 	}
 
+	// Initializer for the first start of 0.8+
 	@Deprecated
 	public void importOld08(FileConfiguration config){ 
 		
 		// ABSOLUTELY PRIVATE TYPES
 		if (config.get("PrivateBlocks") != null) { //$NON-NLS-1$
-			Set<String> keys = config.getConfigurationSection("PrivateBlocks") //$NON-NLS-1$
-					.getKeys(false);
-			for (String player : keys) {
-				privateLists.put(OfflineUser.getInstance(player), new LinkedList<Material>());
-				List<String> privateTypes = config
-						.getStringList("PrivateBlocks." + player); //$NON-NLS-1$
+			Set<String> keys = config.getConfigurationSection("PrivateBlocks").getKeys(false); //$NON-NLS-1$
+			for (String playerName : keys) {
+				OfflineUser player = OfflineUser.getInstance(playerName);
+				privateLists.put(player, new LinkedList<Material>());
+				List<String> privateTypes = config.getStringList("PrivateBlocks." + playerName); //$NON-NLS-1$
 				for (String privateTypeName : privateTypes) {
 					try {
-						Material privateType = Material
-								.getMaterial(privateTypeName);
+						Material privateType = Material.getMaterial(privateTypeName);
 						if (privateType != null) {
 							privateLists.get(player).add(privateType);
 						}
@@ -360,8 +358,7 @@ public class PlayerSettings extends TypeBased_Protection{
 	public boolean isBlacklisted(OfflineUser candidate, OfflineUser owner,	Material material) {
 		if(candidate == null) return false;
 		if (Setting.DISABLE_IN_WORLDS.getList(plugin) != null) {
-			List<String> disabledWorlds = Setting.DISABLE_IN_WORLDS
-					.getStringList(plugin);
+			List<String> disabledWorlds = Setting.DISABLE_IN_WORLDS.getStringList(plugin);
 			if (candidate.getOfflinePlayer().isOnline()) {
 				for (String worldName : disabledWorlds) {
 					if (worldName.equalsIgnoreCase(candidate.getOfflinePlayer().getPlayer().getWorld().getName())) {
@@ -580,7 +577,7 @@ public class PlayerSettings extends TypeBased_Protection{
 	
 	@Override
 	public boolean canAccess(OfflinePlayer candidate, Block block) {
-		OfflineUser owner = OfflineUser.getInstance(((me.pheasn.Owning) plugin.getAddonDatabase(Use.OWNING)).getOwner(block));
+		OfflineUser owner = ((me.pheasn.Owning) plugin.getAddonDatabase(Use.OWNING)).getOwner(block);
 		if(owner == null){
 			return true;
 		}

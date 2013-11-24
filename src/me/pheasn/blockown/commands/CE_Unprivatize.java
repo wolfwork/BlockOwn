@@ -28,7 +28,7 @@ public class CE_Unprivatize implements CommandExecutor {
 			if (args.length == 1) {
 				Material material = Material.getMaterial(args[0]);
 				if (material != null) {
-					plugin.getPlayerSettings().removePrivate(material, user);
+					plugin.getPlayerSettings().removePrivate(material, user.getOfflineUser());
 					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unprivatize.success", material.name())); //$NON-NLS-1$
 					return true;
 				} else {
@@ -38,7 +38,7 @@ public class CE_Unprivatize implements CommandExecutor {
 			} else if (args.length == 0) {
 				Block target = user.getTargetBlock();
 				if (target != null) {
-					plugin.getPlayerSettings().removePrivate(Material.getMaterial(target.getType()), user);
+					plugin.getPlayerSettings().removePrivate(Material.getMaterial(target.getType()), user.getOfflineUser());
 					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unprivatize.success", target.getType().name())); //$NON-NLS-1$
 					return true;
 				} else {

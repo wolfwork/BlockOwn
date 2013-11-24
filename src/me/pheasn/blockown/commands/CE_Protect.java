@@ -117,7 +117,7 @@ public class CE_Protect implements CommandExecutor {
 						plugin.say(player, ChatColor.RED, Messages.getString("invalidPlayer")); //$NON-NLS-1$
 						return false;
 					}
-					plugin.getPlayerSettings().addBlacklisted(material, against, user);
+					plugin.getPlayerSettings().addBlacklisted(material, against, user.getOfflineUser());
 					sendSuccessMessage(player, blockName, protectName);
 					return true;
 				} else {

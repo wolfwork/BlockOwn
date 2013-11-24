@@ -5,11 +5,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.pheasn.OfflineUser;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.mysql.MySqlLocal;
 import me.pheasn.blockown.mysql.TableDefinition;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 
@@ -39,17 +39,15 @@ public class SQLOwningLocal extends SQLOwning {
 	}
 
 	@Override
-	public OfflinePlayer getOwner(Block block) {
+	public OfflineUser getOwner(Block block) {
 		String world = block.getWorld().getName();
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		ResultSet rs = msql
-				.doQuery("SELECT playername FROM block INNER JOIN player ON block.ownerid=player.playerid WHERE x=" + x + " AND y=" + y + " AND z=" + z + " AND world='" + world + "';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		ResultSet rs = msql.doQuery("SELECT playername FROM block INNER JOIN player ON block.ownerid=player.playerid WHERE x=" + x + " AND y=" + y + " AND z=" + z + " AND world='" + world + "';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		try {
 			if (rs.next()) {
-				return plugin.getServer().getOfflinePlayer(
-						rs.getString("playername")); //$NON-NLS-1$
+				return OfflineUser.getInstance(rs.getString("playername")); //$NON-NLS-1$
 			} else {
 				return null;
 			}
@@ -62,29 +60,21 @@ public class SQLOwningLocal extends SQLOwning {
 	}
 
 	@Override
-	public void setOwner(Block block, OfflinePlayer offlinePlayer) {
-		if (offlinePlayer != null) {
-			setOwner(block, offlinePlayer.getName());
-		}
-	}
-
-	@Override
-	public void setOwner(Block block, String player) {
-		if (!playerExists(player)) {
-			msql.doUpdate("INSERT INTO player(playername) VALUES('" + player + "');"); //$NON-NLS-1$ //$NON-NLS-2$
+	public void setOwner(Block block, OfflineUser player) {
+		if (!playerExists(player.getName())) {
+			msql.doUpdate("INSERT INTO player(playername) VALUES('" + player.getName() + "');"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		String world = block.getWorld().getName();
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		ResultSet rs = msql
-				.doQuery("SELECT playerid FROM player WHERE playername='" + player + "';"); //$NON-NLS-1$ //$NON-NLS-2$
+		ResultSet rs = msql.doQuery("SELECT playerid FROM player WHERE playername='" + player.getName() + "';"); //$NON-NLS-1$ //$NON-NLS-2$
 		Integer playerid = null;
 		try {
 			rs.next();
 			playerid = rs.getInt("playerid"); //$NON-NLS-1$
 		} catch (SQLException e) {
-			e.printStackTrace();
+			plugin.error(e);
 		} catch (NullPointerException e) {
 
 		}
@@ -106,15 +96,15 @@ public class SQLOwningLocal extends SQLOwning {
 	}
 
 	@Override
-	boolean playerExists(String player) {
-		player = plugin.getServer().getOfflinePlayer(player).getName();
+	protected boolean playerExists(String playerName) {
+		playerName = plugin.getServer().getOfflinePlayer(playerName).getName();
 		ResultSet rs = msql.doQuery("SELECT playername FROM player;"); //$NON-NLS-1$
 		ArrayList<String> players = new ArrayList<String>();
 		try {
 			while (rs.next()) {
 				players.add(rs.getString("playername")); //$NON-NLS-1$
 			}
-			if (players.contains(player)) {
+			if (players.contains(playerName)) {
 				return true;
 			} else {
 				return false;
@@ -128,9 +118,8 @@ public class SQLOwningLocal extends SQLOwning {
 	}
 
 	@Override
-	public void deleteOwningsOf(String player) {
-		ResultSet rs = msql
-				.doQuery("SELECT playerid FROM player WHERE playername='" + player + "';"); //$NON-NLS-1$ //$NON-NLS-2$
+	public void deleteOwningsOf(OfflineUser player) {
+		ResultSet rs = msql.doQuery("SELECT playerid FROM player WHERE playername='" + player.getName() + "';"); //$NON-NLS-1$ //$NON-NLS-2$
 		try {
 			rs.next();
 			int playerid = rs.getInt("playerid"); //$NON-NLS-1$
@@ -141,15 +130,9 @@ public class SQLOwningLocal extends SQLOwning {
 	}
 
 	@Override
-	public void deleteOwningsOf(OfflinePlayer offlinePlayer) {
-		deleteOwningsOf(offlinePlayer.getName());
-	}
-
-	@Override
-	public HashMap<Block, String> getOwnings() {
-		HashMap<Block, String> result = new HashMap<Block, String>();
-		ResultSet rs = msql
-				.doQuery("SELECT * FROM block INNER JOIN player ON block.ownerid=player.playerid;"); //$NON-NLS-1$
+	public HashMap<Block, OfflineUser> getOwnings() {
+		HashMap<Block, OfflineUser> result = new HashMap<Block, OfflineUser>();
+		ResultSet rs = msql.doQuery("SELECT * FROM block INNER JOIN player ON block.ownerid=player.playerid;"); //$NON-NLS-1$
 		try {
 			while (rs.next()) {
 				String world = rs.getString("world"); //$NON-NLS-1$
@@ -159,14 +142,13 @@ public class SQLOwningLocal extends SQLOwning {
 				if (plugin.getServer().getWorld(world) == null) {
 					plugin.getServer().createWorld(new WorldCreator(world));
 				}
-				result.put(
-						plugin.getServer().getWorld(world).getBlockAt(x, y, z),
-						rs.getString("playername")); //$NON-NLS-1$
+				result.put(plugin.getServer().getWorld(world).getBlockAt(x, y, z),
+						OfflineUser.getInstance(rs.getString("playername"))); //$NON-NLS-1$
 			}
 			rs.close();
 			return result;
 		} catch (SQLException e) {
-			return new HashMap<Block, String>();
+			return new HashMap<Block, OfflineUser>();
 		}
 	}
 }

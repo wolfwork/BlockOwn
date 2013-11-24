@@ -37,7 +37,7 @@ public class CE_List_Protected implements CommandExecutor {
 				return true;
 			}
 			HashMap<Material, LinkedList<OfflineUser>> protections = plugin
-					.getPlayerSettings().getRawBlacklists(user);
+					.getPlayerSettings().getRawBlacklists(user.getOfflineUser());
 			if (Setting.PROTECTION_AUTO_CHEST.getBoolean(plugin)) {
 				plugin.say(player, ChatColor.YELLOW,
 						Messages.getString("CE_List_Protected.chestsProtected")); //$NON-NLS-1$
