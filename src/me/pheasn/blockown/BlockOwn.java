@@ -74,7 +74,7 @@ public class BlockOwn extends PheasnPlugin {
 		// ServerSettings
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$	
 		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"), //$NON-NLS-1$
-		SERVER_NAME("ServerSettings.serverName"), //$NON-NLS-1$
+		SERVER_NAME("ServerSettings.serverName"), //$NON-NLS-1$	
 		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
 		ENABLE_OWNED_BLOCK_DROPS("ServerSettings.enableOwnedBlockDrops"), //$NON-NLS-1$
 
@@ -824,17 +824,17 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	@Override
-	public String getServerNameSettingPath() {
-		return Setting.SERVER_NAME.getString(this);
-	}
-
-	@Override
 	public Database getDatabase(Use use) {
 		switch(use){
 			case PROTECTION: return this.playerSettings;
 			case OWNING: return this.owning;
 			default: return null;
 		}
+	}
+
+	@Override
+	public String getServerNameSettingPath() {
+		return Setting.SERVER_NAME.toString();
 	}
 
 	// Credits for this go to zeeveener !
