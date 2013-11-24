@@ -32,7 +32,7 @@ public class CE_Unprivatize implements CommandExecutor {
 					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unprivatize.success", material.name())); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED, Messages.getString("CE_Unprivatize.invalidMaterial")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.RED, Messages.getString("invalidMaterial")); //$NON-NLS-1$
 					return false;
 				}
 			} else if (args.length == 0) {

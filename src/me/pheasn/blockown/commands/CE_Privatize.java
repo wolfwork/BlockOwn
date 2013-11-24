@@ -77,7 +77,7 @@ public class CE_Privatize implements CommandExecutor {
 					return true;
 				} else {
 					plugin.say(player, ChatColor.RED,
-							Messages.getString("CE_Privatize.invalidMaterial")); //$NON-NLS-1$
+							Messages.getString("invalidMaterial")); //$NON-NLS-1$
 					return false;
 				}
 			} else if (args.length == 0) {

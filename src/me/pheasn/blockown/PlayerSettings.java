@@ -16,7 +16,6 @@ import me.pheasn.TypeBased_Protection;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.BlockOwn.Setting;
 
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -59,8 +58,7 @@ public class PlayerSettings extends TypeBased_Protection{
 						.getStringList("PrivateBlocks." + player); //$NON-NLS-1$
 				for (String privateTypeName : privateTypes) {
 					try {
-						Material privateType = Material
-								.getMaterial(privateTypeName);
+						Material privateType = Material.getMaterial(privateTypeName);
 						if (privateType != null) {
 							privateLists.get(player).add(privateType);
 						}
@@ -167,7 +165,7 @@ public class PlayerSettings extends TypeBased_Protection{
 	}
 
 	@Deprecated
-	public void importOld08(FileConfiguration config){ //TODO check this
+	public void importOld08(FileConfiguration config){ 
 		
 		// ABSOLUTELY PRIVATE TYPES
 		if (config.get("PrivateBlocks") != null) { //$NON-NLS-1$
@@ -360,6 +358,7 @@ public class PlayerSettings extends TypeBased_Protection{
 	}
 
 	public boolean isBlacklisted(OfflineUser candidate, OfflineUser owner,	Material material) {
+		if(candidate == null) return false;
 		if (Setting.DISABLE_IN_WORLDS.getList(plugin) != null) {
 			List<String> disabledWorlds = Setting.DISABLE_IN_WORLDS
 					.getStringList(plugin);
@@ -374,11 +373,12 @@ public class PlayerSettings extends TypeBased_Protection{
 		if (Setting.PROTECTION_AUTO_EVERYTHING.getBoolean(plugin)) {
 			return true;
 		}
+		if(material == null) return false;
 		if (Setting.PROTECTION_AUTO_CHEST.getBoolean(plugin)
 				&& (material.name().equals(org.bukkit.Material.CHEST.name()) || material.name().equals(org.bukkit.Material.ENDER_CHEST.name()))) {
 			return true;
 		}
-		if (candidate != null) {
+		if (owner != null) {
 			try {
 				LinkedList<OfflineUser> blacklist = this.getBlacklist(owner, Material.ALL_BLOCKS);
 				if(blacklist != null){
@@ -387,12 +387,16 @@ public class PlayerSettings extends TypeBased_Protection{
 					}
 				}
 				blacklist = this.getBlacklist(owner, material);
-				if (blacklist.contains(candidate) || blacklist.contains(OfflineUser.ALL_PLAYERS)) {
-					return true;
-				} else {
+				if(blacklist != null){
+					if (blacklist.contains(candidate) || blacklist.contains(OfflineUser.ALL_PLAYERS)) {
+						return true;
+					} else {
+						return false;
+					}
+				}else{
 					return false;
 				}
-			} catch (Exception ex) {
+			} catch (Exception e) {
 				return false;
 			}
 		} else {
@@ -565,15 +569,12 @@ public class PlayerSettings extends TypeBased_Protection{
 		if (this.isPrivate(owner, material)) {
 				return false;
 		}
-		plugin.say(ChatColor.RED, "NOT PRIVATE");//TODO
 		if(this.isFriend(candidate, owner)){
 			return true;
 		}
-		plugin.say(ChatColor.RED, "NOT FRIENDS");
 		if (this.isBlacklisted(candidate, owner, material)) {
 			return false;
 		}
-		plugin.say(ChatColor.RED, "NOT PROTECTED");
 		return true;
 	}
 	

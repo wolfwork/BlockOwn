@@ -37,7 +37,7 @@ public class CE_Friend implements CommandExecutor {
 					plugin.say(player,	ChatColor.GREEN, Messages.getString("CE_Friend.success", friend.getName())); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED, Messages.getString("CE_Friend.playerNotFound")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.RED, Messages.getString("invalidPlayer")); //$NON-NLS-1$
 					return false;
 				}
 			} else {

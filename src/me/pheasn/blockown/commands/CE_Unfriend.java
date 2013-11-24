@@ -31,7 +31,7 @@ public class CE_Unfriend implements CommandExecutor {
 					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unfriend.success", friend.getName())); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED, Messages.getString("CE_Unfriend.invalidPlayer")); //$NON-NLS-1$
+					plugin.say(player, ChatColor.RED, Messages.getString("invalidPlayer")); //$NON-NLS-1$
 					return false;
 				}
 			} else {
