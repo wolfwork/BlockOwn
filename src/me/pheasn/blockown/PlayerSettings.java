@@ -11,17 +11,17 @@ import java.util.Set;
 import me.pheasn.Base.Use;
 import me.pheasn.Material;
 import me.pheasn.OfflineUser;
-import me.pheasn.Protection;
-import me.pheasn.TypeBased_Protection;
+import me.pheasn.OwningDatabase;
+import me.pheasn.ProtectionDatabase;
+import me.pheasn.Protection_TypeBased;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.BlockOwn.Setting;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class PlayerSettings extends TypeBased_Protection{
+public class PlayerSettings extends Protection_TypeBased{
 	private BlockOwn plugin;
 	private HashMap<OfflineUser, LinkedList<Material>> privateLists;
 	private HashMap<OfflineUser, LinkedList<OfflineUser>> friendLists;
@@ -213,11 +213,11 @@ public class PlayerSettings extends TypeBased_Protection{
 				blackLists.put(player, new HashMap<Material, LinkedList<OfflineUser>>());
 				for (String blockTypeName : config.getConfigurationSection(
 						"Protections." + playerName).getKeys(false)) { //$NON-NLS-1$
-					Material material = (blockTypeName.equalsIgnoreCase("#all#")) ?  Material.getMaterial(Protection.ALL_BLOCKS) : Material.getMaterial(blockTypeName);
+					Material material = (blockTypeName.equalsIgnoreCase("#all#")) ?  Material.getMaterial(ProtectionDatabase.ALL_BLOCKS) : Material.getMaterial(blockTypeName);
 					if(material != null){
 						blackLists.get(player).put(material, new LinkedList<OfflineUser>());
 						for (String blacklistedPlayerName : config.getStringList("Protections." + playerName + "." + blockTypeName)) { //$NON-NLS-1$ //$NON-NLS-2$
-							OfflineUser blacklistedPlayer = (blacklistedPlayerName.equalsIgnoreCase("#all#")) ? OfflineUser.getInstance(Protection.ALL_PLAYERS) : OfflineUser.getInstance(blacklistedPlayerName);
+							OfflineUser blacklistedPlayer = (blacklistedPlayerName.equalsIgnoreCase("#all#")) ? OfflineUser.getInstance(ProtectionDatabase.ALL_PLAYERS) : OfflineUser.getInstance(blacklistedPlayerName);
 							if (blacklistedPlayer != null) {
 								blackLists.get(player).get(material).add(blacklistedPlayer);
 							}
@@ -574,14 +574,14 @@ public class PlayerSettings extends TypeBased_Protection{
 		}
 		return true;
 	}
-	
+
 	@Override
-	public boolean canAccess(OfflinePlayer candidate, Block block) {
-		OfflineUser owner = ((me.pheasn.Owning) plugin.getAddonDatabase(Use.OWNING)).getOwner(block);
+	public boolean canAccess(OfflineUser candidate, Block block) {
+		OfflineUser owner = ((OwningDatabase) plugin.getAddonDatabase(Use.OWNING)).getOwner(block);
 		if(owner == null){
 			return true;
 		}
-		if (candidate.getName().equalsIgnoreCase(owner.getName())) {
+		if (candidate.equals(owner)) {
 			return true;
 		}
 		if (!Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
@@ -590,10 +590,10 @@ public class PlayerSettings extends TypeBased_Protection{
 		if (this.isPrivate(owner, Material.getMaterial(block.getType()))) {
 			return false;
 		}
-		if (this.isFriend(OfflineUser.getInstance(candidate), owner)) {
+		if (this.isFriend(candidate, owner)) {
 			return true;
 		}
-		if (this.isBlacklisted(OfflineUser.getInstance(candidate), owner, Material.getMaterial(block.getType()))) {
+		if (this.isBlacklisted(candidate, owner, Material.getMaterial(block.getType()))) {
 			return false;
 		}
 		return true;

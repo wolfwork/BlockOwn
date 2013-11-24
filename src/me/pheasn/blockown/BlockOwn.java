@@ -8,6 +8,7 @@ import java.util.List;
 
 import me.pheasn.Base.Use;
 import me.pheasn.Database;
+import me.pheasn.OwningDatabase;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.commands.CE_Friend;
 import me.pheasn.blockown.commands.CE_List_Friends;
@@ -817,8 +818,9 @@ public class BlockOwn extends PheasnPlugin {
 		}
 	}
 
-	public Owning getOwning() {
-		return this.owning;
+	public OwningDatabase getOwning() {
+		OwningDatabase data;
+		return ((data = (OwningDatabase) this.getAddonDatabase(Use.OWNING)) != null) ? data : this.owning;
 	}
 
 	@Override
@@ -829,8 +831,8 @@ public class BlockOwn extends PheasnPlugin {
 	@Override
 	public Database getDatabase(Use use) {
 		switch(use){
-			case PROTECTION: return this.getPlayerSettings();
-			case OWNING: return this.getOwning();
+			case PROTECTION: return this.playerSettings;
+			case OWNING: return this.owning;
 			default: return null;
 		}
 	}

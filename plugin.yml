@@ -5,7 +5,7 @@ author: Pheasn
 
 main: me.pheasn.blockown.BlockOwn
 
-softdepend: [WorldEdit, Vault]
+softdepend: [ServerBase, WorldEdit, Vault]
 
 commands:
     
