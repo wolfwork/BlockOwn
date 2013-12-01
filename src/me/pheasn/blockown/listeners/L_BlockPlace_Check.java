@@ -30,7 +30,9 @@ public class L_BlockPlace_Check implements Listener {
 				return;
 			}
 		}
-		plugin.getOwning().setOwner(event.getBlockPlaced(),	OfflineUser.getInstance(event.getPlayer()));
+		if(Setting.ENABLE_OWNING.getBoolean(plugin)){
+			plugin.getOwning().setOwner(event.getBlockPlaced(),	OfflineUser.getInstance(event.getPlayer()));
+		}
 		new CheckThread(plugin, this, event.getBlockPlaced(), event.getPlayer()).start();
 	}
 

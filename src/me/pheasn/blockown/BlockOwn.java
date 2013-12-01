@@ -6,9 +6,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 
-import me.pheasn.Base.Use;
-import me.pheasn.Database;
-import me.pheasn.OwningDatabase;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.commands.CE_Friend;
 import me.pheasn.blockown.commands.CE_List_Friends;
@@ -38,6 +35,9 @@ import me.pheasn.blockown.owning.Owning;
 import me.pheasn.blockown.owning.Owning.DatabaseType;
 import me.pheasn.blockown.owning.SQLOwningLocal;
 import me.pheasn.blockown.owning.SQLOwningNetwork;
+import me.pheasn.interfaces.Database;
+import me.pheasn.interfaces.OwningDatabase;
+import me.pheasn.interfaces.Base.Use;
 import me.pheasn.pluginupdater.Updater;
 import net.milkbowl.vault.economy.Economy;
 
@@ -75,6 +75,7 @@ public class BlockOwn extends PheasnPlugin {
 		ENABLE("ServerSettings.enable"), //$NON-NLS-1$	
 		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"), //$NON-NLS-1$
 		SERVER_NAME("ServerSettings.serverName"), //$NON-NLS-1$	
+		ENABLE_OWNING("ServerSettings.enableOwning"), //$NON-NLS-1$
 		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
 		ENABLE_OWNED_BLOCK_DROPS("ServerSettings.enableOwnedBlockDrops"), //$NON-NLS-1$
 
@@ -94,13 +95,13 @@ public class BlockOwn extends PheasnPlugin {
 		PROTECTION_AUTO_EVERYTHING(	"ServerSettings.Protection.autoProtectEverything"), //$NON-NLS-1$
 		PROTECTION_RADIUS("ServerSettings.Protection.radius"), //$NON-NLS-1$
 
-		// ECONOMY
+		// Economy
 		ECONOMY_ENABLE("ServerSettings.Economy.enable"), //$NON-NLS-1$
 		ECONOMY_PRICE_PROTECT("ServerSettings.Economy.protectPrice"), //$NON-NLS-1$
 		ECONOMY_PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
 		ECONOMY_PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
 
-		// very OLD 
+		// very Old
 		@Deprecated
 		ENABLE_AUTOUPDATE_old("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
 		@Deprecated
@@ -268,10 +269,9 @@ public class BlockOwn extends PheasnPlugin {
 	@Override
 	public void onEnable() {
 		super.onEnable();
-		console = this.getServer().getConsoleSender();
 		if(this.findBase()){
-			this.getBase().registerAddon(Use.OWNING, this, true);
-			this.getBase().registerAddon(Use.PROTECTION, this, true);
+			if(Setting.ENABLE_OWNING.getBoolean(this)) this.getBase().registerAddon(Use.OWNING, this, false);
+			if(Setting.PROTECTION_ENABLE.getBoolean(this)) this.getBase().registerAddon(Use.PROTECTION, this, true);
 		}
 		blockOwnerFile = new File(this.getPluginDirectory().getPath() + "/blocks.dat"); //$NON-NLS-1$
 		protectionsFile = new File(this.getPluginDirectory().getPath() + "/playerSettings.yml"); //$NON-NLS-1$
@@ -568,7 +568,7 @@ public class BlockOwn extends PheasnPlugin {
 				ChatColor.RED + Messages.getString("BlockOwn.usage.blockown")); //$NON-NLS-1$
 		Commands.BLOCKOWN.getCommand(this).setDescription(
 				Messages.getString("BlockOwn.description.blockown")); //$NON-NLS-1$
-
+		if(Setting.ENABLE_OWNING.getBoolean(this)){
 		Commands.OWN.getCommand(this).setExecutor(new CE_Own(this));
 		Commands.OWN.getCommand(this).setUsage(
 				ChatColor.RED + Messages.getString("BlockOwn.usage.own")); //$NON-NLS-1$
@@ -591,6 +591,12 @@ public class BlockOwn extends PheasnPlugin {
 				Messages.getString("BlockOwn.usage.makepoor")); //$NON-NLS-1$
 		Commands.MAKE_POOR.getCommand(this).setDescription(
 				Messages.getString("BlockOwn.description.makepoor")); //$NON-NLS-1$
+		}else{
+			this.unRegisterBukkitCommand(Commands.OWN.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.UNOWN.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.OWNER.getCommand(this));
+			this.unRegisterBukkitCommand(Commands.MAKE_POOR.getCommand(this));
+		}
 		if (!Setting.PROTECTION_CASCADE.getBoolean(this)) {
 			Commands.PROTECT.getCommand(this).setExecutor(new CE_Protect(this));
 			Commands.PROTECT.getCommand(this).setUsage(
@@ -653,16 +659,19 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	private void registerEvents() {
+		if(Setting.ENABLE_OWNING.getBoolean(this)){
+			this.getServer().getPluginManager()
+					.registerEvents(new L_BlockBreak(this), this);
+			this.getServer().getPluginManager()
+					.registerEvents(new L_BlockBurn(this), this);
+			this.getServer().getPluginManager()
+					.registerEvents(new L_BlockFade(this), this);
+			this.getServer().getPluginManager()
+					.registerEvents(new L_StructureGrow(this), this);
+		}
 		this.getServer().getPluginManager()
 				.registerEvents(new L_BlockClick(this), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new L_BlockBreak(this), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new L_BlockBurn(this), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new L_BlockFade(this), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new L_StructureGrow(this), this);
+
 		if (Setting.PROTECTION_RADIUS.getInt(this) == 0) {
 			this.getServer().getPluginManager()
 					.registerEvents(new L_BlockPlace_NoCheck(this), this);
@@ -675,8 +684,7 @@ public class BlockOwn extends PheasnPlugin {
 	private void createEnv() {
 		if (!this.getPluginDirectory().exists()) {
 			try {
-				this.con(ChatColor.YELLOW,
-						Messages.getString("BlockOwn.prepare.start")); //$NON-NLS-1$
+				this.con(ChatColor.YELLOW,	Messages.getString("BlockOwn.prepare.start")); //$NON-NLS-1$
 				this.getPluginDirectory().mkdir();
 				this.blockOwnerFile.createNewFile();
 				this.protectionsFile.createNewFile();
@@ -717,13 +725,9 @@ public class BlockOwn extends PheasnPlugin {
 	 */
 	private boolean establishOwning() {
 		try {
-			if (this.getConfig().getBoolean(
-					me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_ENABLE
-							.toString())) {
+			if (this.getConfig().getBoolean(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
 				if (this.getConfig()
-						.getString(
-								me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_TYPE
-										.toString()).equalsIgnoreCase("local")) { //$NON-NLS-1$
+						.getString(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_TYPE.toString()).equalsIgnoreCase("local")) { //$NON-NLS-1$
 					owning = new SQLOwningLocal(this);
 				} else {
 					owning = new SQLOwningNetwork(this);
@@ -779,9 +783,7 @@ public class BlockOwn extends PheasnPlugin {
 	private void initializeMetrics() {
 		try {
 			Metrics metrics = new Metrics(this);
-
-			Graph owningSystemGraph = metrics
-					.createGraph("Type of owning system used"); //$NON-NLS-1$
+			Graph owningSystemGraph = metrics.createGraph("Type of owning system used"); //$NON-NLS-1$
 			owningSystemGraph.addPlotter(new Plotter("LocalSQL") { //$NON-NLS-1$
 						@Override
 						public int getValue() {
@@ -814,7 +816,7 @@ public class BlockOwn extends PheasnPlugin {
 					});
 			metrics.start();
 		} catch (IOException e) {
-			// Failed to submit the stats :-(
+			// Failed to submit the stats
 		}
 	}
 
@@ -848,7 +850,7 @@ public class BlockOwn extends PheasnPlugin {
 		objectField.setAccessible(false);
 		return result;
 	}
-	
+
 	/**
 	 * Unregisters a PluginCommand from Bukkit, not revertible!
 	 * @param cmd PluginCommand that is going to be unregistered.

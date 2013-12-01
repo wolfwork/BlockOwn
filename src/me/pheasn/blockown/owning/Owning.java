@@ -1,9 +1,9 @@
 package me.pheasn.blockown.owning;
 
-import me.pheasn.OwningDatabase;
 import me.pheasn.blockown.BlockOwn;
+import me.pheasn.interfaces.OwningDatabase;
 
-public abstract class Owning implements OwningDatabase{
+public abstract class Owning extends OwningDatabase{
 	protected BlockOwn plugin;
 	protected DatabaseType type;
 

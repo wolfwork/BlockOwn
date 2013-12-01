@@ -24,6 +24,8 @@ public class L_BlockPlace_NoCheck implements Listener {
 				return;
 			}
 		}
-		plugin.getOwning().setOwner(event.getBlockPlaced(), OfflineUser.getInstance(event.getPlayer()));
+		if(Setting.ENABLE_OWNING.getBoolean(plugin)){
+			plugin.getOwning().setOwner(event.getBlockPlaced(), OfflineUser.getInstance(event.getPlayer()));
+		}
 	}
 }
