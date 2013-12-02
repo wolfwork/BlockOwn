@@ -1,14 +1,15 @@
 package me.pheasn.blockown.listeners;
 
+import java.util.ArrayList;
+
 import me.pheasn.Material;
 import me.pheasn.OfflineUser;
+import me.pheasn.Region;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
 import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,9 +31,22 @@ public class L_BlockPlace_Check implements Listener {
 				return;
 			}
 		}
-		plugin.getOwning().setOwner(event.getBlockPlaced(),	OfflineUser.getInstance(event.getPlayer()));
+		Block [] blocks = {event.getBlockPlaced()};
+		ArrayList<org.bukkit.Material> doubleHeight = new ArrayList<org.bukkit.Material>();
+		doubleHeight.add(org.bukkit.Material.WOODEN_DOOR);
+		doubleHeight.add(org.bukkit.Material.IRON_DOOR);
+		//TODO add high flowers
+		if(doubleHeight.contains(event.getBlockPlaced().getType())){
+			Block [] allblocks = {event.getBlockPlaced(), event.getBlock().getWorld().getBlockAt(event.getBlockPlaced().getLocation().add(0, 0, 1))};
+			blocks = allblocks;
+		}
+		for(Block block : blocks){
+			plugin.getOwning().setOwner(block, OfflineUser.getInstance(event.getPlayer()));
+		}
 		if(!event.getPlayer().hasPermission(Permission.ADMIN.toString()) && !event.getPlayer().hasPermission(Permission.IGNORE_PROTECTION.toString())){
-			new CheckThread(plugin, this, event.getBlockPlaced(), event.getPlayer()).start();
+			CheckThread thread = new CheckThread(plugin, this, event.getBlockPlaced(), event.getPlayer());
+			thread.offset = blocks.length-1;
+			thread.start();
 		}
 	}
 
@@ -47,9 +61,9 @@ class CheckThread extends Thread {
 	private Block block;
 	private Player player;
 	private L_BlockPlace_Check listener;
+	protected int offset = 0;
 
-	protected CheckThread(BlockOwn plugin, L_BlockPlace_Check listener,
-			Block block, Player player) {
+	protected CheckThread(BlockOwn plugin, L_BlockPlace_Check listener,	Block block, Player player) {
 		this.plugin = plugin;
 		this.block = block;
 		this.player = player;
@@ -59,20 +73,13 @@ class CheckThread extends Thread {
 	@Override
 	public void run() {
 		int radius = Setting.PROTECTION_RADIUS_RADIUS.getInt(plugin);
-		Location end = block.getLocation().add(radius, radius, radius);
-		Location start = block.getLocation().subtract(radius, radius, radius);
-		World world = block.getWorld();
+		Region region = new Region(block.getLocation().subtract(radius, radius, radius), radius *2, radius *2, radius *2 + offset);
 		OfflineUser owner;
-		Block curBlock;
-		for (int x = start.getBlockX(); x <= end.getBlockX(); x++) {
-			for (int y = start.getBlockY(); y <= end.getBlockY(); y++) {
-				for (int z = start.getBlockZ(); z <= end.getBlockZ(); z++) {
-					if ((owner = plugin.getOwning().getOwner((curBlock = world.getBlockAt(x, y, z)))) != null && !plugin.getPlayerSettings().canAccess(Material.getMaterial(curBlock.getType()), OfflineUser.getInstance(player), owner)) {
-						listener.removeBlock(new reverseBlockTask(plugin, block, player));
-						return;
-					}
-				}
-			}
+		for(Block block : region.getBlocks()){
+			if ((owner = plugin.getOwning().getOwner(block)) != null && !plugin.getPlayerSettings().canAccess(Material.getMaterial(block.getType()), OfflineUser.getInstance(player), owner)) {
+				listener.removeBlock(new reverseBlockTask(plugin, block, player));
+				return;
+			}		
 		}
 	}
 }
