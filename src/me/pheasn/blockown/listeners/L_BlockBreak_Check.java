@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import me.pheasn.OfflineUser;
+import me.pheasn.PheasnPlugin;
 import me.pheasn.Region;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -33,7 +35,7 @@ public class L_BlockBreak_Check implements Listener {
 				event.setCancelled(true);
 				event.getBlock().setType(org.bukkit.Material.AIR);
 			}else{
-				drops = event.getBlock().getDrops();
+				drops.addAll(event.getBlock().getDrops()); //TODO is always 0
 			}
 		}
 		if(!event.getPlayer().hasPermission(Permission.ADMIN.toString()) && !event.getPlayer().hasPermission(Permission.IGNORE_PROTECTION.toString())){
@@ -64,7 +66,7 @@ class CheckForProtectionThread extends Thread {
 	@Override
 	public void run() {
 		int radius = Setting.PROTECTION_RADIUS_RADIUS.getInt(plugin);
-		Region region = new Region(block.getLocation().subtract(radius, radius, radius), radius*2, radius*2, radius*2);
+		Region region = new Region(block.getLocation().subtract(radius, radius, radius), radius*2 + 1, radius*2 + 1, radius*2 + 1);
 		OfflineUser user = OfflineUser.getInstance(player);
 		for(Block block : region.getBlocks()){
 			if(!plugin.getPlayerSettings().canAccess(user, block)){
@@ -93,10 +95,11 @@ class ReplaceBlockTask implements Runnable {
 		if(drops.size()>0){
 			for(ItemStack drop : drops){
 				try{
-				player.getInventory().remove(drop);
+					player.getInventory().remove(drop);
 				}catch(Exception e){	
 				}
 			}
 		}
+		PheasnPlugin.getInstance().con(ChatColor.RED, String.valueOf(drops.size())); //TODO delete
 	}
 }

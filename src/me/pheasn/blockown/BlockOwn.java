@@ -140,6 +140,8 @@ public class BlockOwn extends PheasnPlugin {
 		// Old since 0.7.4
 		@Deprecated
 		OLD_PROTECTION_ADMINS_IGNORE_PROTECTION("ServerSettings.Protection.adminsIgnoreProtection"), //$NON-NLS-1$
+		@Deprecated
+		OLD_PROTECTION_ADMINS_IGNORE_PROTECTION2("ServerSettings.adminsIgnoreProtection"), //$NON-NLS-1$
 
 		// Old since 0.7.5
 		@Deprecated
@@ -774,9 +776,12 @@ public class BlockOwn extends PheasnPlugin {
 
 		// 0.7.4
 		Setting.OLD_PROTECTION_ADMINS_IGNORE_PROTECTION.set(this, null);
+		Setting.OLD_PROTECTION_ADMINS_IGNORE_PROTECTION2.set(this, null);
 
 		//0.7.5
 		if(compareVersions(Setting.SETTINGS_VERSION.getString(this), "0.7.5") == -1){
+			Setting.PROTECTION_RADIUS_PREVENT_PLACE.set(this, Setting.PROTECTION_RADIUS_OLD.getInt(this)>0);
+		//	Setting.PROTECTION_RADIUS_PREVENT_BREAK.set(this, false);
 			Setting.PROTECTION_RADIUS_RADIUS.update(this, Setting.PROTECTION_RADIUS_OLD.getInt(this), Setting.PROTECTION_RADIUS_OLD);
 		}
 

@@ -18,7 +18,6 @@ ServerSettings:
     onlyLeftClicks: false
     autoProtectChests: true
     autoProtectEverything: false
-    adminsIgnoreProtection: false
     Radius:
       radius: 3
       preventPlace: false

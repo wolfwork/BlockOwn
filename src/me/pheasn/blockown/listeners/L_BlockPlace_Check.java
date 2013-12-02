@@ -73,11 +73,11 @@ class CheckThread extends Thread {
 	@Override
 	public void run() {
 		int radius = Setting.PROTECTION_RADIUS_RADIUS.getInt(plugin);
-		Region region = new Region(block.getLocation().subtract(radius, radius, radius), radius *2, radius *2, radius *2 + offset);
+		Region region = new Region(block.getLocation().subtract(radius, radius, radius), radius *2+1, radius *2+1, radius *2 + 1 + offset);
 		OfflineUser owner;
 		for(Block block : region.getBlocks()){
 			if ((owner = plugin.getOwning().getOwner(block)) != null && !plugin.getPlayerSettings().canAccess(Material.getMaterial(block.getType()), OfflineUser.getInstance(player), owner)) {
-				listener.removeBlock(new reverseBlockTask(plugin, block, player));
+				listener.removeBlock(new reverseBlockTask(plugin, this.block, player));
 				return;
 			}		
 		}
