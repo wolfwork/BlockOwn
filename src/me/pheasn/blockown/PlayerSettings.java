@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import me.pheasn.Base.Use;
 import me.pheasn.Material;
 import me.pheasn.OfflineUser;
-import me.pheasn.OwningDatabase;
-import me.pheasn.ProtectionDatabase;
-import me.pheasn.Protection_TypeBased;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.BlockOwn.Setting;
+import me.pheasn.interfaces.Base.Use;
+import me.pheasn.interfaces.OwningDatabase;
+import me.pheasn.interfaces.ProtectionDatabase;
+import me.pheasn.interfaces.Protection_TypeBased;
 
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;

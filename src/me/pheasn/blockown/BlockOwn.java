@@ -6,9 +6,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 
-import me.pheasn.Base.Use;
-import me.pheasn.Database;
-import me.pheasn.OwningDatabase;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.commands.CE_Friend;
 import me.pheasn.blockown.commands.CE_List_Friends;
@@ -24,7 +21,8 @@ import me.pheasn.blockown.commands.CE_Unfriend;
 import me.pheasn.blockown.commands.CE_Unown;
 import me.pheasn.blockown.commands.CE_Unprivatize;
 import me.pheasn.blockown.commands.CE_Unprotect;
-import me.pheasn.blockown.listeners.L_BlockBreak;
+import me.pheasn.blockown.listeners.L_BlockBreak_Check;
+import me.pheasn.blockown.listeners.L_BlockBreak_NoCheck;
 import me.pheasn.blockown.listeners.L_BlockBurn;
 import me.pheasn.blockown.listeners.L_BlockClick;
 import me.pheasn.blockown.listeners.L_BlockFade;
@@ -38,6 +36,9 @@ import me.pheasn.blockown.owning.Owning;
 import me.pheasn.blockown.owning.Owning.DatabaseType;
 import me.pheasn.blockown.owning.SQLOwningLocal;
 import me.pheasn.blockown.owning.SQLOwningNetwork;
+import me.pheasn.interfaces.Base.Use;
+import me.pheasn.interfaces.Database;
+import me.pheasn.interfaces.OwningDatabase;
 import me.pheasn.pluginupdater.Updater;
 import net.milkbowl.vault.economy.Economy;
 
@@ -91,8 +92,10 @@ public class BlockOwn extends PheasnPlugin {
 		PROTECTION_ENABLE_MESSAGES("ServerSettings.Protection.enableMessages"), //$NON-NLS-1$
 		PROTECTION_ONLY_LEFT_CLICKS("ServerSettings.Protection.onlyLeftClicks"), //$NON-NLS-1$
 		PROTECTION_AUTO_CHEST("ServerSettings.Protection.autoProtectChests"), //$NON-NLS-1$
-		PROTECTION_AUTO_EVERYTHING(	"ServerSettings.Protection.autoProtectEverything"), //$NON-NLS-1$
-		PROTECTION_RADIUS("ServerSettings.Protection.radius"), //$NON-NLS-1$
+		PROTECTION_AUTO_EVERYTHING("ServerSettings.Protection.autoProtectEverything"), //$NON-NLS-1$
+		PROTECTION_RADIUS_RADIUS("ServerSettings.Protection.Radius.radius"), //$NON-NLS-1$
+		PROTECTION_RADIUS_PREVENT_PLACE("ServerSettings.Protection.Radius.preventPlace"), //$NON-NLS-1$
+		PROTECTION_RADIUS_PREVENT_BREAK("ServerSettings.Protection.Radius.preventBreak"), //$NON-NLS-1$
 
 		// ECONOMY
 		ECONOMY_ENABLE("ServerSettings.Economy.enable"), //$NON-NLS-1$
@@ -136,7 +139,11 @@ public class BlockOwn extends PheasnPlugin {
 
 		// Old since 0.7.4
 		@Deprecated
-		OLD_PROTECTION_ADMINS_IGNORE_PROTECTION("ServerSettings.Protection.adminsIgnoreProtection"); //$NON-NLS-1$
+		OLD_PROTECTION_ADMINS_IGNORE_PROTECTION("ServerSettings.Protection.adminsIgnoreProtection"), //$NON-NLS-1$
+
+		// Old since 0.7.5
+		@Deprecated
+		PROTECTION_RADIUS_OLD("ServerSettings.Protection.radius"); //$NON-NLS-1$
 
 		private String s;
 
@@ -282,6 +289,7 @@ public class BlockOwn extends PheasnPlugin {
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+		this.cleanUpOldSettings();
 		this.registerCommands();
 		this.registerEvents();
 		if (!this.establishOwning()) {
@@ -289,14 +297,12 @@ public class BlockOwn extends PheasnPlugin {
 		}
 		this.playerSettings = new PlayerSettings(this);
 		this.getConfig().options().copyDefaults(true);
-		this.cleanUpOldSettings();
 		Setting.SETTINGS_VERSION.set(this, this.getDescription().getVersion());
 		this.saveConfig();
 		this.initializeMetrics();
 
 		// enable AutoUpdater
-		updater = new Updater(this, this.pluginId, this.getFile(),
-				me.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
+		updater = new Updater(this, this.pluginId, this.getFile(), me.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
 		if (me.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE
 				.getBoolean(this)) {
 			updater.schedule(100l,
@@ -653,22 +659,21 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	private void registerEvents() {
-		this.getServer().getPluginManager()
-				.registerEvents(new L_BlockClick(this), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new L_BlockBreak(this), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new L_BlockBurn(this), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new L_BlockFade(this), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new L_StructureGrow(this), this);
-		if (Setting.PROTECTION_RADIUS.getInt(this) == 0) {
-			this.getServer().getPluginManager()
-					.registerEvents(new L_BlockPlace_NoCheck(this), this);
-		} else {
-			this.getServer().getPluginManager()
-					.registerEvents(new L_BlockPlace_Check(this), this);
+		this.getServer().getPluginManager().registerEvents(new L_BlockClick(this), this);
+		this.getServer().getPluginManager().registerEvents(new L_BlockBurn(this), this);
+		this.getServer().getPluginManager().registerEvents(new L_BlockFade(this), this);
+		this.getServer().getPluginManager().registerEvents(new L_StructureGrow(this), this);
+
+		if(Setting.PROTECTION_RADIUS_PREVENT_PLACE.getBoolean(this) && Setting.PROTECTION_RADIUS_RADIUS.getInt(this) != 0){
+			this.getServer().getPluginManager().registerEvents(new L_BlockPlace_Check(this), this);
+		}else{
+			this.getServer().getPluginManager().registerEvents(new L_BlockPlace_NoCheck(this), this);
+		}
+
+		if(Setting.PROTECTION_RADIUS_PREVENT_BREAK.getBoolean(this) && Setting.PROTECTION_RADIUS_RADIUS.getInt(this) != 0){
+			this.getServer().getPluginManager().registerEvents(new L_BlockBreak_Check(this), this);
+		}else{
+			this.getServer().getPluginManager().registerEvents(new L_BlockBreak_NoCheck(this), this);
 		}
 	}
 
@@ -760,7 +765,7 @@ public class BlockOwn extends PheasnPlugin {
 		Setting.PROTECTION_ENABLE.update(this, Setting.OLD_ENABLE_PLAYERSETTINGS.getBoolean(this), Setting.OLD_ENABLE_PLAYERSETTINGS);
 		Setting.PROTECTION_ENABLE_MESSAGES.update(this, Setting.OLD_ENABLE_PROTECTED_MESSAGES.getBoolean(this), Setting.OLD_ENABLE_PROTECTED_MESSAGES);
 		Setting.PROTECTION_ONLY_LEFT_CLICKS.update(this, Setting.OLD_PROTECT_ONLY_LEFT_CLICKS.getBoolean(this), Setting.OLD_PROTECT_ONLY_LEFT_CLICKS);
-		Setting.PROTECTION_RADIUS.update(this, Setting.OLD_RADIUS_BLOCK_PLACE_DENIED.getInt(this), Setting.OLD_RADIUS_BLOCK_PLACE_DENIED);
+		Setting.PROTECTION_RADIUS_RADIUS.update(this, Setting.OLD_RADIUS_BLOCK_PLACE_DENIED.getInt(this), Setting.OLD_RADIUS_BLOCK_PLACE_DENIED);
 		
 		Setting.PERMISSION_NEEDED_OWN_COMMAND.update(this, Setting.OLD_PERMISSION_NEEDED_FOR_OWN_COMMAND.getBoolean(this),Setting.OLD_PERMISSION_NEEDED_FOR_OWN_COMMAND);
 		Setting.PERMISSION_NEEDED_OWN_PLACE.update(this, Setting.OLD_PERMISSION_NEEDED_FOR_OWNING.getBoolean(this), Setting.OLD_PERMISSION_NEEDED_FOR_OWNING);
@@ -769,6 +774,11 @@ public class BlockOwn extends PheasnPlugin {
 
 		// 0.7.4
 		Setting.OLD_PROTECTION_ADMINS_IGNORE_PROTECTION.set(this, null);
+
+		//0.7.5
+		if(compareVersions(Setting.SETTINGS_VERSION.getString(this), "0.7.5") == -1){
+			Setting.PROTECTION_RADIUS_RADIUS.update(this, Setting.PROTECTION_RADIUS_OLD.getInt(this), Setting.PROTECTION_RADIUS_OLD);
+		}
 
 		this.saveConfig();
 	}

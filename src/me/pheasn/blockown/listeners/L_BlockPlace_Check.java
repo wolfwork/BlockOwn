@@ -31,7 +31,9 @@ public class L_BlockPlace_Check implements Listener {
 			}
 		}
 		plugin.getOwning().setOwner(event.getBlockPlaced(),	OfflineUser.getInstance(event.getPlayer()));
-		new CheckThread(plugin, this, event.getBlockPlaced(), event.getPlayer()).start();
+		if(!event.getPlayer().hasPermission(Permission.ADMIN.toString()) && !event.getPlayer().hasPermission(Permission.IGNORE_PROTECTION.toString())){
+			new CheckThread(plugin, this, event.getBlockPlaced(), event.getPlayer()).start();
+		}
 	}
 
 	protected synchronized void removeBlock(reverseBlockTask task) {
@@ -56,7 +58,7 @@ class CheckThread extends Thread {
 
 	@Override
 	public void run() {
-		int radius = Setting.PROTECTION_RADIUS.getInt(plugin);
+		int radius = Setting.PROTECTION_RADIUS_RADIUS.getInt(plugin);
 		Location end = block.getLocation().add(radius, radius, radius);
 		Location start = block.getLocation().subtract(radius, radius, radius);
 		World world = block.getWorld();
