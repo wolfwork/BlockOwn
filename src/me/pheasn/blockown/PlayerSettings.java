@@ -12,10 +12,10 @@ import me.pheasn.Material;
 import me.pheasn.OfflineUser;
 import me.pheasn.PheasnPlugin;
 import me.pheasn.blockown.BlockOwn.Setting;
+import me.pheasn.interfaces.Base.Use;
 import me.pheasn.interfaces.OwningDatabase;
 import me.pheasn.interfaces.ProtectionDatabase;
 import me.pheasn.interfaces.Protection_TypeBased;
-import me.pheasn.interfaces.Base.Use;
 
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;

@@ -19,8 +19,10 @@ ServerSettings:
     onlyLeftClicks: false
     autoProtectChests: true
     autoProtectEverything: false
-    adminsIgnoreProtection: false
-    radius: 0
+    Radius:
+      radius: 3
+      preventPlace: false
+      preventBreak: false
   AutoUpdater:
     enable: true
     releaseType: release

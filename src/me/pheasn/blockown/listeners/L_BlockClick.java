@@ -31,7 +31,7 @@ public class L_BlockClick implements Listener {
 						if (Setting.PROTECTION_ONLY_LEFT_CLICKS.getBoolean(plugin)	&& !event.getAction().equals(Action.LEFT_CLICK_BLOCK)) return;
 						event.setCancelled(true);
 						if (Setting.PROTECTION_ENABLE_MESSAGES.getBoolean(plugin)) {
-							plugin.say(event.getPlayer(), ChatColor.RED, Messages.getString("L_BlockClick.deny")); //$NON-NLS-1$
+							plugin.say(event.getPlayer(), ChatColor.RED, Messages.getString("L_BlockClick.deny", owner.getName())); //$NON-NLS-1$
 						}
 					}
 				}

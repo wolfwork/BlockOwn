@@ -8,10 +8,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-public class L_BlockBreak implements Listener {
+public class L_BlockBreak_NoCheck implements Listener {
 	private BlockOwn plugin;
 
-	public L_BlockBreak(BlockOwn plugin) {
+	public L_BlockBreak_NoCheck(BlockOwn plugin) {
 		this.plugin = plugin;
 	}
 
