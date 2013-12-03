@@ -117,5 +117,5 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-	<version>0.7.5-SNAPSHOT</version>
+	<version>0.8-SNAPSHOT</version>
 </project>
