@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import me.pheasn.OfflineUser;
-import me.pheasn.PheasnPlugin;
 import me.pheasn.Region;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.BlockOwn.Permission;
 import me.pheasn.blockown.BlockOwn.Setting;
 
-import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -28,14 +26,13 @@ public class L_BlockBreak_Check implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		drops = new ArrayList<ItemStack>();
+		drops = event.getBlock().getDrops();
 		if (plugin.getOwning().getOwner(event.getBlock()) != null) {
 			plugin.getOwning().removeOwner(event.getBlock());
 			if (!Setting.ENABLE_OWNED_BLOCK_DROPS.getBoolean(plugin)) {
 				event.setCancelled(true);
 				event.getBlock().setType(org.bukkit.Material.AIR);
-			}else{
-				drops.addAll(event.getBlock().getDrops()); //TODO is always 0
+				drops = new ArrayList<ItemStack>();
 			}
 		}
 		if(!event.getPlayer().hasPermission(Permission.ADMIN.toString()) && !event.getPlayer().hasPermission(Permission.IGNORE_PROTECTION.toString())){
@@ -95,11 +92,10 @@ class ReplaceBlockTask implements Runnable {
 		if(drops.size()>0){
 			for(ItemStack drop : drops){
 				try{
-					player.getInventory().remove(drop);
+					player.getInventory().removeItem(drop);
 				}catch(Exception e){	
 				}
 			}
 		}
-		PheasnPlugin.getInstance().con(ChatColor.RED, String.valueOf(drops.size())); //TODO delete
 	}
 }
