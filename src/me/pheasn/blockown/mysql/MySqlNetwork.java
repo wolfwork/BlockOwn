@@ -77,7 +77,7 @@ public class MySqlNetwork extends MySql {
 	@Override
 	public void doUpdate(String sql) {
 		try {
-			con.createStatement().execute(sql);
+			con.createStatement().executeUpdate(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
