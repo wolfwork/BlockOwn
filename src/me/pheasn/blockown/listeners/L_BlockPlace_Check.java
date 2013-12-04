@@ -1,7 +1,5 @@
 package me.pheasn.blockown.listeners;
 
-import java.util.ArrayList;
-
 import me.pheasn.Material;
 import me.pheasn.OfflineUser;
 import me.pheasn.Region;
@@ -32,16 +30,11 @@ public class L_BlockPlace_Check implements Listener {
 			}
 		}
 		Block [] blocks = {event.getBlockPlaced()};
-		if(Setting.ENABLE_OWNING.getBoolean(plugin)){
+		if(!Setting.ENABLE_OWNING.getBoolean(plugin)){
 			blocks = new Block[0];
 		}
-		ArrayList<org.bukkit.Material> doubleHeight = new ArrayList<org.bukkit.Material>();
-		doubleHeight.add(org.bukkit.Material.WOODEN_DOOR);
-		doubleHeight.add(org.bukkit.Material.IRON_DOOR);
-		//TODO add high flowers
-		if(doubleHeight.contains(event.getBlockPlaced().getType())){
-			Block [] allblocks = {event.getBlockPlaced(), event.getBlock().getWorld().getBlockAt(event.getBlockPlaced().getLocation().add(0, 0, 1))};
-			blocks = allblocks;
+		if(Material.getDoubleHeightBlocks().contains(event.getBlockPlaced().getType())){
+			blocks = new Block[] {event.getBlockPlaced(), event.getBlock().getWorld().getBlockAt(event.getBlockPlaced().getLocation().add(0, 1, 0))};
 		}
 		for(Block block : blocks){
 			plugin.getOwning().setOwner(block, OfflineUser.getInstance(event.getPlayer()));

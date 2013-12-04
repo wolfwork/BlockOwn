@@ -3,6 +3,7 @@ package me.pheasn.blockown.listeners;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import me.pheasn.Material;
 import me.pheasn.OfflineUser;
 import me.pheasn.Region;
 import me.pheasn.blockown.BlockOwn;
@@ -28,11 +29,17 @@ public class L_BlockBreak_Check implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 		drops = event.getBlock().getDrops();
 		if (plugin.getOwning().getOwner(event.getBlock()) != null) {
-			plugin.getOwning().removeOwner(event.getBlock());
-			if (!Setting.ENABLE_OWNED_BLOCK_DROPS.getBoolean(plugin)) {
-				event.setCancelled(true);
-				event.getBlock().setType(org.bukkit.Material.AIR);
-				drops = new ArrayList<ItemStack>();
+			Block[] blocks = {event.getBlock()};
+			if(Material.getDoubleHeightBlocks().contains(event.getBlock().getType())){
+				blocks = new Block[] {event.getBlock(), event.getBlock().getWorld().getBlockAt(event.getBlock().getLocation().add(0, 1, 0))};
+			}
+			for(Block block : blocks){
+				plugin.getOwning().removeOwner(block);
+				if (!Setting.ENABLE_OWNED_BLOCK_DROPS.getBoolean(plugin)) {
+					event.setCancelled(true);
+					event.getBlock().setType(org.bukkit.Material.AIR);
+					drops = new ArrayList<ItemStack>();
+				}
 			}
 		}
 		if(!event.getPlayer().hasPermission(Permission.ADMIN.toString()) && !event.getPlayer().hasPermission(Permission.IGNORE_PROTECTION.toString())){
