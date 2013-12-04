@@ -2,7 +2,6 @@ package me.pheasn.blockown.owning;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import me.pheasn.OfflineUser;
@@ -26,7 +25,7 @@ public class SQLOwningLocal extends SQLOwning {
 
 	@Override
 	public boolean load() {
-		return (msql.connect("./plugins/" + plugin.getName() + "/data.db", plugin.getName().toLowerCase(), "pw4242") && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return (msql.connect(plugin.getPluginDirectory().getPath() + "/data.db", plugin.getName().toLowerCase(), "pw4242") && createTablesIfNotExist()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	private boolean createTablesIfNotExist() {
@@ -47,8 +46,10 @@ public class SQLOwningLocal extends SQLOwning {
 		ResultSet rs = msql.doQuery("SELECT playername FROM block INNER JOIN player ON block.ownerid=player.playerid WHERE x=" + x + " AND y=" + y + " AND z=" + z + " AND world='" + world + "';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		try {
 			if (rs.next()) {
+				rs.getStatement().close();
 				return OfflineUser.getInstance(rs.getString("playername")); //$NON-NLS-1$
 			} else {
+				rs.getStatement().close();
 				return null;
 			}
 		} catch (SQLException e) {
@@ -73,6 +74,7 @@ public class SQLOwningLocal extends SQLOwning {
 		try {
 			rs.next();
 			playerid = rs.getInt("playerid"); //$NON-NLS-1$
+			rs.getStatement().close();
 		} catch (SQLException e) {
 			plugin.error(e);
 		} catch (NullPointerException e) {
@@ -98,15 +100,13 @@ public class SQLOwningLocal extends SQLOwning {
 	@Override
 	protected boolean playerExists(String playerName) {
 		playerName = plugin.getServer().getOfflinePlayer(playerName).getName();
-		ResultSet rs = msql.doQuery("SELECT playername FROM player;"); //$NON-NLS-1$
-		ArrayList<String> players = new ArrayList<String>();
+		ResultSet rs = msql.doQuery("SELECT playername FROM player WHERE playername = '" + playerName + "';"); //$NON-NLS-1$
 		try {
-			while (rs.next()) {
-				players.add(rs.getString("playername")); //$NON-NLS-1$
-			}
-			if (players.contains(playerName)) {
+			if (rs.next()) {
+				rs.getStatement().close();
 				return true;
-			} else {
+			}else{
+				rs.getStatement().close();
 				return false;
 			}
 		} catch (SQLException e) {
@@ -123,6 +123,7 @@ public class SQLOwningLocal extends SQLOwning {
 		try {
 			rs.next();
 			int playerid = rs.getInt("playerid"); //$NON-NLS-1$
+			rs.getStatement().close();
 			msql.doUpdate("DELETE FROM block WHERE ownerid=" + playerid + ";"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -145,7 +146,7 @@ public class SQLOwningLocal extends SQLOwning {
 				result.put(plugin.getServer().getWorld(world).getBlockAt(x, y, z),
 						OfflineUser.getInstance(rs.getString("playername"))); //$NON-NLS-1$
 			}
-			rs.close();
+			rs.getStatement().close();
 			return result;
 		} catch (SQLException e) {
 			return new HashMap<Block, OfflineUser>();

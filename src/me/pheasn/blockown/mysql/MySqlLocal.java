@@ -2,6 +2,7 @@ package me.pheasn.blockown.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 import org.sqlite.JDBC;
@@ -51,7 +52,9 @@ public class MySqlLocal extends MySql {
 			updateString.delete(updateString.length() - 2,
 					updateString.length());
 			updateString.append(")");
-			con.createStatement().executeUpdate(updateString.toString());
+			Statement statement = con.createStatement();
+			statement.executeUpdate(updateString.toString());
+			statement.close();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -71,7 +74,9 @@ public class MySqlLocal extends MySql {
 				updateString.delete(updateString.length() - 2,
 						updateString.length());
 				updateString.append(")");
-				con.createStatement().executeUpdate(updateString.toString());
+				Statement statement = con.createStatement();
+				statement.executeUpdate(updateString.toString());
+				statement.close();
 			}
 			return true;
 		} catch (Exception e) {
@@ -82,9 +87,11 @@ public class MySqlLocal extends MySql {
 	@Override
 	public void doUpdate(String sql) {
 		try {
-			con.createStatement().executeUpdate(sql);
+			Statement statement = con.createStatement();
+			statement.executeUpdate(sql);
+			statement.close();
 		} catch (SQLException e) {
-
+			e.printStackTrace();
 		} catch (Exception e) {
 			return;
 		}
@@ -93,7 +100,9 @@ public class MySqlLocal extends MySql {
 	@Override
 	public ResultSet doQuery(String sql) {
 		try {
-			return con.createStatement().executeQuery(sql);
+			Statement statement = con.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			return rs;
 		} catch (SQLException e) {
 			return null;
 		} catch (Exception e) {

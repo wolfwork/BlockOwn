@@ -3,6 +3,7 @@ package me.pheasn.blockown.mysql;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class MySqlNetwork extends MySql {
 	public MySqlNetwork() throws ClassNotFoundException {
@@ -47,7 +48,9 @@ public class MySqlNetwork extends MySql {
 				updateString.delete(updateString.length() - 2,
 						updateString.length());
 				updateString.append(")");
-				con.createStatement().executeUpdate(updateString.toString());
+				Statement statement = con.createStatement();
+				statement.executeUpdate(updateString.toString());
+				statement.close();
 			} catch (SQLException e) {
 				return false;
 			}
@@ -67,7 +70,9 @@ public class MySqlNetwork extends MySql {
 			updateString.delete(updateString.length() - 2,
 					updateString.length());
 			updateString.append(")");
-			con.createStatement().executeUpdate(updateString.toString());
+			Statement statement = con.createStatement();
+			statement.executeUpdate(updateString.toString());
+			statement.close();
 			return true;
 		} catch (SQLException e) {
 			return false;
@@ -77,7 +82,9 @@ public class MySqlNetwork extends MySql {
 	@Override
 	public void doUpdate(String sql) {
 		try {
-			con.createStatement().executeUpdate(sql);
+			Statement statement = con.createStatement();
+			statement.executeUpdate(sql);
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -88,7 +95,9 @@ public class MySqlNetwork extends MySql {
 	@Override
 	public ResultSet doQuery(String sql) {
 		try {
-			return con.createStatement().executeQuery(sql);
+			Statement statement = con.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			return rs;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;

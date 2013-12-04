@@ -294,7 +294,7 @@ public class BlockOwn extends PheasnPlugin {
 		this.cleanUpOldSettings();
 		this.registerCommands();
 		this.registerEvents();
-		if (!this.establishOwning()) {
+		if (Setting.ENABLE_OWNING.getBoolean(this) && !this.establishOwning()) {
 			return;
 		}
 		this.playerSettings = new PlayerSettings(this);
@@ -755,6 +755,10 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	private void cleanUpOldSettings() {
+		if(Setting.SETTINGS_VERSION.getString(this).equals("0")){
+			this.saveConfig();
+			return;
+		}
 		FileConfiguration config = this.getConfig();
 		// VERY OLD
 		config.set(Setting.API_KEY_old.toString(), null);
@@ -836,8 +840,8 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	public OwningDatabase getOwning() {
-		OwningDatabase data;
-		return ((data = (OwningDatabase) this.getAddonDatabase(Use.OWNING)) != null) ? data : this.owning;
+		OwningDatabase data =  (OwningDatabase) this.getAddonDatabase(Use.OWNING);
+		return (data != null) ? data : this.owning;
 	}
 
 	@Override

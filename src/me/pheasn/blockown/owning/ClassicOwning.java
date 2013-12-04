@@ -45,9 +45,9 @@ public class ClassicOwning extends Owning {
 					}
 					if (plugin.getServer().getWorld(worldName) != null && player != null) {
 						Block block = plugin.getServer().getWorld(worldName).getBlockAt(
-								Integer.valueOf(BlockCoordinates[0]),
-								Integer.valueOf(BlockCoordinates[1]),
-								Integer.valueOf(BlockCoordinates[2]));
+								Integer.parseInt(BlockCoordinates[0]),
+								Integer.parseInt(BlockCoordinates[1]),
+								Integer.parseInt(BlockCoordinates[2]));
 						if (!block.getType().equals(Material.AIR)) {
 							ownings.put(block, player);
 						}
@@ -102,7 +102,7 @@ public class ClassicOwning extends Owning {
 	}
 
 	@Override
-	public OfflineUser getOwner(Block block) {
+	public synchronized OfflineUser getOwner(Block block) {
 		try {
 			return ownings.get(block);
 		} catch (Exception e) {
