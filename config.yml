@@ -4,6 +4,7 @@ ServerSettings:
   disableInWorlds: []
   serverName:
   enableOwning: true
+  disableOwningInWorlds: []
   autoSaveInterval: 1200
   enableOwnedBlockDrops: true
   PermissionNeeded:

@@ -30,14 +30,13 @@ public class L_BlockPlace_Check implements Listener {
 			}
 		}
 		Block [] blocks = {event.getBlockPlaced()};
-		if(!Setting.ENABLE_OWNING.getBoolean(plugin)){
-			blocks = new Block[0];
-		}
 		if(Material.getDoubleHeightBlocks().contains(event.getBlockPlaced().getType())){
 			blocks = new Block[] {event.getBlockPlaced(), event.getBlock().getWorld().getBlockAt(event.getBlockPlaced().getLocation().add(0, 1, 0))};
 		}
-		for(Block block : blocks){
-			plugin.getOwning().setOwner(block, OfflineUser.getInstance(event.getPlayer()));
+		if(plugin.isOwningPlugin() && !Setting.DISABLE_OWNING_IN_WORLDS.getStringList(plugin).contains(event.getBlock().getWorld().getName())){
+			for(Block block : blocks){
+				plugin.getOwning().setOwner(block, OfflineUser.getInstance(event.getPlayer()));
+			}
 		}
 		if(!event.getPlayer().hasPermission(Permission.ADMIN.toString()) && !event.getPlayer().hasPermission(Permission.IGNORE_PROTECTION.toString())){
 			CheckThread thread = new CheckThread(plugin, this, event.getBlockPlaced(), event.getPlayer());
@@ -72,6 +71,7 @@ class CheckThread extends Thread {
 		Region region = new Region(block.getLocation().subtract(radius, radius, radius), radius *2+1, radius *2+1, radius *2 + 1 + offset);
 		OfflineUser owner;
 		for(Block block : region.getBlocks()){
+			if(block.getType().equals(org.bukkit.Material.AIR)) continue;
 			if ((owner = plugin.getOwning().getOwner(block)) != null && !plugin.getPlayerSettings().canAccess(Material.getMaterial(block.getType()), OfflineUser.getInstance(player), owner)) {
 				listener.removeBlock(new reverseBlockTask(plugin, this.block, player));
 				return;

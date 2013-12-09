@@ -77,6 +77,7 @@ public class BlockOwn extends PheasnPlugin {
 		DISABLE_IN_WORLDS("ServerSettings.disableInWorlds"), //$NON-NLS-1$
 		SERVER_NAME("ServerSettings.serverName"), //$NON-NLS-1$	
 		ENABLE_OWNING("ServerSettings.enableOwning"), //$NON-NLS-1$
+		DISABLE_OWNING_IN_WORLDS("ServerSettings.disableOwningInWorlds"), //$NON-NLS-1$
 		AUTOSAVE_INTERVAL("ServerSettings.autoSaveInterval"), //$NON-NLS-1$
 		ENABLE_OWNED_BLOCK_DROPS("ServerSettings.enableOwnedBlockDrops"), //$NON-NLS-1$
 
@@ -667,7 +668,7 @@ public class BlockOwn extends PheasnPlugin {
 	}
 
 	private void registerEvents() {
-		if(Setting.ENABLE_OWNING.getBoolean(this)){
+		if(this.isOwningPlugin()){
 			this.getServer().getPluginManager().registerEvents(new L_BlockBurn(this), this);
 			this.getServer().getPluginManager().registerEvents(new L_BlockFade(this), this);
 			this.getServer().getPluginManager().registerEvents(new L_StructureGrow(this), this);
@@ -685,6 +686,14 @@ public class BlockOwn extends PheasnPlugin {
 			this.getServer().getPluginManager().registerEvents(new L_BlockBreak_Check(this), this);
 		}else{
 			this.getServer().getPluginManager().registerEvents(new L_BlockBreak_NoCheck(this), this);
+		}
+	}
+
+	public boolean isOwningPlugin(){
+		if(this.getBase() != null){
+			return this.getAddonDatabase(Use.OWNING) instanceof Owning;
+		}else{
+			return true;
 		}
 	}
 

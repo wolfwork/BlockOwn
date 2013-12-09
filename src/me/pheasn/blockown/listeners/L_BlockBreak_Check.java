@@ -28,7 +28,7 @@ public class L_BlockBreak_Check implements Listener {
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		drops = event.getBlock().getDrops();
-		if (plugin.getOwning().getOwner(event.getBlock()) != null) {
+		if (plugin.isOwningPlugin() && plugin.getOwning().getOwner(event.getBlock()) != null) {
 			Block[] blocks = {event.getBlock()};
 			if(Material.getDoubleHeightBlocks().contains(event.getBlock().getType())){
 				blocks = new Block[] {event.getBlock(), event.getBlock().getWorld().getBlockAt(event.getBlock().getLocation().add(0, 1, 0))};
@@ -73,6 +73,7 @@ class CheckForProtectionThread extends Thread {
 		Region region = new Region(block.getLocation().subtract(radius, radius, radius), radius*2 + 1, radius*2 + 1, radius*2 + 1);
 		OfflineUser user = OfflineUser.getInstance(player);
 		for(Block block : region.getBlocks()){
+			if(block.getType().equals(org.bukkit.Material.AIR)) continue;
 			if(!plugin.getPlayerSettings().canAccess(user, block)){
 				ReplaceBlockTask task = new ReplaceBlockTask(this.block, player, listener.drops);
 				listener.replaceBlock(task);

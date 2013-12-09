@@ -13,6 +13,7 @@ import me.pheasn.blockown.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 
@@ -40,8 +41,11 @@ public class ClassicOwning extends Owning {
 					String playerName = owningDiv[2];
 					OfflineUser player = OfflineUser.getInstance(playerName);
 					if (plugin.getServer().getWorld(worldName) == null) {
-						plugin.getServer().createWorld(
-								new WorldCreator(worldName));
+						for(World world : plugin.getServer().getWorlds()){
+							if(world.getName().equalsIgnoreCase(worldName)){
+								plugin.getServer().createWorld(new WorldCreator(worldName));
+							}
+						}
 					}
 					if (plugin.getServer().getWorld(worldName) != null && player != null) {
 						Block block = plugin.getServer().getWorld(worldName).getBlockAt(

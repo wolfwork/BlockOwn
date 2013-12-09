@@ -15,6 +15,7 @@ public class L_BlockBurn implements Listener {
 
 	@EventHandler
 	public void onBlockBurn(BlockBurnEvent event) {
+		if(!plugin.isOwningPlugin()) return;
 		if (plugin.getOwning().getOwner(event.getBlock()) != null) {
 			plugin.getOwning().removeOwner(event.getBlock());
 		}

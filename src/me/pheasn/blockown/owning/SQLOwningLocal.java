@@ -46,8 +46,9 @@ public class SQLOwningLocal extends SQLOwning {
 		ResultSet rs = msql.doQuery("SELECT playername FROM block INNER JOIN player ON block.ownerid=player.playerid WHERE x=" + x + " AND y=" + y + " AND z=" + z + " AND world='" + world + "';"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		try {
 			if (rs.next()) {
+				OfflineUser user = OfflineUser.getInstance(rs.getString("playername")); //$NON-NLS-1$
 				rs.getStatement().close();
-				return OfflineUser.getInstance(rs.getString("playername")); //$NON-NLS-1$
+				return user;
 			} else {
 				rs.getStatement().close();
 				return null;

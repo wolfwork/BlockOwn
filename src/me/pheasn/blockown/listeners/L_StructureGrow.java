@@ -23,7 +23,7 @@ public class L_StructureGrow implements Listener {
 
 	@EventHandler
 	public void onStructureGrow(StructureGrowEvent event) {
-		new CheckForOwnerThread(plugin, this, event.getBlocks()).start();
+		if(plugin.isOwningPlugin()) new CheckForOwnerThread(plugin, this, event.getBlocks()).start();
 	}
 	protected void ownBlocks(Collection<Block> blocks, OfflineUser owner){
 		for (Block block: blocks) {

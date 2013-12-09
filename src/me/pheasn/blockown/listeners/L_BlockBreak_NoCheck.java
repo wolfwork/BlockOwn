@@ -18,6 +18,7 @@ public class L_BlockBreak_NoCheck implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
+		if(!plugin.isOwningPlugin()) return;
 		if (plugin.getOwning().getOwner(event.getBlock()) != null) {
 			Block[] blocks = {event.getBlock()};
 			if(Material.getDoubleHeightBlocks().contains(event.getBlock().getType())){

@@ -21,6 +21,7 @@ public class L_BlockPlace_NoCheck implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
+		if(!plugin.isOwningPlugin() || Setting.DISABLE_OWNING_IN_WORLDS.getStringList(plugin).contains(event.getBlock().getWorld().getName())) return;
 		if (Setting.PERMISSION_NEEDED_OWN_PLACE.getBoolean(plugin) && !event.getPlayer().hasPermission(Permission.OWN_PLACE.toString())) {
 			if(!(event.getPlayer().getGameMode()==GameMode.CREATIVE && event.getPlayer().hasPermission(Permission.OWN_PLACE_CREATIVE.toString()))){
 				return;

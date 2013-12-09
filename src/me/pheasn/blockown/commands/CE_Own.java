@@ -6,9 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import me.pheasn.Material;
 import me.pheasn.OfflineUser;
-import me.pheasn.Region;
 import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
@@ -17,6 +15,7 @@ import me.pheasn.blockown.BlockOwn.Setting;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -92,15 +91,17 @@ public class CE_Own implements CommandExecutor {
 						String next = argIterator.next();
 						if(next.equalsIgnoreCase("not")){
 							not = true;
-							continue;
 						}else{
-							Material material = Material.getMaterial(next);
+							Material material = Material.getMaterial(next.toUpperCase());
 							if(material != null){
 								materials.add(material);
+							}else{
+								plugin.say(player, ChatColor.RED, "You specified an invalid material.");
+								return false;
 							}
 						}
 						while(argIterator.hasNext()){
-							next = argIterator.next();
+							next = argIterator.next().toUpperCase();
 							Material material = Material.getMaterial(next);
 							if(material != null){
 								materials.add(material);
@@ -108,7 +109,6 @@ public class CE_Own implements CommandExecutor {
 								break;
 							}
 						}
-						
 					}
 
 					if(Arg.SELECTION.equalsIgnoreCase(arg)){
@@ -144,7 +144,7 @@ public class CE_Own implements CommandExecutor {
 					return true;
 				}
 				Selection s = plugin.getWorldEdit().getSelection((Player)sender);
-				List<Block> candidateTargets = new Region(s.getWorld(), s.getMinimumPoint().getBlockX(), s.getMinimumPoint().getBlockY(), s.getMinimumPoint().getBlockZ(), s.getHeight(), s.getLength(), s.getWidth()).getBlocks();
+				List<Block> candidateTargets = new me.pheasn.Region(s.getMinimumPoint(), s.getMaximumPoint()).getBlocks();
 				for(Block block : candidateTargets){
 					if(block.getType().equals(org.bukkit.Material.AIR)) continue;
 					if(materials != null){

@@ -16,6 +16,7 @@ public class L_BlockFade implements Listener {
 
 	@EventHandler
 	public void onBlockFade(BlockFadeEvent event) {
+		if(!plugin.isOwningPlugin()) return;
 		if (plugin.getOwning().getOwner(event.getBlock()) != null) {
 			if (event.getNewState().getType().equals(Material.AIR)) {
 				plugin.getOwning().removeOwner(event.getBlock());
