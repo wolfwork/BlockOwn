@@ -3,6 +3,7 @@ package me.pheasn.blockown.commands;
 import java.util.ArrayList;
 
 import me.pheasn.OfflineUser;
+import me.pheasn.Region;
 import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
@@ -11,8 +12,7 @@ import me.pheasn.blockown.BlockOwn.Setting;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -33,6 +33,10 @@ public class CE_Own implements CommandExecutor {
 			String cmd_label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			if(Setting.DISABLE_OWNING_IN_WORLDS.getStringList(plugin).contains(player.getWorld().getName())){
+				plugin.say(player, ChatColor.RED, "Owning is disabled in this world");
+				return true;
+			}
 			OfflineUser user = OfflineUser.getInstance(player);
 			if (Setting.PERMISSION_NEEDED_OWN_COMMAND.getBoolean(plugin)
 					&& !player.hasPermission(Permission.OWN_COMMAND.toString())) {
@@ -61,31 +65,19 @@ public class CE_Own implements CommandExecutor {
 					plugin.tell(sender, ChatColor.RED, Messages.getString("CE_Own.selection.noWorldedit")); //$NON-NLS-1$
 					return false;
 				}
-				Selection selection;
-				if ((selection = plugin.getWorldEdit().getSelection(player)) != null) {
-					Location min = selection.getMinimumPoint();
-					int xMin = min.getBlockX();
-					int yMin = min.getBlockY();
-					int zMin = min.getBlockZ();
-					Location max = selection.getMaximumPoint();
-					int xMax = max.getBlockX();
-					int yMax = max.getBlockY();
-					int zMax = max.getBlockZ();
-					World w = min.getWorld();
+				Selection s;
+				if ((s = plugin.getWorldEdit().getSelection(player)) != null) {
+					Region region = new Region(s.getWorld(), s.getMinimumPoint().getBlockX(), s.getMinimumPoint().getBlockY(), s.getMinimumPoint().getBlockZ(), s.getHeight(), s.getLength(), s.getWidth());
 					int failed = 0;
 					ArrayList<Block> selectedBlocks = new ArrayList<Block>();
-					for (int x = xMin; x <= xMax; x++) {
-						for (int y = yMin; y <= yMax; y++) {
-							for (int z = zMin; z <= zMax; z++) {
-								Block block = w.getBlockAt(x, y, z);
-								OfflineUser owner = plugin.getOwning().getOwner(block);
-								if (owner == null) {
-									selectedBlocks.add(w.getBlockAt(x, y, z));
-								} else if (!owner.equals(user)) {
-									failed += 1;
-								}
+					for(Block block : region.getBlocks()){
+						if(block.getType().equals(Material.AIR)) continue;
+							OfflineUser owner = plugin.getOwning().getOwner(block);
+							if (owner == null) {
+								selectedBlocks.add(block);
+							} else if (!owner.equals(user)) {
+								failed += 1;
 							}
-						}
 					}
 					if (Setting.ECONOMY_ENABLE.getBoolean(plugin)
 							&& plugin.getEconomy() != null
