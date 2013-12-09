@@ -28,7 +28,8 @@ public class L_BlockClick implements Listener {
 				OfflineUser owner = plugin.getOwning().getOwner(event.getClickedBlock());
 				if (owner != null && !owner.getName().equalsIgnoreCase(event.getPlayer().getName())) {
 					if (!plugin.getPlayerSettings().canAccess(Material.getMaterial(event.getClickedBlock().getType()), OfflineUser.getInstance(event.getPlayer()), owner)) {
-						if (Setting.PROTECTION_ONLY_LEFT_CLICKS.getBoolean(plugin)	&& !event.getAction().equals(Action.LEFT_CLICK_BLOCK)) return;
+						if (Setting.PROTECTION_ONLY_LEFT_CLICKS.getBoolean(plugin)	&& !event.getAction().equals(Action.LEFT_CLICK_BLOCK) && 
+								!event.getClickedBlock().getType().equals(org.bukkit.Material.CHEST) && !event.getClickedBlock().getType().equals(org.bukkit.Material.ENDER_CHEST)) return;
 						event.setCancelled(true);
 						if (Setting.PROTECTION_ENABLE_MESSAGES.getBoolean(plugin)) {
 							plugin.say(event.getPlayer(), ChatColor.RED, Messages.getString("L_BlockClick.deny", owner.getName())); //$NON-NLS-1$
