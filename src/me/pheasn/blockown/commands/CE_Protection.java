@@ -3,6 +3,7 @@ package me.pheasn.blockown.commands;
 import java.util.LinkedList;
 
 import me.pheasn.Material;
+import me.pheasn.OfflineUser;
 import me.pheasn.User;
 import me.pheasn.blockown.BlockOwn;
 import me.pheasn.blockown.Messages;
@@ -28,19 +29,13 @@ public class CE_Protection implements CommandExecutor {
 			User user = User.getInstance(player);
 			if (args.length == 0) {
 				if (User.getInstance(player).getTargetBlock() != null) {
-					sendLists(
-							player,
-							plugin.getPlayerSettings().getProtection(Material.getMaterial(user.getTargetBlock().getType()), user.getOfflineUser()));
+					sendLists(player, plugin.getPlayerSettings().getProtection(Material.getMaterial(user.getTargetBlock().getType()), user.getOfflineUser()));
 					return true;
 				} else {
 					return false;
 				}
 			} else if (args.length == 1) {
-				if (args[0].equalsIgnoreCase("all")) { //$NON-NLS-1$
-					sendLists(player, plugin.getPlayerSettings().getProtection(Material.ALL_BLOCKS, user.getOfflineUser()));
-				} else {
-					sendLists(player, plugin.getPlayerSettings().getProtection(Material.getMaterial(args[0]), user.getOfflineUser()));
-				}
+				sendLists(player, plugin.getPlayerSettings().getProtection(Material.getMaterial(args[0]), user.getOfflineUser()));
 				return true;
 			} else {
 				plugin.con(Messages.getString("countArgs")); //$NON-NLS-1$
@@ -52,11 +47,13 @@ public class CE_Protection implements CommandExecutor {
 		}
 	}
 
-	private void sendLists(Player player, LinkedList<String> protectionList) {
-		plugin.say(player, ChatColor.GREEN,
-				Messages.getString("CE_Protection.listTitle")); //$NON-NLS-1$
-		for (String blacklistedPlayer : protectionList) {
-			plugin.say(player, ChatColor.RED, blacklistedPlayer);
+	private void sendLists(Player player, LinkedList<OfflineUser> protectionList) {
+		plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Protection.listTitle")); //$NON-NLS-1$
+		String name;
+		for (OfflineUser blacklistedPlayer : protectionList) {
+			name = blacklistedPlayer.getName();
+			if(name.equalsIgnoreCase(OfflineUser.ALL_PLAYERS.getName())) name = Messages.getString("everyone");
+			plugin.say(player, ChatColor.RED, name);
 		}
 	}
 }

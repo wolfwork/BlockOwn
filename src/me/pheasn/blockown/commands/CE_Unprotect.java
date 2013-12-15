@@ -29,8 +29,8 @@ public class CE_Unprotect implements CommandExecutor {
 
 
 	public enum Arg {
-		MATERIAL("material"),
-		PLAYER("against");
+		MATERIAL("material"), //$NON-NLS-1$
+		PLAYER("against"); //$NON-NLS-1$
 		
 		private String s;
 		private Arg(String s){
@@ -79,7 +79,7 @@ public class CE_Unprotect implements CommandExecutor {
 						if(m != null){
 							material = m;
 						}else{
-							plugin.say(player, ChatColor.RED, Messages.getString("invalidMaterial"));
+							plugin.say(player, ChatColor.RED, Messages.getString("invalidMaterial")); //$NON-NLS-1$
 							return false;
 						}
 					}
@@ -92,7 +92,7 @@ public class CE_Unprotect implements CommandExecutor {
 				}
 
 			}catch(NoSuchElementException e){
-				plugin.say(player, ChatColor.RED, "You made some syntax mistake!");
+				plugin.say(player, ChatColor.RED, Messages.getString("syntax")); //$NON-NLS-1$
 				return false;
 			}
 
@@ -100,7 +100,7 @@ public class CE_Unprotect implements CommandExecutor {
 			if(material == null){
 				Block target = User.getInstance(player).getTargetBlock();
 				if(target == null){
-					plugin.say(player, ChatColor.RED, Messages.getString("noTargetBlock"));
+					plugin.say(player, ChatColor.RED, Messages.getString("noTargetBlock")); //$NON-NLS-1$
 					return false;
 				}
 				material = Material.getMaterial(target.getType());
@@ -110,11 +110,11 @@ public class CE_Unprotect implements CommandExecutor {
 			if(playerName != null){
 				against = OfflineUser.getInstance(playerName);
 				if(against == null){
-					plugin.say(player, ChatColor.RED, Messages.getString("invalidPlayer"));
+					plugin.say(player, ChatColor.RED, Messages.getString("invalidPlayer")); //$NON-NLS-1$
 					return false;
 				}
 			}else{
-				plugin.say(player, ChatColor.RED, "You need to specify a playername!");
+				plugin.say(player, ChatColor.RED, Messages.getString("playerNameNeeded")); //$NON-NLS-1$
 				return false;
 			}
 
@@ -128,8 +128,8 @@ public class CE_Unprotect implements CommandExecutor {
 
 			// Perform actual command
 			plugin.getPlayerSettings().addBlacklisted(material, against, user);
-			String mName = (material.equals(Material.ALL_BLOCKS)) ? "" : material.name();
-			String pName = (against.equals(OfflineUser.ALL_PLAYERS)) ? "all players" : against.getName();
+			String mName = (material.equals(Material.ALL_BLOCKS)) ? "" : material.name(); //$NON-NLS-1$
+			String pName = (against.equals(OfflineUser.ALL_PLAYERS)) ? Messages.getString("CE_Unprotect.allPlayers") : against.getName(); //$NON-NLS-1$
 			this.sendSuccessMessage(player, mName, pName);
 			return true;
 		} else {

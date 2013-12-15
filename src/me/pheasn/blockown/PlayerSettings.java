@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import me.pheasn.Material;
 import me.pheasn.OfflineUser;
 import me.pheasn.PheasnPlugin;
@@ -36,7 +38,7 @@ public class PlayerSettings extends Protection_TypeBased{
 			importOld06();
 		} else if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin),	"0.6.2") == -1) { //$NON-NLS-1$
 			importOld08(plugin.getConfig());
-		} else if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin), "0.8") == -1){
+		} else if (PheasnPlugin.compareVersions(Setting.SETTINGS_VERSION.getString(plugin), "0.8") == -1){ //$NON-NLS-1$
 			importOld08(YamlConfiguration.loadConfiguration(plugin.getProtectionsFile()));
 		} else {
 			FileConfiguration config = YamlConfiguration.loadConfiguration(plugin.getProtectionsFile());
@@ -213,11 +215,11 @@ public class PlayerSettings extends Protection_TypeBased{
 				blackLists.put(player, new HashMap<Material, LinkedList<OfflineUser>>());
 				for (String blockTypeName : config.getConfigurationSection(
 						"Protections." + playerName).getKeys(false)) { //$NON-NLS-1$
-					Material material = (blockTypeName.equalsIgnoreCase("#all#")) ?  Material.getMaterial(ProtectionDatabase.ALL_BLOCKS) : Material.getMaterial(blockTypeName);
+					Material material = (blockTypeName.equalsIgnoreCase("#all#")) ?  Material.getMaterial(ProtectionDatabase.ALL_BLOCKS) : Material.getMaterial(blockTypeName); //$NON-NLS-1$
 					if(material != null){
 						blackLists.get(player).put(material, new LinkedList<OfflineUser>());
 						for (String blacklistedPlayerName : config.getStringList("Protections." + playerName + "." + blockTypeName)) { //$NON-NLS-1$ //$NON-NLS-2$
-							OfflineUser blacklistedPlayer = (blacklistedPlayerName.equalsIgnoreCase("#all#")) ? OfflineUser.getInstance(ProtectionDatabase.ALL_PLAYERS) : OfflineUser.getInstance(blacklistedPlayerName);
+							OfflineUser blacklistedPlayer = (blacklistedPlayerName.equalsIgnoreCase("#all#")) ? OfflineUser.getInstance(ProtectionDatabase.ALL_PLAYERS) : OfflineUser.getInstance(blacklistedPlayerName); //$NON-NLS-1$
 							if (blacklistedPlayer != null) {
 								blackLists.get(player).get(material).add(blacklistedPlayer);
 							}
@@ -295,6 +297,7 @@ public class PlayerSettings extends Protection_TypeBased{
 		}
 	}
 
+	@Nonnull
 	public LinkedList<OfflineUser> getBlacklist(String ownerName, Material material) {
 		try {
 			OfflineUser owner = OfflineUser.getInstance(ownerName);
@@ -308,6 +311,7 @@ public class PlayerSettings extends Protection_TypeBased{
 		}
 	}
 
+	@Nonnull
 	public LinkedList<OfflineUser> getBlacklist(OfflineUser owner, Material material) {
 		HashMap<Material, LinkedList<OfflineUser>> playerBlacklists;
 		if ((playerBlacklists = this.blackLists.get(owner)) != null) {
@@ -384,13 +388,9 @@ public class PlayerSettings extends Protection_TypeBased{
 					}
 				}
 				blacklist = this.getBlacklist(owner, material);
-				if(blacklist != null){
-					if (blacklist.contains(candidate) || blacklist.contains(OfflineUser.ALL_PLAYERS)) {
-						return true;
-					} else {
-						return false;
-					}
-				}else{
+				if (blacklist.contains(candidate) || blacklist.contains(OfflineUser.ALL_PLAYERS)) {
+					return true;
+				} else {
 					return false;
 				}
 			} catch (Exception e) {
@@ -599,17 +599,16 @@ public class PlayerSettings extends Protection_TypeBased{
 		return true;
 	}
 
-	public LinkedList<String> getProtection(Material material,
+	public LinkedList<OfflineUser> getProtection(Material material,
 			OfflineUser owner) {
 		LinkedList<OfflineUser> protection = new LinkedList<OfflineUser>();
 		if (!Setting.PROTECTION_ENABLE.getBoolean(plugin)) {
-			return new LinkedList<String>();
+			return protection;
 		}
 		if (material != Material.ALL_BLOCKS) {
 			if (this.isPrivate(owner, material)) {
-				LinkedList<String> result = new LinkedList<String>();
-				result.add("Everyone");
-				return result;
+				protection.add(OfflineUser.ALL_PLAYERS);
+				return protection;
 			}
 		}
 		protection = this.getBlacklist(owner, material);
@@ -618,11 +617,7 @@ public class PlayerSettings extends Protection_TypeBased{
 				protection.remove(blacklistedPlayer);
 			}
 		}
-		LinkedList<String> result = new LinkedList<String>();
-		for(OfflineUser protectedPlayer : protection){
-			result.add(protectedPlayer.getName());
-		}
-		return result;
+		return protection;
 	}
 
 	@Override

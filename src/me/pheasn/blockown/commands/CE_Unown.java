@@ -31,8 +31,8 @@ public class CE_Unown implements CommandExecutor {
 	}
 
 	public enum Arg {
-		SELECTION("selection"),
-		MATERIAL("material");
+		SELECTION("selection"), //$NON-NLS-1$
+		MATERIAL("material"); //$NON-NLS-1$
 		
 		private String s;
 		private Arg(String s){
@@ -79,14 +79,14 @@ public class CE_Unown implements CommandExecutor {
 					if(Arg.MATERIAL.equalsIgnoreCase(arg)){
 						materials = new ArrayList<Material>();
 						String next = argIterator.next();
-						if(next.equalsIgnoreCase("not")){
+						if(next.equalsIgnoreCase("not")){ //$NON-NLS-1$
 							not = true;
 						}else{
 							Material material = Material.getMaterial(next.toUpperCase());
 							if(material != null){
 								materials.add(material);
 							}else{
-								plugin.say(player, ChatColor.RED, Messages.getString("invalidMaterial"));
+								plugin.say(player, ChatColor.RED, Messages.getString("invalidMaterial")); //$NON-NLS-1$
 								return false;
 							}
 						}
@@ -109,7 +109,7 @@ public class CE_Unown implements CommandExecutor {
 				}
 
 			}catch(NoSuchElementException e){
-				plugin.say(player, ChatColor.RED, "You made some syntax mistake!");
+				plugin.say(player, ChatColor.RED, Messages.getString("syntax")); //$NON-NLS-1$
 				return false;
 			}
 
@@ -117,12 +117,12 @@ public class CE_Unown implements CommandExecutor {
 			List<Block> targets = new ArrayList<Block>();
 			if(selection){
 				if(plugin.getWorldEdit() == null) {
-					plugin.tell(sender, ChatColor.RED, Messages.getString("CE_Unown.selection.noWorldedit"));
+					plugin.tell(sender, ChatColor.RED, Messages.getString("CE_Unown.selection.noWorldedit")); //$NON-NLS-1$
 					return true;
 				}
 				Selection s = plugin.getWorldEdit().getSelection((Player)sender);
 				if(s == null){
-					plugin.say(player, ChatColor.RED, Messages.getString("CE_Unown.selection.noArea"));
+					plugin.say(player, ChatColor.RED, Messages.getString("CE_Unown.selection.noArea")); //$NON-NLS-1$
 					return true;
 				}
 				List<Block> candidateTargets = new me.pheasn.Region(s.getMinimumPoint(), s.getMaximumPoint()).getBlocks();
@@ -130,7 +130,7 @@ public class CE_Unown implements CommandExecutor {
 					if(block.getType().equals(org.bukkit.Material.AIR)) continue;
 					if(materials != null){
 						if(materials.isEmpty()){
-							plugin.say(player, ChatColor.RED, "You didn't specify any valid materials");
+							plugin.say(player, ChatColor.RED, Messages.getString("CE_Unown.noValidMaterials")); //$NON-NLS-1$
 							return false;
 						}
 						if(not){
@@ -150,7 +150,7 @@ public class CE_Unown implements CommandExecutor {
 				if(owner != null && owner.equals(user)){
 					targets.add(target);
 				}else{
-					plugin.say(player, ChatColor.RED, Messages.getString("CE_Unown.unneccessary"));
+					plugin.say(player, ChatColor.RED, Messages.getString("CE_Unown.unneccessary")); //$NON-NLS-1$
 					return true;
 				}
 			}
@@ -162,10 +162,10 @@ public class CE_Unown implements CommandExecutor {
 
 			// Tell player about the result
 			if(selection){
-				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unown.selection.success"));
+				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unown.selection.success")); //$NON-NLS-1$
 				return true;
 			}else{
-				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unown.success"));
+				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Unown.success")); //$NON-NLS-1$
 				return true;
 			}
 		} else {

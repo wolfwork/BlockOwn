@@ -54,7 +54,7 @@ public class CE_Privatize implements CommandExecutor {
 									.currencyNamePlural()));
 					return true;
 				} else {
-					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Privatize.howMuch", Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin), plugin.getEconomy().currencyNamePlural())); 
+					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Privatize.howMuch", Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin), plugin.getEconomy().currencyNamePlural()));  //$NON-NLS-1$
 					plugin.getEconomy().withdrawPlayer(player.getName(), Setting.ECONOMY_PRICE_PRIVATIZE.getDouble(plugin));
 				}
 			}
@@ -73,7 +73,7 @@ public class CE_Privatize implements CommandExecutor {
 			} else if (args.length == 0) {
 				if (target != null) {
 					plugin.getPlayerSettings().addPrivate(Material.getMaterial(target.getType()), user.getOfflineUser());
-					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Privatize.success", target.getType().name())); 
+					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Privatize.success", target.getType().name()));  //$NON-NLS-1$
 					return true;
 				} else {
 					return false;

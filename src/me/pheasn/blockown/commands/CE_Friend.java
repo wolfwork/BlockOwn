@@ -27,7 +27,7 @@ public class CE_Friend implements CommandExecutor {
 			Player player = (Player) sender;
 			User user = User.getInstance(player);
 			if(Setting.PERMISSION_NEEDED_FRIEND_COMMAND.getBoolean(plugin) && !player.hasPermission(Permission.FRIEND.toString())){
-				plugin.say(player, ChatColor.RED,Messages.getString("noPermission"));
+				plugin.say(player, ChatColor.RED,Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
 			}
 			if (args.length == 1) {

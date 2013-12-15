@@ -30,7 +30,7 @@ public class CE_MakePoor implements CommandExecutor {
 					plugin.say(player, ChatColor.GREEN, Messages.getString("CE_MakePoor.success", user.getName())); //$NON-NLS-1$
 					return true;
 				} else {
-					plugin.say(player, ChatColor.RED, Messages.getString("noPermission"));
+					plugin.say(player, ChatColor.RED, Messages.getString("noPermission")); //$NON-NLS-1$
 					return true;
 				}
 			} else {
