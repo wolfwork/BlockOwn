@@ -68,7 +68,7 @@ public class CE_Own implements CommandExecutor {
 			}
 			if (Setting.PERMISSION_NEEDED_OWN_COMMAND.getBoolean(plugin)
 					&& !player.hasPermission(Permission.OWN_COMMAND.toString())) {
-				if(!(player.getGameMode()==GameMode.CREATIVE&&player.hasPermission(Permission.OWN_COMMAND_CREATIVE.toString()))){
+				if(!(player.getGameMode() == GameMode.CREATIVE && player.hasPermission(Permission.OWN_COMMAND_CREATIVE.toString()))){
 				plugin.say(player, ChatColor.RED, Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
 				}
@@ -122,11 +122,17 @@ public class CE_Own implements CommandExecutor {
 					}
 
 				}
+
 			}catch(NoSuchElementException e){
 				plugin.say(player, ChatColor.RED, "You made some syntax mistake!");
 				return false;
 			}
 
+			// Checking for permission to own for other players
+			if(playerName != null && !player.hasPermission(Permission.OWN_COMMAND_OTHERS.toString())){
+				plugin.say(player, ChatColor.RED, "Sorry, you don't have permission to own blocks for other players.");
+				return true;
+			}
 			// Getting specified player
 			OfflineUser newOwner = (playerName == null) ? user : OfflineUser.getInstance(playerName);
 			if(newOwner == null) {
@@ -144,6 +150,10 @@ public class CE_Own implements CommandExecutor {
 					return true;
 				}
 				Selection s = plugin.getWorldEdit().getSelection((Player)sender);
+				if(s == null){
+					plugin.say(player, ChatColor.RED, Messages.getString("CE_Own.selection.noArea"));
+					return true;
+				}
 				List<Block> candidateTargets = new me.pheasn.Region(s.getMinimumPoint(), s.getMaximumPoint()).getBlocks();
 				for(Block block : candidateTargets){
 					if(block.getType().equals(org.bukkit.Material.AIR)) continue;
@@ -166,7 +176,17 @@ public class CE_Own implements CommandExecutor {
 					}
 				}
 			}else{
-				targets.add(User.getInstance(player).getTargetBlock());
+				Block target = User.getInstance(player).getTargetBlock();
+				OfflineUser owner = plugin.getOwning().getOwner(target);
+				if(owner == null){
+					targets.add(target);
+				}else if(owner.equals(user)){
+					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Own.unneccessary"));
+					return true;
+				}else{
+					plugin.say(player, ChatColor.RED, Messages.getString("CE_Own.ownedBy", owner.getName()));
+					return true;
+				}
 			}
 
 			// Economy
@@ -188,12 +208,19 @@ public class CE_Own implements CommandExecutor {
 			}
 
 			// Tell player about the result
-			if(selection){
-				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Own.selection.success"));
+			if(selection && playerName == null){
+				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Own.selection.success.own"));
 				if(others > 0 || unneccessary > 0){
 					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Own.selection.except", others, unneccessary));
 				}
 				return true;
+			} else if(selection && playerName != null){
+				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Own.selection.success.other", playerName));
+				if(others > 0 || unneccessary > 0){
+					plugin.say(player, ChatColor.YELLOW, Messages.getString("CE_Own.selection.except", others, unneccessary));
+				}
+				return true;
+			
 			}else if(playerName == null){
 				plugin.say(player, ChatColor.GREEN, Messages.getString("CE_Own.success.own"));
 				return true;
