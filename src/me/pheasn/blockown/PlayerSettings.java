@@ -234,10 +234,10 @@ public class PlayerSettings extends Protection_TypeBased{
 		// ABSOLUTELY PRIVATE TYPES
 		config.set("PrivateBlocks", null); //$NON-NLS-1$
 		for (Entry<OfflineUser, LinkedList<Material>> entry : privateLists.entrySet()) {
-			if (entry.getValue().size() != 0) {
+			if (entry.getKey() != null && entry.getValue().size() != 0) {
 				ArrayList<String> privateTypeNames = new ArrayList<String>();
 				for (Material privateType : entry.getValue()) {
-					privateTypeNames.add(privateType.name());
+						privateTypeNames.add(privateType.name());
 				}
 				config.set("PrivateBlocks." + entry.getKey().getName(), privateTypeNames); //$NON-NLS-1$
 			}

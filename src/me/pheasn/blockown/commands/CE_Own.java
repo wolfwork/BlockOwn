@@ -66,8 +66,7 @@ public class CE_Own implements CommandExecutor {
 				plugin.say(player, ChatColor.RED, "Owning is disabled in this world");
 				return true;
 			}
-			if (Setting.PERMISSION_NEEDED_OWN_COMMAND.getBoolean(plugin)
-					&& !player.hasPermission(Permission.OWN_COMMAND.toString())) {
+			if (Setting.PERMISSION_NEEDED_OWN_COMMAND.getBoolean(plugin) && !player.hasPermission(Permission.OWN_COMMAND.toString())) {
 				if(!(player.getGameMode() == GameMode.CREATIVE && player.hasPermission(Permission.OWN_COMMAND_CREATIVE.toString()))){
 				plugin.say(player, ChatColor.RED, Messages.getString("noPermission")); //$NON-NLS-1$
 				return true;
@@ -96,7 +95,7 @@ public class CE_Own implements CommandExecutor {
 							if(material != null){
 								materials.add(material);
 							}else{
-								plugin.say(player, ChatColor.RED, "You specified an invalid material.");
+								plugin.say(player, ChatColor.RED, Messages.getString("invalidMaterial"));
 								return false;
 							}
 						}
@@ -136,7 +135,7 @@ public class CE_Own implements CommandExecutor {
 			// Getting specified player
 			OfflineUser newOwner = (playerName == null) ? user : OfflineUser.getInstance(playerName);
 			if(newOwner == null) {
-				plugin.say(player, ChatColor.RED, "You specified an invalid player");
+				plugin.say(player, ChatColor.RED, Messages.getString("invalidPlayer"));
 				return false;
 			}
 
@@ -158,6 +157,10 @@ public class CE_Own implements CommandExecutor {
 				for(Block block : candidateTargets){
 					if(block.getType().equals(org.bukkit.Material.AIR)) continue;
 					if(materials != null){
+						if(materials.isEmpty()){
+							plugin.say(player, ChatColor.RED, "You didn't specify any valid materials");
+							return false;
+						}
 						if(not){
 							if(materials.contains(block.getType())) continue;
 						}else{

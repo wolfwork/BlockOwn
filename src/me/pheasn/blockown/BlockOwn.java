@@ -242,6 +242,7 @@ public class BlockOwn extends PheasnPlugin {
 		OWN_PLACE_CREATIVE("blockown.own.place.creative"), //$NON-NLS-1$
 		OWN_COMMAND("blockown.own.command"), //$NON-NLS-1$
 		OWN_COMMAND_CREATIVE("blockown.own.command.creative"), //$NON-NLS-1$
+		OWN_COMMAND_OTHERS("blockown.own.forothers"), //$NON-NLS-1$
 		UNOWN("blockown.unown"), //$NON-NLS-1$
 		FRIEND("blockown.friend"), //$NON-NLS-1$
 		IGNORE_PROTECTION("blockown.ignore"), //$NON-NLS-1$
@@ -287,8 +288,7 @@ public class BlockOwn extends PheasnPlugin {
 		protectionsFile = new File(this.getPluginDirectory().getPath() + "/playerSettings.yml"); //$NON-NLS-1$
 		this.createEnv();
 		if (!Setting.ENABLE.getBoolean(this)) {
-			this.con(ChatColor.YELLOW,
-					Messages.getString("BlockOwn.enabled.false")); //$NON-NLS-1$
+			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.enabled.false")); //$NON-NLS-1$
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -306,11 +306,8 @@ public class BlockOwn extends PheasnPlugin {
 
 		// enable AutoUpdater
 		updater = new Updater(this, this.pluginId, this.getFile(), me.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
-		if (me.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE
-				.getBoolean(this)) {
-			updater.schedule(100l,
-					me.pheasn.pluginupdater.Updater.Setting.AUTOUPDATE_INTERVAL
-							.getLong(this) * 1000);
+		if (me.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
+			updater.schedule(100l, me.pheasn.pluginupdater.Updater.Setting.AUTOUPDATE_INTERVAL.getLong(this) * 1000);
 			this.con(Messages.getString("BlockOwn.updater.started")); //$NON-NLS-1$
 		}
 
@@ -321,8 +318,7 @@ public class BlockOwn extends PheasnPlugin {
 		}
 
 		// Soft dependency to WorldEdit
-		worldEdit = (WorldEditPlugin) this.getServer().getPluginManager()
-				.getPlugin("WorldEdit"); //$NON-NLS-1$
+		worldEdit = (WorldEditPlugin) this.getServer().getPluginManager().getPlugin("WorldEdit"); //$NON-NLS-1$
 		if (worldEdit != null) {
 			this.con(Messages.getString("BlockOwn.dependency.worldedit")); //$NON-NLS-1$
 		}
@@ -330,8 +326,7 @@ public class BlockOwn extends PheasnPlugin {
 		// Soft dependency to Vault
 		try {
 			if (this.getServer().getPluginManager().getPlugin("Vault") != null) { //$NON-NLS-1$
-				RegisteredServiceProvider<Economy> rsp = this.getServer()
-						.getServicesManager().getRegistration(Economy.class);
+				RegisteredServiceProvider<Economy> rsp = this.getServer().getServicesManager().getRegistration(Economy.class);
 				if (rsp != null) {
 					economy = rsp.getProvider();
 				}
@@ -360,60 +355,45 @@ public class BlockOwn extends PheasnPlugin {
 					newargs[i - 1] = args[i];
 				}
 				if (args[0].equalsIgnoreCase(Commands.FRIEND.toString())) {
-					return new CE_Friend(this).onCommand(sender, cmd,
-							cmd_label, newargs);
+					return new CE_Friend(this).onCommand(sender, cmd, cmd_label, newargs);
 				}
 				if (args[0].equalsIgnoreCase(Commands.UNFRIEND.toString())) {
-					return new CE_Unfriend(this).onCommand(sender, cmd,
-							cmd_label, newargs);
+					return new CE_Unfriend(this).onCommand(sender, cmd, cmd_label, newargs);
 				}
 				if (args[0].equalsIgnoreCase(Commands.PRIVATIZE.toString())) {
-					return new CE_Privatize(this).onCommand(sender, cmd,
-							cmd_label, newargs);
+					return new CE_Privatize(this).onCommand(sender, cmd, cmd_label, newargs);
 				}
 				if (args[0].equalsIgnoreCase(Commands.UNPRIVATIZE.toString())) {
-					return new CE_Unprivatize(this).onCommand(sender, cmd,
-							cmd_label, newargs);
+					return new CE_Unprivatize(this).onCommand(sender, cmd, cmd_label, newargs);
 				}
 				if (args[0].equalsIgnoreCase(Commands.PROTECT.toString())) {
-					return new CE_Protect(this).onCommand(sender, cmd,
-							cmd_label, newargs);
+					return new CE_Protect(this).onCommand(sender, cmd, cmd_label, newargs);
 				}
 				if (args[0].equalsIgnoreCase(Commands.UNPROTECT.toString())) {
-					return new CE_Unprotect(this).onCommand(sender, cmd,
-							cmd_label, newargs);
+					return new CE_Unprotect(this).onCommand(sender, cmd, cmd_label, newargs);
 				}
 				if (args[0].equalsIgnoreCase(Commands.PROTECTION.toString())) {
-					return new CE_Protection(this).onCommand(sender, cmd,
-							cmd_label, newargs);
+					return new CE_Protection(this).onCommand(sender, cmd, cmd_label, newargs);
 				}
 			}
 			if (args.length == 2) {
 				if (args[0].equalsIgnoreCase("list")) { //$NON-NLS-1$
 					if (args[1].equalsIgnoreCase("private")) { //$NON-NLS-1$
-						return new CE_List_Private(this).onCommand(sender, cmd,
-								cmd_label, new String[0]);
+						return new CE_List_Private(this).onCommand(sender, cmd, cmd_label, new String[0]);
 					}
 					if (args[1].equalsIgnoreCase("protected")) { //$NON-NLS-1$
-						return new CE_List_Protected(this).onCommand(sender,
-								cmd, cmd_label, new String[0]);
+						return new CE_List_Protected(this).onCommand(sender, cmd, cmd_label, new String[0]);
 					}
 					if (args[1].equalsIgnoreCase("friends")) { //$NON-NLS-1$
-						return new CE_List_Friends(this).onCommand(sender, cmd,
-								cmd_label, new String[0]);
+						return new CE_List_Friends(this).onCommand(sender, cmd, cmd_label, new String[0]);
 					}
 				}
 			}
 
 			// If sender is a player, check for his permission
 			boolean isPlayer = sender instanceof Player;
-			if (isPlayer
-					&& !((Player) sender).hasPermission(Permission.ADMIN
-							.toString())) {
-				this.tell(
-						sender,
-						ChatColor.RED,
-						Messages.getString("noPermission") + String.valueOf(((Player) sender).hasPermission(Permission.ADMIN.toString()))); //$NON-NLS-1$ 
+			if (isPlayer && !((Player) sender).hasPermission(Permission.ADMIN.toString())) {
+				this.tell(sender, ChatColor.RED, Messages.getString("noPermission")); //$NON-NLS-1$ 
 				return true;
 			}
 			if (args.length == 1) {
@@ -465,8 +445,7 @@ public class BlockOwn extends PheasnPlugin {
 				return false;
 			}
 		} else {
-			this.tell(sender,
-					Messages.getString("BlockOwn.owner.save.unneccessary")); //$NON-NLS-1$
+			this.tell(sender, Messages.getString("BlockOwn.owner.save.unneccessary")); //$NON-NLS-1$
 			return true;
 		}
 	}
@@ -503,12 +482,10 @@ public class BlockOwn extends PheasnPlugin {
 			}
 			Thread importThread = new ImportThread(sender, this, oldOwning);
 			importThread.start();
-			this.tell(sender, ChatColor.GREEN,
-					Messages.getString("BlockOwn.import.started")); //$NON-NLS-1$
+			this.tell(sender, ChatColor.GREEN, Messages.getString("BlockOwn.import.started")); //$NON-NLS-1$
 			return true;
 		} else {
-			this.tell(sender, ChatColor.RED,
-					Messages.getString("BlockOwn.import.unneccessary")); //$NON-NLS-1$
+			this.tell(sender, ChatColor.RED, Messages.getString("BlockOwn.import.unneccessary")); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -518,12 +495,9 @@ public class BlockOwn extends PheasnPlugin {
 		playerSettings.save();
 		FileConfiguration config = this.getConfig();
 		updater.cancel();
-		updater = new Updater(this, this.pluginId, this.getFile(),
-				me.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
-		if (me.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE
-				.getBoolean(this)) {
-			updater.schedule(100l,
-					Setting.AUTOSAVE_INTERVAL.getLong(this) * 1000);
+		updater = new Updater(this, this.pluginId, this.getFile(), me.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
+		if (me.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
+			updater.schedule(100l, Setting.AUTOSAVE_INTERVAL.getLong(this) * 1000);
 			this.con(Messages.getString("BlockOwn.updater.started")); //$NON-NLS-1$
 		}
 
@@ -531,30 +505,25 @@ public class BlockOwn extends PheasnPlugin {
 			autoSaveThread.interrupt();
 		}
 
-		if (config
-				.getBoolean(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_ENABLE
-						.toString())) {
-			if (config.getString(
-					me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_TYPE
-							.toString()).equalsIgnoreCase(
-					DatabaseType.SQL_LOCAL.toString())
+		if (config.getBoolean(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
+			if (config.getString(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_TYPE.toString()).equalsIgnoreCase(DatabaseType.SQL_LOCAL.toString()) 
 					&& owning.getType() != DatabaseType.SQL_LOCAL) {
 				owning.save();
 				try {
 					owning = new SQLOwningLocal(this);
 				} catch (Exception e) {
-					this.tell(sender, ChatColor.RED, Messages
-							.getString("BlockOwn.database.switch.error")); //$NON-NLS-1$
+					this.tell(sender, ChatColor.RED, Messages.getString("BlockOwn.database.switch.error")); //$NON-NLS-1$
 					this.getServer().getPluginManager().disablePlugin(this);
+					return false;
 				}
 			} else if (owning.getType() != DatabaseType.SQL_NETWORK) {
 				owning.save();
 				try {
 					owning = new SQLOwningNetwork(this);
 				} catch (Exception e) {
-					this.tell(sender, ChatColor.RED, Messages
-							.getString("BlockOwn.database.switch.error")); //$NON-NLS-1$
+					this.tell(sender, ChatColor.RED, Messages.getString("BlockOwn.database.switch.error")); //$NON-NLS-1$
 					this.getServer().getPluginManager().disablePlugin(this);
+					return false;
 				}
 			}
 		} else if (owning.getType() != DatabaseType.CLASSIC) {
@@ -565,96 +534,70 @@ public class BlockOwn extends PheasnPlugin {
 			autoSaveThread = new AutoSaveThread(this);
 			autoSaveThread.start();
 		}
-		this.tell(sender, ChatColor.GREEN,
-				Messages.getString("BlockOwn.reload.success")); //$NON-NLS-1$
+		this.tell(sender, ChatColor.GREEN, Messages.getString("BlockOwn.reload.success")); //$NON-NLS-1$
 		return true;
 	}
 
 	private void registerCommands() {
 
 		Commands.BLOCKOWN.getCommand(this).setExecutor(this);
-		Commands.BLOCKOWN.getCommand(this).setUsage(
-				ChatColor.RED + Messages.getString("BlockOwn.usage.blockown")); //$NON-NLS-1$
-		Commands.BLOCKOWN.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.description.blockown")); //$NON-NLS-1$
+		Commands.BLOCKOWN.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.blockown")); //$NON-NLS-1$
+		Commands.BLOCKOWN.getCommand(this).setDescription(Messages.getString("BlockOwn.description.blockown")); //$NON-NLS-1$
+
 		if(Setting.ENABLE_OWNING.getBoolean(this)){
+
 		Commands.OWN.getCommand(this).setExecutor(new CE_Own(this));
-		Commands.OWN.getCommand(this).setUsage(
-				ChatColor.RED + Messages.getString("BlockOwn.usage.own")); //$NON-NLS-1$
-		Commands.OWN.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.description.own")); //$NON-NLS-1$
+		Commands.OWN.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.own")); //$NON-NLS-1$
+		Commands.OWN.getCommand(this).setDescription(Messages.getString("BlockOwn.description.own")); //$NON-NLS-1$
 
 		Commands.UNOWN.getCommand(this).setExecutor(new CE_Unown(this));
-		Commands.UNOWN.getCommand(this).setUsage(
-				ChatColor.RED + Messages.getString("BlockOwn.usage.unown")); //$NON-NLS-1$
-		Commands.UNOWN.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.description.unown")); //$NON-NLS-1$
+		Commands.UNOWN.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.unown")); //$NON-NLS-1$
+		Commands.UNOWN.getCommand(this).setDescription(Messages.getString("BlockOwn.description.unown")); //$NON-NLS-1$
 
 		Commands.OWNER.getCommand(this).setExecutor(new CE_Owner(this));
-		Commands.OWNER.getCommand(this).setUsage(
-				ChatColor.RED + Messages.getString("BlockOwn.usage.owner")); //$NON-NLS-1$
-		Commands.OWNER.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.description.owner")); //$NON-NLS-1$
+		Commands.OWNER.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.owner")); //$NON-NLS-1$
+		Commands.OWNER.getCommand(this).setDescription(Messages.getString("BlockOwn.description.owner")); //$NON-NLS-1$
+
 		Commands.MAKE_POOR.getCommand(this).setExecutor(new CE_MakePoor(this));
-		Commands.MAKE_POOR.getCommand(this).setUsage(
-				Messages.getString("BlockOwn.usage.makepoor")); //$NON-NLS-1$
-		Commands.MAKE_POOR.getCommand(this).setDescription(
-				Messages.getString("BlockOwn.description.makepoor")); //$NON-NLS-1$
+		Commands.MAKE_POOR.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.makepoor")); //$NON-NLS-1$
+		Commands.MAKE_POOR.getCommand(this).setDescription(Messages.getString("BlockOwn.description.makepoor")); //$NON-NLS-1$
+
 		}else{
 			this.unRegisterBukkitCommand(Commands.OWN.getCommand(this));
 			this.unRegisterBukkitCommand(Commands.UNOWN.getCommand(this));
 			this.unRegisterBukkitCommand(Commands.OWNER.getCommand(this));
 			this.unRegisterBukkitCommand(Commands.MAKE_POOR.getCommand(this));
 		}
+
 		if (!Setting.PROTECTION_CASCADE.getBoolean(this)) {
+
 			Commands.PROTECT.getCommand(this).setExecutor(new CE_Protect(this));
-			Commands.PROTECT.getCommand(this).setUsage(
-					ChatColor.RED
-							+ Messages.getString("BlockOwn.usage.protect")); //$NON-NLS-1$
-			Commands.PROTECT.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.description.protect")); //$NON-NLS-1$
+			Commands.PROTECT.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.protect")); //$NON-NLS-1$
+			Commands.PROTECT.getCommand(this).setDescription(Messages.getString("BlockOwn.description.protect")); //$NON-NLS-1$
 
-			Commands.UNPROTECT.getCommand(this).setExecutor(
-					new CE_Unprotect(this));
-			Commands.UNPROTECT.getCommand(this).setUsage(
-					ChatColor.RED
-							+ Messages.getString("BlockOwn.usage.unprotect")); //$NON-NLS-1$
-			Commands.UNPROTECT.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.description.unprotect")); //$NON-NLS-1$
+			Commands.UNPROTECT.getCommand(this).setExecutor(new CE_Unprotect(this));
+			Commands.UNPROTECT.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.unprotect")); //$NON-NLS-1$
+			Commands.UNPROTECT.getCommand(this).setDescription(Messages.getString("BlockOwn.description.unprotect")); //$NON-NLS-1$
 
-			Commands.PROTECTION.getCommand(this).setExecutor(
-					new CE_Protection(this));
-			Commands.PROTECTION.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.usage.protection")); //$NON-NLS-1$
-			Commands.PROTECTION.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.description.protection")); //$NON-NLS-1$
+			Commands.PROTECTION.getCommand(this).setExecutor(new CE_Protection(this));
+			Commands.PROTECTION.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.protection")); //$NON-NLS-1$
+			Commands.PROTECTION.getCommand(this).setDescription(Messages.getString("BlockOwn.description.protection")); //$NON-NLS-1$
 
-			Commands.PRIVATIZE.getCommand(this).setExecutor(
-					new CE_Privatize(this));
-			Commands.PRIVATIZE.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.usage.privatize")); //$NON-NLS-1$
-			Commands.PRIVATIZE.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.description.privatize")); //$NON-NLS-1$
+			Commands.PRIVATIZE.getCommand(this).setExecutor(new CE_Privatize(this));
+			Commands.PRIVATIZE.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.privatize")); //$NON-NLS-1$
+			Commands.PRIVATIZE.getCommand(this).setDescription(Messages.getString("BlockOwn.description.privatize")); //$NON-NLS-1$
 
-			Commands.UNPRIVATIZE.getCommand(this).setExecutor(
-					new CE_Unprivatize(this));
-			Commands.UNPRIVATIZE.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.usage.unprivatize")); //$NON-NLS-1$
-			Commands.UNPRIVATIZE.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.description.unprivatize")); //$NON-NLS-1$
+			Commands.UNPRIVATIZE.getCommand(this).setExecutor(new CE_Unprivatize(this));
+			Commands.UNPRIVATIZE.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.unprivatize")); //$NON-NLS-1$
+			Commands.UNPRIVATIZE.getCommand(this).setDescription(Messages.getString("BlockOwn.description.unprivatize")); //$NON-NLS-1$
 
 			Commands.FRIEND.getCommand(this).setExecutor(new CE_Friend(this));
-			Commands.FRIEND.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.usage.friend")); //$NON-NLS-1$
-			Commands.FRIEND.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.description.friend")); //$NON-NLS-1$
+			Commands.FRIEND.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.friend")); //$NON-NLS-1$
+			Commands.FRIEND.getCommand(this).setDescription(Messages.getString("BlockOwn.description.friend")); //$NON-NLS-1$
 
-			Commands.UNFRIEND.getCommand(this).setExecutor(
-					new CE_Unfriend(this));
-			Commands.UNFRIEND.getCommand(this).setUsage(
-					Messages.getString("BlockOwn.usage.unfriend")); //$NON-NLS-1$
-			Commands.UNFRIEND.getCommand(this).setDescription(
-					Messages.getString("BlockOwn.description.unfriend")); //$NON-NLS-1$
+			Commands.UNFRIEND.getCommand(this).setExecutor(new CE_Unfriend(this));
+			Commands.UNFRIEND.getCommand(this).setUsage(ChatColor.RED + Messages.getString("BlockOwn.usage.unfriend")); //$NON-NLS-1$
+			Commands.UNFRIEND.getCommand(this).setDescription(Messages.getString("BlockOwn.description.unfriend")); //$NON-NLS-1$
 
 		} else {
 			this.unRegisterBukkitCommand(Commands.PROTECTION.getCommand(this));
@@ -707,23 +650,19 @@ public class BlockOwn extends PheasnPlugin {
 				this.saveDefaultConfig();
 				Setting.SETTINGS_VERSION.set(this, this.getDescription().getVersion());
 			} catch (IOException ex) {
-				this.con(ChatColor.RED,
-						Messages.getString("BlockOwn.prepare.error")); //$NON-NLS-1$
+				this.con(ChatColor.RED, Messages.getString("BlockOwn.prepare.error")); //$NON-NLS-1$
 			}
 		}
 		if (!blockOwnerFile.exists()) {
 			try {
-				this.con(ChatColor.YELLOW,
-						Messages.getString("BlockOwn.prepare.new.owner")); //$NON-NLS-1$
+				this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.prepare.new.owner")); //$NON-NLS-1$
 				blockOwnerFile.createNewFile();
 			} catch (IOException ex) {
-				this.con(ChatColor.RED,
-						Messages.getString("BlockOwn.prepare.error")); //$NON-NLS-1$
+				this.con(ChatColor.RED, Messages.getString("BlockOwn.prepare.error")); //$NON-NLS-1$
 			}
 		}
 		if (!this.getConfigFile().exists()) {
-			this.con(ChatColor.YELLOW,
-					Messages.getString("BlockOwn.prepare.new.config")); //$NON-NLS-1$
+			this.con(ChatColor.YELLOW, Messages.getString("BlockOwn.prepare.new.config")); //$NON-NLS-1$
 			this.saveDefaultConfig();
 			Setting.SETTINGS_VERSION.set(this, this.getDescription().getVersion());
 		}
@@ -742,8 +681,7 @@ public class BlockOwn extends PheasnPlugin {
 	private boolean establishOwning() {
 		try {
 			if (this.getConfig().getBoolean(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_ENABLE.toString())) {
-				if (this.getConfig()
-						.getString(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_TYPE.toString()).equalsIgnoreCase("local")) { //$NON-NLS-1$
+				if (this.getConfig().getString(me.pheasn.blockown.owning.SQLOwning.Setting.MYSQL_TYPE.toString()).equalsIgnoreCase("local")) { //$NON-NLS-1$
 					owning = new SQLOwningLocal(this);
 				} else {
 					owning = new SQLOwningNetwork(this);
@@ -756,8 +694,7 @@ public class BlockOwn extends PheasnPlugin {
 		} catch (ClassNotFoundException e1) {
 			return false;
 		} catch (MySQLNotConnectingException e2) {
-			this.con(ChatColor.RED,
-					Messages.getString("BlockOwn.database.connect.error")); //$NON-NLS-1$
+			this.con(ChatColor.RED, Messages.getString("BlockOwn.database.connect.error")); //$NON-NLS-1$
 			this.getServer().getPluginManager().disablePlugin(this);
 			return false;
 		}
@@ -798,7 +735,6 @@ public class BlockOwn extends PheasnPlugin {
 		//0.7.5
 		if(compareVersions(Setting.SETTINGS_VERSION.getString(this), "0.7.5") == -1){
 			Setting.PROTECTION_RADIUS_PREVENT_PLACE.set(this, Setting.PROTECTION_RADIUS_OLD.getInt(this)>0);
-		//	Setting.PROTECTION_RADIUS_PREVENT_BREAK.set(this, false);
 			Setting.PROTECTION_RADIUS_RADIUS.update(this, Setting.PROTECTION_RADIUS_OLD.getInt(this), Setting.PROTECTION_RADIUS_OLD);
 		}
 
@@ -893,9 +829,7 @@ public class BlockOwn extends PheasnPlugin {
 			HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
 			knownCommands.remove(cmd.getName());
 			for (String alias : cmd.getAliases()) {
-				if (knownCommands.containsKey(alias)
-						&& knownCommands.get(alias).toString()
-								.contains(this.getName())) {
+				if (knownCommands.containsKey(alias) && knownCommands.get(alias).toString().contains(this.getName())) {
 					knownCommands.remove(alias);
 				}
 			}
