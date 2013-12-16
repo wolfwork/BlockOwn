@@ -2,7 +2,24 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.pheasn.blockown</groupId>
-	<artifactId>BlockOwn</artifactId>
+	<artifactId>blockown</artifactId>
+	<version>0.8-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>BlockOwn</name>
+	<description>A CraftBukkit server plugin</description>
+	<url>http://dev.bukkit.org/bukkit-plugins/blockown/</url>
+	<licenses>
+		<license>
+			<name>Mozilla Public License version 2.0</name>
+			<url>http://www.mozilla.org/MPL/2.0/</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:git:git@github.com:Pheasn/BlockOwn.git</connection>
+		<url>scm:git:git@github.com:Pheasn/BlockOwn.git</url>
+		<developerConnection>scm:git:git@github.com:Pheasn/BlockOwn.git</developerConnection>
+	</scm>
 	<repositories>
 		<repository>
 			<id>Plugin Metrics</id>
@@ -72,6 +89,11 @@
 					</artifactSet>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.2</version>
+			</plugin>
 		</plugins>
 
 	</build>
@@ -117,5 +139,4 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-	<version>0.8-SNAPSHOT</version>
 </project>
