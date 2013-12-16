@@ -138,6 +138,10 @@ public class CE_Own implements CommandExecutor {
 				plugin.say(player, ChatColor.RED, Messages.getString("invalidPlayer")); //$NON-NLS-1$
 				return false;
 			}
+			if(newOwner.equals(OfflineUser.ALL_PLAYERS)){
+				plugin.say(player, ChatColor.RED, "You can't own a block for everyone");
+				return true;
+			}
 
 			// Determining amount of blocks
 			List<Block> targets = new ArrayList<Block>();
