@@ -25,10 +25,9 @@ ServerSettings:
       preventPlace: false
       preventBreak: false
   AutoUpdater:
-    enable: true
     releaseType: release
     apiKey:
-    autoUpdateInterval: 1800
+    interval: 1800
     broadcastToOperators: true
   MySQL:
     enable: false

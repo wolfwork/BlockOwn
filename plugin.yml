@@ -3,7 +3,7 @@ version: 0.8b
 
 author: Pheasn
 
-main: me.pheasn.blockown.BlockOwn
+main: com.github.pheasn.blockown.BlockOwn
 
 softdepend: [ServerBase, WorldEdit, Vault]
 
