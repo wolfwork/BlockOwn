@@ -1,0 +1,3 @@
+To contribute, please give some understandable description about what you have changed!
+
+You'll need Maven 3 to work with this. The plugin builds up on https://github.com/Pheasn/PheasnPlugin and uses https://github.com/Pheasn/PluginUpdater . Sorry that there are no CI-servers that provide ready-to-use .jars of the two dependencies the pom.xml could link to, maybe I'll set something like that up in the next time.
