@@ -105,6 +105,13 @@ public class BlockOwn extends PheasnPlugin {
 		ECONOMY_PRICE_PRIVATIZE("ServerSettings.Economy.privatizePrice"), //$NON-NLS-1$
 		ECONOMY_PRICE_OWN_SELECTION("ServerSettings.Economy.ownSelectionPricePerBlock"), //$NON-NLS-1$
 
+		//Auto updater
+		UPDATER_APIKEY("ServerSettings.AutoUpdater.apiKey"),
+		UPDATER_INTERVAL("ServerSettings.AutoUpdater.interval"),
+		UPDATER_RELEASE_TYPE("ServerSettings.AutoUpdater.releaseType"),
+		UPDATER_BROADCAST("ServerSettings.AutoUpdater.broadcastToOperators"),
+		
+
 		// very Old
 		@Deprecated
 		ENABLE_AUTOUPDATE_old("ServerSettings.enableAutoUpdate"), //$NON-NLS-1$
@@ -147,7 +154,13 @@ public class BlockOwn extends PheasnPlugin {
 
 		// Old since 0.7.5
 		@Deprecated
-		PROTECTION_RADIUS_OLD("ServerSettings.Protection.radius"); //$NON-NLS-1$
+		OLD_PROTECTION_RADIUS("ServerSettings.Protection.radius"), //$NON-NLS-1$
+
+		// Old since 0.8.1
+		@Deprecated
+		OLD_UPDATER_ENABLE("ServerSettings.AutoUpdater.enable"),
+		@Deprecated
+		OLD_UPDATER_INTERVAL("ServerSettings.AutoUpdater.autoUpdateInterval");
 
 		private String s;
 
@@ -305,10 +318,10 @@ public class BlockOwn extends PheasnPlugin {
 		this.initializeMetrics();
 
 		// enable AutoUpdater
-		updater = new Updater(this, pluginId, this.getFile(), com.github.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
-		if (com.github.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
-			updater.schedule(100l, com.github.pheasn.pluginupdater.Updater.Setting.AUTOUPDATE_INTERVAL.getLong(this) * 1000);
-			this.con(Messages.getString("BlockOwn.updater.started")); //$NON-NLS-1$
+		updater = Updater.getInstance(this, pluginId, this.getFile(), Setting.UPDATER_APIKEY.getString(this), Setting.UPDATER_RELEASE_TYPE.getString(this), Setting.UPDATER_BROADCAST.getBoolean(this));
+		if (updater != null) {
+			updater.scheduleRepeating(100l, Setting.UPDATER_INTERVAL.getLong(this));
+			if(Setting.UPDATER_INTERVAL.getLong(this) != 0) this.con(Messages.getString("BlockOwn.updater.started")); //$NON-NLS-1$
 		}
 
 		// enable AutoSaver
@@ -494,12 +507,8 @@ public class BlockOwn extends PheasnPlugin {
 		this.reloadConfig();
 		playerSettings.save();
 		FileConfiguration config = this.getConfig();
-		updater.cancel();
-		updater = new Updater(this, pluginId, this.getFile(), com.github.pheasn.pluginupdater.Updater.Setting.API_KEY.getString(this));
-		if (com.github.pheasn.pluginupdater.Updater.Setting.ENABLE_AUTOUPDATE.getBoolean(this)) {
-			updater.schedule(100l, Setting.AUTOSAVE_INTERVAL.getLong(this) * 1000);
-			this.con(Messages.getString("BlockOwn.updater.started")); //$NON-NLS-1$
-		}
+		updater.scheduleRepeating(100l, Setting.UPDATER_INTERVAL.getLong(this) * 1000);
+		if(Setting.UPDATER_INTERVAL.getLong(this) != 0) this.con(Messages.getString("BlockOwn.updater.started")); 
 
 		if (autoSaveThread.isAlive()) {
 			autoSaveThread.interrupt();
@@ -714,7 +723,7 @@ public class BlockOwn extends PheasnPlugin {
 		this.getConfig().set("ServerSettings.AutoUpdater.enableAutoUpdater", null); //$NON-NLS-1$
 
 		// 0.7.3 clean up
-		if(compareVersions(Setting.SETTINGS_VERSION.getString(this), "0.7.3")==-1){ //$NON-NLS-1$
+		if(compareVersions(Setting.SETTINGS_VERSION.getString(this), "0.7.3") == -1){ //$NON-NLS-1$
 		Setting.PROTECTION_AUTO_CHEST.update(this, Setting.OLD_ENABLE_AUTOMATIC_CHEST_PROTECTION.getBoolean(this),Setting.OLD_ENABLE_AUTOMATIC_CHEST_PROTECTION);
 		Setting.PROTECTION_AUTO_EVERYTHING.update(this, Setting.OLD_ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION.getBoolean(this), Setting.OLD_ENABLE_AUTOMATIC_UNIVERSAL_PROTECTION);
 		Setting.PROTECTION_CASCADE.update(this,Setting.OLD_CASCADE_PROTECTION_COMMANDS.getBoolean(this), Setting.OLD_CASCADE_PROTECTION_COMMANDS);
@@ -734,8 +743,14 @@ public class BlockOwn extends PheasnPlugin {
 
 		//0.7.5
 		if(compareVersions(Setting.SETTINGS_VERSION.getString(this), "0.7.5") == -1){ //$NON-NLS-1$
-			Setting.PROTECTION_RADIUS_PREVENT_PLACE.set(this, Setting.PROTECTION_RADIUS_OLD.getInt(this)>0);
-			Setting.PROTECTION_RADIUS_RADIUS.update(this, Setting.PROTECTION_RADIUS_OLD.getInt(this), Setting.PROTECTION_RADIUS_OLD);
+			Setting.PROTECTION_RADIUS_PREVENT_PLACE.set(this, Setting.OLD_PROTECTION_RADIUS.getInt(this)>0);
+			Setting.PROTECTION_RADIUS_RADIUS.update(this, Setting.OLD_PROTECTION_RADIUS.getInt(this), Setting.OLD_PROTECTION_RADIUS);
+		}
+
+		//0.8.1
+		if(compareVersions(Setting.SETTINGS_VERSION.getString(this), "0.8.1") == -1){ //$NON-NLS-1$
+			Setting.UPDATER_INTERVAL.update(this, Setting.OLD_UPDATER_INTERVAL.getLong(this), Setting.OLD_UPDATER_INTERVAL);
+			Setting.OLD_UPDATER_ENABLE.set(this, null);
 		}
 
 		this.saveConfig();
